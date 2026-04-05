@@ -938,3 +938,39 @@ body{
 
 
 
+
+
+/* ── Scan History Section ──────────────────────────────────────────────── */
+#ws_history_section {
+    background-color: #f0f6e4;
+    border-top: 3px solid #728c36;
+    padding: 48px 20px 56px;
+}
+
+#ws_history_inner {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+#ws_history_title {
+    color: #1E3A8A;
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+#ws_history_list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#ws_history_empty {
+    color: #94a3b8;
+    font-size: 13px;
+    text-align: center;
+    padding: 10px 0;
+}

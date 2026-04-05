@@ -64,8 +64,7 @@
  <!-- safety_status kept hidden for JS compatibility -->
  <span id="safety_status" aria-hidden="true"></span>
 
- <!-- Results row: both panels sit side-by-side when both are visible,
-      centered alone when only one is showing -->
+ <!-- Results row: side-by-side when both open, centered when only one -->
  <div id="results_row">
      <div id="link_status" aria-live="polite"></div>
 
@@ -268,9 +267,27 @@ Forward Reports: Email phishing scams to <a href="/cdn-cgi/l/email-protection" c
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 </div>
                 <div class="ws-feature-text">
-                    <h3> Save Evidences</h3>
-                    <p>Take Screenshots: Capture images of the email, message, or w
-<!-- Scan History Section -->
-<section id="ws_history_section" style="max-width:600px;margin:0 auto 40px;padding:0 20px;">
-    <h3 style="color:#1E3A8A;font-size:16px;font-weight:800;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px;">🕑 Recent Scans This Session</h3>
-    <div id="ws_history
+                    <h3>Save Evidences</h3>
+                    <p>Take Screenshots: Capture images of the email, message, or website involved in the phishing attempt to use as evidence when reporting.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+</section><!-- end #info_section -->
+
+<!-- ── Scan History ──────────────────────────────────────────────────────────── -->
+<section id="ws_history_section">
+    <div id="ws_history_inner">
+        <h3 id="ws_history_title">🕑 Recent Scans This Session</h3>
+        <div id="ws_history_list">
+            <p id="ws_history_empty">No scans yet this session</p>
+        </div>
+    </div>
+</section>
+
+<script src="check_link.js"></script>
+</body>
+</html>
