@@ -231,9 +231,11 @@ function normalizeURL(raw) {
         // ── Try server /api/check ─────────────────────────────────────────
         let serverData = null;
         try {
-            const res = await fetch(WEBSAFE_API_BASE + '/check?url=' + encodeURIComponent(normalized));
+            const apiUrl = '/api/check?url=' + encodeURIComponent(normalized);
+            console.log('[WebSafe] Calling:', apiUrl);
+            const res = await fetch(apiUrl);
             if (res.ok) { const j = await res.json(); if (j && j.ok) serverData = j; }
-        } catch (e) { /* server offline */ }
+        } catch (e) { console.warn('[WebSafe] API failed:', e.message); }
 
         if (serverData) {
             const d = serverData;
@@ -296,12 +298,12 @@ function normalizeURL(raw) {
             const httpsOk     = normalized.startsWith('https://');
             checks.push({ label: 'HTTPS',          ok: httpsOk,                detail: httpsOk   ? 'Secure connection' : 'No HTTPS' });
             checks.push({ label: 'Reachable',       ok: reachable||isWellKnown, detail: reachable ? 'Site responded'   : isWellKnown ? 'Well-known site (may block bots)' : 'Could not reach site' });
-            checks.push({ label: 'SSL Certificate', ok: null, detail: 'Run "npm start" locally for full checks' });
-            checks.push({ label: 'Blacklist',       ok: null, detail: 'Run "npm start" locally for full checks' });
-            checks.push({ label: 'Domain Age',      ok: null, detail: 'Run "npm start" locally for full checks' });
+            checks.push({ label: 'SSL Certificate', ok: null, detail: 'Server check unavailable' });
+            checks.push({ label: 'Blacklist',       ok: null, detail: 'Server check unavailable' });
+            checks.push({ label: 'Domain Age',      ok: null, detail: 'Server check unavailable' });
             if (!reachable && !isWellKnown) { level = 'danger'; reason = 'Site not reachable'; }
             else if (!httpsOk)              { level = 'hazard'; reason = 'No HTTPS'; }
-            else                            { level = 'safe';   reason = 'Basic checks passed — run npm start for full analysis'; }
+            else                            { level = 'safe';   reason = 'Basic checks passed'; }
         }
 
         // 4 core badges for the badge row
