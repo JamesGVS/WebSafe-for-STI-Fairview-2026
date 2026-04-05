@@ -125,6 +125,15 @@ function calcSafetyScore(checks, level) {
         if (safetyEl) { safetyEl.textContent = ''; safetyEl.className = ''; }
         const pa = document.getElementById('preview_area');
         if (pa) pa.style.display = 'none';
+        // Wipe preview content too so stale buttons/screenshots never survive a URL change
+        const pActions = document.getElementById('preview_actions');
+        if (pActions) pActions.innerHTML = '';
+        const pChecks = document.getElementById('preview_checks');
+        if (pChecks) pChecks.innerHTML = '';
+        const pTitle = document.getElementById('preview_title');
+        if (pTitle) pTitle.textContent = '';
+        const pDomain = document.getElementById('preview_domain');
+        if (pDomain) pDomain.textContent = '';
     }
     if (input) {
         input.addEventListener('input', () => {
@@ -294,7 +303,7 @@ function calcSafetyScore(checks, level) {
                     clearTimeout(tid2);reachable=r2.ok||r2.type==='opaque';
                 } catch(e2){reachable=false;}
             }
-            const WELL_KNOWN=['youtube.com','www.youtube.com','google.com','www.google.com','facebook.com','fb.com','twitter.com','x.com','instagram.com','microsoft.com','apple.com','amazon.com','wikipedia.org','linkedin.com','reddit.com','yahoo.com'];
+            const WELL_KNOWN=['youtube.com','www.youtube.com','google.com','www.google.com','facebook.com','fb.com','twitter.com','x.com','instagram.com','microsoft.com','apple.com','amazon.com','wikipedia.org','linkedin.com','reddit.com','yahoo.com','github.com','www.github.com','github.io','netflix.com','twitch.tv','discord.com','tiktok.com','spotify.com','stackoverflow.com','paypal.com'];
             let hostname='';
             try{hostname=new URL(normalized).hostname.toLowerCase();}catch(e){}
             const isWellKnown=WELL_KNOWN.includes(hostname);
@@ -380,17 +389,8 @@ function calcSafetyScore(checks, level) {
     }
     async function getScreenshot(url){
         const enc=encodeURIComponent(url);
-        // Use only thum.io — it's the most reliable and doesn't return its own error pages as images.
-        // The others (s-shot, screenshotapi) serve their own branded error pages as valid images,
-        // which is worse than showing nothing at all.
-        const sources=[
-            `https://image.thum.io/get/width/900/crop/600/noanimate/${url}`,
-            `https://api.screenshotmachine.com/?key=&url=${enc}&dimension=1024x768&device=desktop&format=png&timeout=10`,
-        ];
-        for(const src of sources){
-            const r=await tryLoadImage(src,12000);
-            if(r) return r;
-        }
+        const sources=[`https://image.thum.io/get/width/900/crop/600/noanimate/${url}`,`https://shot.screenshotapi.net/screenshot?url=${enc}&width=1280&height=768&output=image&file_type=png&wait_for_event=load`,`https://mini.s-shot.ru/1024x768/PNG/1024/Z100/?${url}`];
+        for(const src of sources){const r=await tryLoadImage(src,10000);if(r)return r;}
         return null;
     }
 
@@ -398,29 +398,22 @@ function calcSafetyScore(checks, level) {
         const inputEl=document.getElementById('link_input');if(!inputEl)return;
         const normalized=normalizeURL(inputEl.value||'');
         if(!normalized){alert('Please enter a valid URL first.');return;}
-
-        // Fully wipe pvActions first so repeat clicks never stack old buttons
-        if(pvActions) pvActions.innerHTML='';
-
         setPreviewVisible(true);resetPreviewContent();showSpinner();
         let hostname='';try{hostname=new URL(normalized).hostname;}catch(e){}
         if(pvDomain)pvDomain.textContent=hostname;
-
         if(pvActions){
-            const wrapper=makeWrapper();pvActions.appendChild(wrapper);
+            pvActions.innerHTML='';const wrapper=makeWrapper();pvActions.appendChild(wrapper);
             renderSkeleton(wrapper,hostname);
-            const shot=await getScreenshot(normalized);
-            hideSpinner();
+            const shot=await getScreenshot(normalized);hideSpinner();
             wrapper.innerHTML='';wrapper.appendChild(makeBrowserBar(hostname));
             if(shot){
                 const img=document.createElement('img');img.src=shot;img.alt=`Preview of ${hostname}`;img.style.cssText='width:100%;height:auto;display:block;';wrapper.appendChild(img);
             } else {
                 const fb=document.createElement('div');fb.style.cssText='padding:50px 20px;text-align:center;';
-                fb.innerHTML=`<span style="font-size:48px">&#127758;</span><p style="color:#1E3A8A;font-weight:700;font-size:16px;margin:12px 0 6px">${hostname}</p><p style="color:#94a3b8;font-size:13px;margin:0">Screenshot unavailable - this site may block preview services</p>`;
+                fb.innerHTML=`<span style="font-size:48px">🌐</span><p style="color:#1E3A8A;font-weight:700;font-size:16px;margin:12px 0 6px">${hostname}</p><p style="color:#94a3b8;font-size:13px;margin:0">Screenshot unavailable — this site may block preview services</p>`;
                 wrapper.appendChild(fb);
             }
-            // One button only, appended after everything is done
-            const a=document.createElement('a');a.href=normalized;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Open in new tab';
+            const a=document.createElement('a');a.href=normalized;a.target='_blank';a.rel='noopener noreferrer';a.textContent='🔗 Open in new tab';
             a.style.cssText='display:inline-block;margin:12px 0 4px;padding:9px 20px;background:#1E3A8A;color:#F8FAFC;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;border:2px solid #000;';
             pvActions.appendChild(a);
         }
