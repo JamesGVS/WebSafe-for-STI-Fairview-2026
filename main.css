@@ -146,7 +146,7 @@ body{
 /* Constrain preview card width to avoid horizontal scroll and center content */
 #preview_area {
     display: none; /* toggled by JS */
-    margin-top: 18px;
+    margin-top: 0;
 }
 
 #preview_card {
@@ -201,7 +201,7 @@ body{
     display: none;
     width: 40px;
     height: 40px;
-    margin: 28px auto 0;
+    margin: 36px auto 0;
     border: 4px solid rgba(0,0,0,0.08);
     border-top-color: #728c36;
     border-radius: 50%;
@@ -212,11 +212,31 @@ body{
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
+/* ─── Results row: verify + preview sit side-by-side ─── */
+#results_row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    margin-top: 24px;
+    padding: 0 20px;
+}
+
+/* Each panel takes up equal space but never overflows */
+#results_row #link_status,
+#results_row #preview_area {
+    flex: 1 1 420px;
+    max-width: 580px;
+    min-width: 0;
+    margin-top: 0;   /* row handles spacing now */
+    text-align: left;
+}
+
 /* ─── Result card (rendered by check_link.js) ─── */
 #link_status {
-    min-height: 0;          /* let the card size naturally */
+    min-height: 0;
     text-align: center;
-    margin-top: 24px;       /* breathing room below buttons */
 }
 
 #link_status > div {        /* the card itself */
