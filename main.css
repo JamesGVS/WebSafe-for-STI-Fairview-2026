@@ -201,8 +201,7 @@ body{
     display: none;
     width: 40px;
     height: 40px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 28px auto 0;
     border: 4px solid rgba(0,0,0,0.08);
     border-top-color: #728c36;
     border-radius: 50%;
@@ -217,6 +216,7 @@ body{
 #link_status {
     min-height: 0;          /* let the card size naturally */
     text-align: center;
+    margin-top: 24px;       /* breathing room below buttons */
 }
 
 #link_status > div {        /* the card itself */

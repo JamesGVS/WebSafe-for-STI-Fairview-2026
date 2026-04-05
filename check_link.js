@@ -73,14 +73,43 @@ function stopLoadingSteps() {
 }
 
 // ─── Safety Score Calculator ──────────────────────────────────────────────────
+// Weighted scoring: each check contributes a fixed number of points.
+// Unknown (null) checks contribute half their weight as a neutral penalty.
+// Final score is clamped to realistic bands per verdict level.
+const CHECK_WEIGHTS = {
+    'HTTPS':           25,   // Fundamental — no HTTPS is a big red flag
+    'SSL Certificate': 20,   // Encryption validity
+    'Blacklist':       20,   // Known-bad domain list
+    'Domain Age':      15,   // Very new domains are suspicious
+    'Reachable':       10,   // Site must respond
+    'HTTP Redirect':   5,    // HTTPS → HTTP downgrade
+    'Content Scan':    5,    // Suspicious page content
+    'Shortened Link':  0,    // Informational only, no score impact
+};
+const DEFAULT_WEIGHT = 5;   // fallback for any unlisted check label
+
 function calcSafetyScore(checks, level) {
-    if (level === 'danger') return Math.floor(Math.random() * 20) + 5;
-    if (level === 'hazard') return Math.floor(Math.random() * 25) + 35;
-    const passed = checks.filter(c => c.ok === true).length;
-    const total  = checks.filter(c => c.ok !== null).length;
-    if (total === 0) return 70;
-    const base = Math.round((passed / total) * 100);
-    return Math.min(99, Math.max(60, base));
+    let earned = 0;
+    let possible = 0;
+
+    checks.forEach(ch => {
+        const w = CHECK_WEIGHTS[ch.label] ?? DEFAULT_WEIGHT;
+        if (w === 0) return; // informational check, skip
+        possible += w;
+        if (ch.ok === true)  earned += w;
+        else if (ch.ok === null) earned += w * 0.5; // uncertain = half credit
+        // ch.ok === false → 0 points
+    });
+
+    // If no scoreable checks ran, return a neutral score
+    if (possible === 0) return 50;
+
+    const raw = Math.round((earned / possible) * 100);
+
+    // Clamp to believable ranges per verdict so the score and badge always agree
+    if (level === 'danger') return Math.min(raw, 29);
+    if (level === 'hazard') return Math.min(Math.max(raw, 30), 64);
+    return Math.max(raw, 65); // safe
 }
 
 // ─── Check Link module ────────────────────────────────────────────────────────
