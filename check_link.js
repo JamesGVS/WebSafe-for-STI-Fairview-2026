@@ -1,5 +1,5 @@
-// ── Firebase API base URL (for server-side checks) ─────────────────────────────────
-const WEBSAFE_API_BASE = "https://us-central1-websafe-capstone.cloudfunctions.net/api";
+// ── API base URL — empty string means same server (works on Render) ──────────
+const WEBSAFE_API_BASE = "";
 // ─────────────────────────────────────────────────────────────────────────────
 
 // check_link.js — WebSafe v4
