@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="icon" href="/images/logo_circle.png">
+    <link rel="stylesheet" href="main.css">  
+ <title>WebSafe</title>
+</head>
+<body>
+
+<header id="head_logo"> 
+    <img src="images/logo_square.jpg" alt="logo">
+    <h1>WebSafe</h1>
+</header>
+
+    <button id="btn_head" onclick="document.getElementById('about_modal').style.display='flex'">About Us</button>
+
+<!-- About Us Modal -->
+<div id="about_modal" onclick="if(event.target===this)this.style.display='none'">
+    <div id="about_box">
+        <button id="about_close" onclick="document.getElementById('about_modal').style.display='none'">&#x2715;</button>
+        <div id="about_logo_row">
+            <img src="images/logo_square.jpg" alt="logo" id="about_logo">
+            <h2>WebSafe</h2>
+        </div>
+        <div id="about_divider"></div>
+        <p id="about_tagline">Your trusted link safety checker</p>
+        <div id="about_cards">
+            <div class="about_card">
+                <h3>What We Do?</h3>
+                <p>WebSafe scans any URL you paste and runs multiple safety checks — HTTPS, SSL certificate, blacklist, domain age, and content analysis — to tell you if a link is safe, suspicious, or dangerous.</p>
+            </div>
+            <div class="about_card">
+                <h3>How It Works?</h3>
+                <p>Paste a suspicious link, hit <strong>Check Link</strong> to get a full safety report, or hit <strong>Preview</strong> to see what the site looks like before visiting it.</p>
+            </div>
+            <div class="about_card">
+                <h3>Why WebSafe?</h3>
+                <p>Phishing links and malicious URLs are getting harder to spot. WebSafe gives you a quick second opinion before you click — keeping you and your data protected.</p>
+            </div>
+        </div>
+        <div id="about_footer">
+            <span>Made with &#x2764;&#xFE0F; for internet safety</span>
+        </div>
+    </div>
+</div>
+
+<section id="link_checker">
+
+ <h1>IS IT WEBSAFE?</h1>
+ <p>Before we go, let's check and see! Tap below to see if this link's websafe for you and me!</p>
+
+ <form onsubmit="return false;">
+     <input id="link_input" type="text" placeholder="Input the URL/Link deemed to be suspicious">
+ </form>
+
+ <div class="controls">
+     <button id="check_btn" type="button">  Verify Security</button>
+     <button id="preview_btn" type="button">Preview Now</button>
+ </div>
+ <div id="loading_spinner" aria-hidden="true" style="display:none;margin-top:12px"></div>
+ <div id="link_status" aria-live="polite" style="margin-top:12px;"></div>
+ <!-- safety_status kept hidden for JS compatibility -->
+ <span id="safety_status" style="display:none" aria-hidden="true"></span>
+
+ <div id="preview_area" aria-live="polite">
+     <div id="preview_card">
+         <img id="preview_favicon" src="" alt="favicon">
+         <div>
+             <h3 id="preview_title"></h3>
+             <p id="preview_domain"></p>
+             <p id="preview_description"></p>
+             <div id="preview_actions" style="margin-top:8px"></div>
+         </div>
+     </div>
+     <div id="preview_checks" style="margin-top:12px"></div>
+ </div>
+
+</section>
+
+<section id="info_section">
+
+
+<section class="websafe-why-section">
+    <h2 class="section-title">What WebSafe Does</h2>
+    
+    <div class="why-container">
+        <div class="why-text">           
+            <div class="feature-item">
+                <p>WebSafe is a user-friendly online tool designed to help you verify links before visiting them. Just paste any URL into the platform to get an instant preview of the website, including its title and description. WebSafe also performs safety checks to determine if a link is safe, potentially risky, or harmful, giving you the information you need to browse confidently and avoid phishing scams or other online threats.</p>
+            </div>
+        </div>
+
+        <div class="why-image-wrapper">
+            <div class="circle-image">
+                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" alt="Person using WebSafe">
+            </div>
+            <div class="floating-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="websafe-module">
+    <div class="ws-header">
+        <h1>Why Users Should Choose WebSafe</h1>
+        <p>WebSafe is a tool for verifying whether any given URL is harboring known <a href="#" class="ws-link">phishing</a> strains.</p>
+    </div>
+
+    <div class="ws-flex-grid">
+        <div class="ws-graphic">
+            <div class="ws-laptop">
+                <div class="ws-scanner">
+                    <div class="ws-file-icon">
+                        <div class="ws-scan-line"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ws-content">
+            <div class="ws-block">
+                <p>You should choose WebSafe because it makes your online browsing safer and easier. With phishing scams becoming more common, WebSafe offers a simple way to check if a link is trustworthy without needing any tech skills. It’s designed for everyone, so you can feel confident when browsing the internet. By using WebSafe, you can protect yourself from identity theft and financial loss, making your online experience both safer and more enjoyable. can you make this paragraph a little more like an info on a website and make it a little shorter.
+            </div>
+    </div>
+</section>
+
+<section class="ws-how-module">
+    <div class="ws-container">
+        <h1 class="ws-main-title">How does WebSafe work?</h1>
+        <p class="ws-desc">WebSafe is a free tool designed to verify URLs, helping users avoid malware, phishing attempts, and counterfeit websites.</p>
+        <p class="ws-sub-heading">Here’s how it works:</p>
+
+        <div class="ws-grid">
+            <div class="ws-box">
+                <div class="ws-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#4661ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                </div>
+                <h3>Paste</h3>
+                <p>Paste the URL or link you want to check to quickly scan it and find out if it’s safe to visit before clicking.</p>
+            </div>
+
+            <div class="ws-box">
+                <div class="ws-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#4661ff" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                </div>
+                <h3>Click</h3>
+                <p>Click the “Verify Security" button to run a fast and easy security scan, so you can quickly find out if a link is safe before visiting it.</p>
+            </div>
+
+            <div class="ws-box">
+                <div class="ws-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#4661ff" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <h3>Check</h3>
+                <p>Check the results to see if the link is safe, noting any warnings before proceeding to stay protected online.</p>
+            </div>
+        </div>
+    </div>
+</section>
+    
+
+<section class="ws-feature-block">
+    <div class="ws-container">
+        
+        <div class="ws-content">
+            <h2 class="ws-title">The Technology Behind <br> WebSafe</h2>
+            
+            <p class="ws-text">
+                Developed by students from STI College Fairview, WebSafe is a website URL malware detector designed to identify and neutralize malicious links. Built on a robust Node.js backend and powered by advanced JavaScript analysis engines, the system evaluates incoming connection requests in real time to ensure user safety.
+            </p>
+            
+            <p class="ws-text">
+                Rather than relying on simple blocklists, WebSafe utilizes its JavaScript-driven engine to analyze internet traffic patterns and identify malicious behavior. By leveraging the asynchronous capabilities of Node.js, the system evaluates structural signals such as protocol verification, encryption strength, and server reputation to pinpoint malicious infrastructure.
+            </p>
+            
+            <p class="ws-text">
+                A standout component of the system is its preview feature, which allows users to view the contents of a website without being directed to it first. This provides a safe way to inspect a URL's layout and content within the WebSafe environment, effectively isolating the user from potential browser-based exploits or automatic downloads.
+            </p>
+            
+            <p class="ws-text">
+                The analysis engine is trained on diverse datasets of verified safe and malicious connections, including metrics like origin verification and burst latency. For every request, WebSafe generates a safety score that suggests its reliability, providing a vital, student-engineered defensive layer for those who prioritize network security.
+            </p>
+        </div>
+
+        <div class="ws-visual">
+            <div class="ws-image-placeholder">
+                <img src="" alt="" class="ws-final-image" />
+                <span class="placeholder-label">Image Placeholder</span>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+<section class="ws-grid-section">
+    <div class="ws-grid-container">
+        
+        <h2 class="ws-grid-title">What to Do if You Encounter a Phishing Scam in the Philippines</h2>
+
+        <div class="ws-features-grid">
+            
+            <div class="ws-feature-item">
+                <div class="ws-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                </div>
+                <div class="ws-feature-text">
+                    <h3>Report To Your Service Provider</h3>
+                    <p>ISP or Mobile Operator: Contact your Internet Service Provider or mobile network provider to report the phishing attempt.
+                    <p>Globe: Call 211 or report via the GlobeOne app.</p>
+                    <p>Smart: Call 1511 or report via the Smart app.</p>
+                </div>
+            </div>
+
+            <div class="ws-feature-item">
+                <div class="ws-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                </div>
+                <div class="ws-feature-text">
+                    <h3> Report To Local Authorities</h3>
+                    <p>Philippine National Police (PNP) - Cybercrime Division
+Contact: Report the incident through the PNP Cybercrime Group.
+                    <p>Hotline: Call (+632) 724-3660.</p>
+                    <p>Email: Send reports to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f0809e80939385b0979d91999cde939f9d">[email&#160;protected]</a>.</p>
+                </div>
+            </div>
+
+            <div class="ws-feature-item">
+                <div class="ws-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
+                </div>
+                <div class="ws-feature-text">
+                    <h3>Notify Affected Entities</h3>
+                    <p>Financial Institutions: If sensitive information (like bank details) has been shared, contact your bank or relevant financial institution immediately.</p>
+                </div>
+            </div>
+
+            <div class="ws-feature-item">
+                <div class="ws-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+                <div class="ws-feature-text">
+                    <h3>Do Not Interact</h3>
+                    <p>Avoid Engaging: Do not click on any links or respond to messages from the suspected phishing source.</p>
+                </div>
+            </div>
+
+            <div class="ws-feature-item">
+                <div class="ws-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <div class="ws-feature-text">
+                    <h3>Report to Anti-Cybercrime Organizations</h3>
+                    <p>Department of Information and Communications Technology (DICT)
+Forward Reports: Email phishing scams to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f093899295829382999d95b0b4b9b3a4de979f86de8098">[email&#160;protected]</a> or visit the DICT website for more resources.</p>
+                </div>
+            </div>
+
+            <div class="ws-feature-item">
+                <div class="ws-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="ws-feature-text">
+                    <h3> Save Evidences</h3>
+                    <p>Take Screenshots: Capture images of the email, message, or w

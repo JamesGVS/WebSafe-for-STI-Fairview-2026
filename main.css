@@ -1,0 +1,919 @@
+/*UNIVERSAL*/
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background-color: #dbebba;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+/* HEADER */
+#head_logo{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    height: 120px;
+    background-color: #1d1d20;
+    border-bottom: 7px solid #343434;
+    padding-left: 30px;
+}
+
+#head_logo img {
+    width: 100px;
+    height: 100px;
+    margin-right: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#head_logo h1 {
+    font-size: 50px;
+    color: #dbebba;
+    margin: 0;
+    padding: 15px;
+    -webkit-text-stroke: 0px black;
+}
+
+#btn_head {
+    border: none;
+    border-radius: 8px;
+    background-color: #728c36;
+    padding: 10px 20px;
+    color: #dbebba;
+    font-size: 20px;
+    cursor: pointer;
+    float: right;
+    margin-right: 20px;
+    margin-top: 10px;
+}
+
+#btn_head:hover {
+    background-color: #546925;
+    color: #ffffff;
+}
+
+/*END OF HEADER */
+
+/*LINK CHECKER*/
+#link_checker{
+    width: 100%;
+    /* allow content (preview/status) to expand the section so it pushes following content down */
+    background-color: #fcfcfa;
+    text-align: center;
+    padding: 40px 20px 20px;
+}
+
+#link_checker form {
+    margin-top: 20px;
+    width: 100%;
+}
+
+#link_checker form input[type="text"] {
+    width: 80%;
+    padding: 15px;
+    font-size: 18px;
+    border-radius: 15px;
+    border: 2px solid #728c36;
+}
+
+#link_checker h1 {
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+#link_checker p {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+#safety_status {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 18px;
+    font-weight: 700;
+}
+
+.safe { background: #d1fae5; color: #065f46; }
+.hazard { background: #fef3c7; color: #92400e; }
+.danger { background: #fee2e2; color: #991b1b; }
+
+#link_checker button {
+    padding: 12px 30px;
+    background-color: #728c36;
+    color: #F8FAFC;
+    border: none;
+    cursor: pointer;
+    margin-top: 15px;
+    border-radius: 8px;
+}
+
+#link_checker button:hover {
+    background-color: #546925;
+    color: #f4f3f3;
+}
+
+/*END OF LINK CHECKER*/
+
+
+/* PREVIEW CARD */
+#preview_card {
+    background: #ffffff;
+    border: 1px solid #e6eefb;
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(16,24,40,0.06);
+}
+
+#preview_checks ul li {
+    font-weight: 600;
+}
+
+/* preview container spacing so it pushes the info section down */
+/* preview container spacing so it pushes the info section down */
+#preview_area { margin-bottom: 30px; }
+
+/* Constrain preview card width to avoid horizontal scroll and center content */
+#preview_area {
+    display: none; /* toggled by JS */
+    margin-top: 18px;
+}
+
+#preview_card {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    box-sizing: border-box;
+}
+
+#preview_card > img, #preview_card img#preview_favicon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: contain;
+    display: none; /* shown when JS sets a src */
+}
+
+#preview_card > div {
+    flex: 1 1 auto;
+    text-align: center; /* center metadata */
+}
+
+#preview_title, #preview_domain, #preview_description {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+#preview_description {
+    max-width: 520px;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+#preview_domain {
+    color: #555;
+    word-break: break-all;
+}
+
+#preview_checks ul {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap; /* wrap badges to avoid overflow */
+    justify-content: center;
+}
+
+/* Spinner */
+#loading_spinner {
+    width: 40px;
+    height: 40px;
+    margin-left: auto;
+    margin-right: auto;
+    border: 4px solid rgba(0,0,0,0.08);
+    border-top-color: #728c36;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+/* ─── Result card (rendered by check_link.js) ─── */
+#link_status {
+    min-height: 0;          /* let the card size naturally */
+    text-align: center;
+}
+
+#link_status > div {        /* the card itself */
+    text-align: left;
+}
+
+/* ─── ABOUT US MODAL ─────────────────────────────────────────── */
+#about_modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    animation: fadeInOverlay 0.2s ease;
+}
+
+@keyframes fadeInOverlay {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+#about_box {
+    background: #dbebba;
+    border: 3px solid #546925;
+    border-radius: 16px;
+    max-width: 680px;
+    width: 100%;
+    padding: 36px 36px 28px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(30, 58, 138, 0.25);
+    animation: slideUpModal 0.25s ease;
+}
+
+@keyframes slideUpModal {
+    from { transform: translateY(30px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+#about_close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: #dbebba;
+    border: 2px solid #546925;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #546925;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+    margin-top: 0;
+    padding: 0;
+}
+
+#about_close:hover {
+    background: #546925;
+    color: #ffffff;
+}
+
+#about_logo_row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+#about_logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #546925;
+}
+
+#about_logo_row h2 {
+    font-size: 32px;
+    color: #000000;
+    font-weight: 800;
+    letter-spacing: .5px;
+}
+
+#about_divider {
+    height: 4px;
+    background: #728c36;
+    border-radius: 4px;
+    margin-bottom: 14px;
+}
+
+#about_tagline {
+    font-size: 15px;
+    color: #728c36;
+    margin-bottom: 22px;
+    font-style: italic;
+}
+
+#about_cards {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+}
+
+.about_card {
+    flex: 1 1 160px;
+    background: #91b935;
+    border: 2px solid #91b935;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.about_icon {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.about_card h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #3f4f1b;
+    margin-bottom: 6px;
+}
+
+.about_card p {
+    font-size: 13px;
+    color: #374151;
+    line-height: 1.5;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+#about_footer {
+    text-align: center;
+    font-size: 13px;
+    color: #dbebba;
+    padding-top: 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.feature_section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 60px 10%;
+    gap: 40px;
+    background-color: #f5f5f5;
+    flex-wrap: wrap;
+}
+
+.feature_text {
+    flex: 1;
+    min-width: 280px;
+}
+
+.feature_text h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+.feature_text p {
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.feature_text ul {
+    list-style: none;
+    padding: 0;
+}
+
+.feature_text ul li {
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+/* SECTION */
+.feature_section_3 {
+    padding: 80px 10%;
+    background: #f5f5f5;
+}
+
+/* TITLE */
+.feature3_title {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 50px;
+}
+
+/* LAYOUT */
+.feature3_container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+    flex-wrap: wrap;
+}
+
+/* LEFT TEXT */
+.feature3_text {
+    flex: 1;
+    min-width: 280px;
+}
+
+/* EACH ITEM */
+.feature_item {
+    padding-left: 20px;
+    margin-bottom: 20px;
+    border-left: 3px solid #ccc;
+}
+
+.feature_item h3 {
+    margin-bottom: 5px;
+    font-size: 20px;
+}
+
+.feature_item p {
+    color: #555;
+    line-height: 1.6;
+}
+
+/*DITO YUNG START NG 1ST IMG*/ 
+
+
+.websafe-why-section {
+    max-width: 1100px;
+    margin: 80px auto;
+    padding: 20px;
+    font-family: 'Inter', sans-serif;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.2rem;
+    color: #2c333a;
+    margin-bottom: 60px;
+}
+
+.why-container {
+    display: flex;
+    align-items: center;
+    gap: 80px;
+}
+
+/* Text Side Styling */
+.why-text {
+    flex: 1;
+}
+
+.feature-item {
+    border-left: 2px solid #e4e7eb;
+    padding: 10px 0 10px 25px;
+    margin-bottom: 20px;
+}
+
+.feature-item.active {
+    border-left: 3px solid #4661ff;
+}
+
+.feature-item h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.25rem;
+    color: #2c333a;
+}
+
+.feature-item p {
+    margin: 0;
+    color: #585d63;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+/* Image Side Styling */
+.why-image-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.circle-image {
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.circle-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.floating-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 100px;
+    height: 100px;
+    background: #4661ff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(70, 97, 255, 0.4);
+}
+
+.floating-icon svg {
+    width: 50px;
+    height: 50px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .why-container {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+    .feature-item {
+        border-left: none;
+        border-top: 2px solid #e4e7eb;
+        padding: 20px 0;
+    }
+    .circle-image {
+        width: 300px;
+        height: 300px;
+    }
+}
+
+
+/* 2nd Picture about what does websafe do*/
+/* Unique wrapper to prevent style leaks */
+.websafe-module {
+    max-width: 1100px;
+    margin: 60px auto;
+    padding: 20px;
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: #2c333a;
+}
+
+.websafe-module .ws-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.websafe-module h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.websafe-module .ws-header p {
+    color: #585d63;
+    font-size: 1.1rem;
+}
+
+.websafe-module .ws-link {
+    color: #4661ff;
+    text-decoration: underline;
+}
+
+/* Layout Grid */
+.websafe-module .ws-flex-grid {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    flex-wrap: wrap;
+}
+
+.websafe-module .ws-graphic, 
+.websafe-module .ws-content {
+    flex: 1;
+    min-width: 320px;
+}
+
+.websafe-module .ws-block {
+    margin-bottom: 35px;
+}
+
+.websafe-module h3 {
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+}
+
+.websafe-module .ws-content p {
+    line-height: 1.6;
+    color: #585d63;
+}
+
+/* CSS-Only Laptop Illustration */
+.websafe-module .ws-laptop {
+    width: 320px;
+    height: 180px;
+    background: #e4e7eb;
+    border: 12px solid #111;
+    border-radius: 12px;
+    position: relative;
+    margin: 0 auto;
+}
+
+.websafe-module .ws-laptop::after {
+    content: '';
+    position: absolute;
+    bottom: -22px;
+    left: -30px;
+    width: 380px;
+    height: 10px;
+    background: #bdc3c7;
+    border-radius: 0 0 12px 12px;
+}
+
+.websafe-module .ws-scanner {
+    position: absolute;
+    top: -40px;
+    left: 70px;
+    width: 160px;
+    height: 220px;
+    background: #333;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+}
+
+.websafe-module .ws-file-icon {
+    width: 70px;
+    height: 90px;
+    background: #fff;
+    border-radius: 4px;
+    position: relative;
+    opacity: 0.9;
+}
+
+.websafe-module .ws-scan-line {
+    width: 120%;
+    height: 4px;
+    background: #ff5c5c;
+    box-shadow: 0 0 10px #ff5c5c;
+    position: absolute;
+    left: -10%;
+    top: 50%;
+    animation: scanMove 2s infinite ease-in-out;
+}
+
+/* Animation to make it look active */
+@keyframes scanMove {
+    0%, 100% { top: 20%; }
+    50% { top: 80%; }
+}
+
+/* Mobile View */
+@media (max-width: 850px) {
+    .websafe-module .ws-flex-grid { flex-direction: column; text-align: center; }
+    .websafe-module .ws-laptop { scale: 0.8; margin-bottom: 40px; }
+}
+
+
+/* 3RD PICTURE INSTRUCTIONS PART - DAR */
+
+.ws-how-module {
+    padding: 60px 20px;
+    font-family: 'Inter', sans-serif;
+    text-align: center;
+    background: transparent; /* No background outside the boxes */
+}
+
+.ws-container { max-width: 1100px; margin: 0 auto; }
+
+.ws-main-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 15px; color: #000; }
+
+.ws-desc { color: #585d63; max-width: 750px; margin: 0 auto 15px; line-height: 1.6; }
+
+.ws-sub-heading { margin-bottom: 50px; font-weight: 500; color: #2c333a; }
+
+/* Grid & Dotted Line */
+.ws-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    position: relative;
+}
+
+.ws-grid::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 15%;
+    right: 15%;
+    border-top: 2px dotted #4661ff;
+    opacity: 0.25;
+    z-index: 0;
+}
+
+/* Box Styling: Color ONLY inside the box */
+.ws-box {
+    flex: 1;
+    padding: 40px 30px;
+    background-color: #f6f7f8; /* Light gray fill inside the box */
+    border-radius: 20px;
+    text-align: left;
+    position: relative;
+    z-index: 1;
+}
+
+.ws-icon { width: 40px; height: 40px; margin-bottom: 25px; }
+
+.ws-box h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; color: #000; }
+
+.ws-box p { color: #585d63; font-size: 0.95rem; line-height: 1.5; margin: 0; }
+
+/* Mobile Logic */
+@media (max-width: 850px) {
+    .ws-grid { flex-direction: column; gap: 15px; }
+    .ws-grid::before { display: none; }
+    .ws-box { text-align: center; padding: 30px; }
+    .ws-icon { margin: 0 auto 20px; }
+}
+
+
+/* The tech behind websafe Part - Dar*/
+/* WebSafe Scoped Styles */
+.ws-feature-block {
+    padding: 80px 24px;
+    background-color: #fbfdff;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.ws-container {
+    max-width: 1140px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 60px;
+}
+
+.ws-content {
+    flex: 1.2;
+    min-width: 300px;
+}
+
+.ws-title {
+    color: #1a3c5d;
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 2rem;
+}
+
+.ws-text {
+    color: #4a5568;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 1.25rem;
+}
+
+.ws-text strong {
+    color: #1a3c5d;
+}
+
+/* Image/Placeholder Logic */
+.ws-visual {
+    flex: 0.8;
+    min-width: 300px;
+    display: flex;
+    justify-content: center;
+}
+
+.ws-image-placeholder {
+    background-color: #f0f7ff;
+    border: 2px dashed #cbd5e0; /* Visual cue that it's empty */
+    border-radius: 20px;
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.placeholder-label {
+    color: #a0aec0;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
+}
+
+/* This handles the image once you add the SRC */
+.ws-final-image {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    display: block;
+}
+
+/* Hide the label and dashed border once an image is actually present */
+.ws-final-image[src^="http"] + .placeholder-label {
+    display: none;
+}
+.ws-final-image[src^="http"] {
+    border: none;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .ws-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    .ws-image-placeholder {
+        max-width: 100%;
+    }
+}
+
+
+/* What to Do if You Encounter a Phishing Scam in the Philippines part -Dar*/
+/* Features Grid Scoped Styles */
+.ws-grid-section {
+    padding: 80px 24px;
+    background-color: #ebf4ff; /* Light blue background */
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.ws-grid-container {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.ws-grid-title {
+    text-align: center;
+    color: #1a3c5d;
+    font-size: 2.2rem;
+    margin-bottom: 60px;
+    font-weight: 700;
+}
+
+.ws-features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    column-gap: 60px;
+    row-gap: 40px;
+}
+
+.ws-feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+/* Icon Styling */
+.ws-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    color: #4a90e2; /* Icon blue */
+}
+
+/* Text Styling */
+.ws-feature-text h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+    color: #1a3c5d;
+    font-weight: 700;
+}
+
+.ws-feature-text p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #4a5568;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .ws-features-grid {
+        grid-template-columns: 1fr; /* Stack into one column on small screens */
+    }
+    
+    .ws-grid-title {
+        font-size: 1.8rem;
+    }
+}
+
+
+
+
