@@ -1,0 +1,21 @@
+{
+  "name": "websafe-functions",
+  "description": "WebSafe Firebase Cloud Functions",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "firebase-functions": "^4.0.0",
+    "node-fetch": "^2.6.7",
+    "whois": "^2.13.6"
+  },
+  "private": true
+}
