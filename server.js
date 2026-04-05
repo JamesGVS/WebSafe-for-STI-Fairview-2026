@@ -367,7 +367,7 @@ app.get('/api/check', async (req, res) => {
         'facebook.com', 'google.com', 'youtube.com', 'twitter.com', 'instagram.com',
         'microsoft.com', 'apple.com', 'amazon.com', 'wikipedia.org', 'linkedin.com',
         'reddit.com', 'yahoo.com', 'netflix.com', 'github.com', 'stackoverflow.com',
-        'paypal.com', 'bankofamerica.com', 'chase.com', 'wellsfargo.com', 'x.com',
+        'paypal.com', 'bankofamerica.com', 'chase.com', 'wellsfargo.com', 'x.com', 'fb.com', 'fbcdn.net',
         'tiktok.com', 'discord.com', 'twitch.tv', 'spotify.com', 'dropbox.com'
       ];
       const isTrusted = TRUSTED_DOMAINS.some(d => resolvedHostname === d || resolvedHostname.endsWith('.' + d));
@@ -404,12 +404,15 @@ app.get('/api/check', async (req, res) => {
       }
       if (!isTrusted) {
         const scripts = $('script').toArray().map(s => $(s).html() || '');
-        const joined = scripts.join('\n').toLowerCase();
-        if (/eval\(|unescape\(|atob\(|fromcharcode\(|document\.write\(/.test(joined)) {
+        const joined = scripts.join('\n');
+        // Only flag eval+decode combos together — eval alone is common in legit minified JS
+        if (/eval\(\s*(unescape|atob|String\.fromCharCode)/.test(joined)) {
           contentFlags.push({ type: 'obfuscation', severity: 'medium', detail: 'suspicious JS obfuscation detected' });
         }
-        if (/[A-Za-z0-9+/]{40,}={0,2}/.test(joined)) {
-          contentFlags.push({ type: 'base64-large', severity: 'medium', detail: 'long base64-like string found' });
+        // Base64 flag only when used in an eval/decode call — raw base64 strings are
+        // extremely common in minified bundles and cause too many false positives otherwise
+        if (/(?:eval|atob|unescape)\([^)]*[A-Za-z0-9+\/]{60,}={0,2}/.test(joined)) {
+          contentFlags.push({ type: 'base64-large', severity: 'medium', detail: 'encoded script execution detected' });
         }
       }
     } catch (e) {}
