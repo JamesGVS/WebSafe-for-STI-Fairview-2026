@@ -198,6 +198,7 @@ body{
 
 /* Spinner */
 #loading_spinner {
+    display: none;
     width: 40px;
     height: 40px;
     margin-left: auto;
