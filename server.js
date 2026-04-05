@@ -23,7 +23,30 @@ app.use((req, res, next) => {
 });
 
 // Simple in-memory blacklist - extend as needed
-const BLACKLIST = ['example-malicious.com', 'bad-domain.test'];
+const BLACKLIST = [
+  // Test/example domains
+  'example-malicious.com', 'bad-domain.test',
+  // Known Philippine phishing domains and patterns
+  'gcash-promo.com', 'gcash-verify.net', 'gcash-reward.com',
+  'bdo-verify.com', 'bdo-online.net', 'bdo-secure.com',
+  'bpi-verify.net', 'bpi-online.xyz', 'bpi-secure.net',
+  'metrobank-verify.com', 'metrobank-online.net',
+  'pnb-verify.net', 'landbank-verify.com',
+  // Common phishing patterns
+  'paypal-verify.com', 'paypal-secure.net', 'paypal-login.xyz',
+  'facebook-login.xyz', 'fb-verify.com', 'facebook-verify.net',
+  'google-verify.net', 'google-account-verify.com',
+  'apple-id-verify.com', 'apple-support-verify.net',
+  'amazon-verify.net', 'amazon-secure.xyz',
+  // Known malware/scam domains
+  'free-robux-now.com', 'getrobux.xyz', 'roblox-free.net',
+  'claim-prize.xyz', 'you-won.net', 'winner-claim.com',
+  'crypto-doubler.com', 'bitcoin-generator.xyz',
+  'covid-relief-fund.com', 'stimulus-check.xyz',
+  // Typosquatting common sites
+  'faceb00k.com', 'gooogle.com', 'paypa1.com', 'amaz0n.com',
+  'netfl1x.com', 'yout0be.com', 'twltter.com',
+];
 
 function isBlacklisted(hostname) {
   const h = hostname.toLowerCase();
