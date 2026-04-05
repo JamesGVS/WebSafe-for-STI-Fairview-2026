@@ -13,6 +13,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
+// Serve main.html at root URL
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'main.html')));
+
 // simple request logger
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()}  ${req.method} ${req.originalUrl}`);
