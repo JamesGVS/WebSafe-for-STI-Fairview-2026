@@ -269,18 +269,18 @@ function calcSafetyScore(checks, level) {
                     messages.push('The page is using scrambled code that tries to hide what it\'s doing');
                 } else if (f.type === 'form-external-post') {
                     const dest = (f.detail||'').replace('form posts to ','').trim();
-                    messages.push(`This page sends your info to a different website (${dest||'unknown'}) — a common sign of phishing`);
+                    messages.push(`This page sends your info to a different website (${dest||'unknown'}) — a common sign of phishing (note: some trusted sites like Facebook or Google also use login forms, so verify the domain carefully)`);
                 } else if (f.type === 'keywords') {
                     const kws = Array.isArray(f.detail) ? f.detail : [f.detail];
                     const readableKws = kws.map(k => `"${k}"`).join(', ');
                     if (f.severity === 'high') {
-                        messages.push(`Contains sensitive phrases like ${readableKws} — be very careful`);
+                        messages.push(`Contains sensitive phrases like ${readableKws} — be very careful (note: legitimate sites may use similar wording, so check the domain)`);
                     } else {
-                        messages.push(`Contains phrases often used in scam messages like ${readableKws}`);
+                        messages.push(`Contains phrases often used in scam messages like ${readableKws} (note: well-known sites may also trigger this — verify the URL is correct)`);
                     }
                 } else {
                     // Fallback: still readable
-                    messages.push('Suspicious content was detected on this page');
+                    messages.push('Suspicious content was detected on this page (note: popular sites like Facebook, Google, or banking sites may also trigger this warning due to login forms — always verify you have the correct URL)');
                 }
             }
             return messages.join(' · ');
@@ -341,7 +341,7 @@ function calcSafetyScore(checks, level) {
             if(Array.isArray(d.contentFlags)&&d.contentFlags.length){
                 const highFlags=d.contentFlags.filter(f=>f.severity==='high');
                 const friendlyDetail = friendlyContentDetail(d.contentFlags);
-                checks.push({label:'Page Content',ok:false,detail:friendlyDetail});
+                checks.push({label:'Page Content',ok:false,detail:friendlyDetail + ' (some legitimate sites like Facebook or Google may also trigger content warnings — this could still be safe if the URL looks correct)'});
                 if(highFlags.length){
                     level='danger';
                     reason=friendlyContentDetail(highFlags);
