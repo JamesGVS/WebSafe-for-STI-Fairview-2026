@@ -112,6 +112,34 @@ function calcSafetyScore(checks, level) {
     return Math.max(raw, 65); // safe
 }
 
+// ─── Flag type → human label ──────────────────────────────────────────────────
+function flagTypeLabel(type) {
+    const map = {
+        'brand-impersonation':      'Brand Impersonation',
+        'keywords-high':            'High-Risk Phrases',
+        'keywords-medium':          'Suspicious Phrases',
+        'multiple-password-fields': 'Credential Harvesting',
+        'form-external-post':       'Data Theft Risk',
+        'hidden-iframe':            'Hidden Frame',
+        'meta-redirect':            'Silent Redirect',
+        'obfuscation':              'Code Obfuscation',
+        'base64-payload':           'Hidden Payload',
+        'base64-large':             'Hidden Payload',
+        'fake-trust-badges':        'Fake Security Badges',
+        'ip-address':               'Raw IP Address',
+        'at-sign-url':              'URL Spoofing',
+        'dash-heavy-domain':        'Suspicious Domain Name',
+        'suspicious-tld':           'Suspicious Domain Extension',
+        'excessive-subdomains':     'Subdomain Spoofing',
+        'brand-in-subdomain':       'Brand Spoofing',
+        'long-url':                 'Obfuscated URL',
+        'encoded-hostname':         'Encoded Hostname',
+        'dynamic-dns':              'Dynamic DNS Abuse',
+        'suspicious-hosting':       'Suspicious Hosting',
+    };
+    return map[type] || 'Suspicious Signal';
+}
+
 // ─── Check Link module ────────────────────────────────────────────────────────
 (function () {
     const input    = document.getElementById('link_input');
@@ -259,110 +287,183 @@ function calcSafetyScore(checks, level) {
             else { console.warn('[WebSafe] API non-OK:', res.status); }
         } catch(e) { console.warn('[WebSafe] API failed:', e.message); }
 
-        // ── Friendly label mapping for content flags from the server ──────────
-        function friendlyContentDetail(flags) {
-            const messages = [];
-            for (const f of flags) {
-                if (f.type === 'base64-large') {
-                    messages.push('The page contains hidden or encoded data — this is a common trick used by scam sites');
-                } else if (f.type === 'obfuscation') {
-                    messages.push('The page is using scrambled code that tries to hide what it\'s doing');
-                } else if (f.type === 'form-external-post') {
-                    const dest = (f.detail||'').replace('form posts to ','').trim();
-                    messages.push(`This page sends your info to a different website (${dest||'unknown'}) — a common sign of phishing (note: some trusted sites like Facebook or Google also use login forms, so verify the domain carefully)`);
-                } else if (f.type === 'keywords') {
-                    const kws = Array.isArray(f.detail) ? f.detail : [f.detail];
-                    const readableKws = kws.map(k => `"${k}"`).join(', ');
-                    if (f.severity === 'high') {
-                        messages.push(`Contains sensitive phrases like ${readableKws} — be very careful (note: legitimate sites may use similar wording, so check the domain)`);
-                    } else {
-                        messages.push(`Contains phrases often used in scam messages like ${readableKws} (note: well-known sites may also trigger this — verify the URL is correct)`);
-                    }
-                } else {
-                    // Fallback: still readable
-                    messages.push('Suspicious content was detected on this page (note: popular sites like Facebook, Google, or banking sites may also trigger this warning due to login forms — always verify you have the correct URL)');
-                }
+        // ── Friendly label mapping for content/URL/DNS flags from the server ────
+        function friendlyFlagDetail(f) {
+            switch(f.type) {
+                case 'brand-impersonation':
+                    return f.detail || 'This page is pretending to be a brand it isn\'t — a classic phishing tactic';
+                case 'keywords-high':
+                    { const kws = Array.isArray(f.detail) ? f.detail : [f.detail];
+                      return `Contains high-risk phrases (${kws.map(k=>`"${k}"`).join(', ')}) — strongly associated with phishing`; }
+                case 'keywords-medium':
+                    { const kws = Array.isArray(f.detail) ? f.detail : [f.detail];
+                      return `Contains suspicious phrases (${kws.map(k=>`"${k}"`).join(', ')}) — verify the URL is correct`; }
+                case 'multiple-password-fields':
+                    return f.detail || 'Multiple password fields detected — possible credential harvesting';
+                case 'form-external-post':
+                    return f.detail || 'This page sends your data to a different server — common in phishing attacks';
+                case 'hidden-iframe':
+                    return f.detail || 'Hidden frame detected — may be used for silent tracking or clickjacking';
+                case 'meta-redirect':
+                    return f.detail || 'Page silently redirects to another domain — often used in phishing relay attacks';
+                case 'obfuscation':
+                    return f.detail || 'Scrambled/hidden code detected — often used to conceal malicious behaviour';
+                case 'base64-payload': case 'base64-large':
+                    return f.detail || 'Large encoded data blobs found — may be hiding malicious content';
+                case 'fake-trust-badges':
+                    return f.detail || 'Multiple fake "security verified" claims — a common scam site tactic';
+                case 'ip-address':
+                    return f.detail || 'URL uses a raw IP address instead of a domain — almost always suspicious';
+                case 'at-sign-url':
+                    return f.detail || 'URL contains @ symbol — can be used to disguise the real destination';
+                case 'dash-heavy-domain':
+                    return f.detail || 'Over-hyphenated domain — a common pattern in phishing domains';
+                case 'suspicious-tld':
+                    return f.detail || 'Domain uses a TLD frequently abused for scams';
+                case 'excessive-subdomains':
+                    return f.detail || 'Unusual subdomain depth — often used to make phishing URLs look legitimate';
+                case 'brand-in-subdomain':
+                    return f.detail || 'A trusted brand is used in the subdomain to impersonate the real site';
+                case 'long-url':
+                    return f.detail || 'Unusually long URL — often used to obscure the real destination';
+                case 'encoded-hostname':
+                    return f.detail || 'Percent-encoded characters in the hostname — common phishing obfuscation';
+                case 'dynamic-dns':
+                    return f.detail || 'Uses a free dynamic DNS service — frequently abused in phishing campaigns';
+                case 'suspicious-hosting':
+                    return f.detail || 'Hosted on an IP range associated with bulletproof hosting';
+                default:
+                    return f.detail || 'Suspicious signal detected';
             }
-            return messages.join(' · ');
+        }
+
+        function friendlyContentDetail(flags) {
+            return flags.map(f => friendlyFlagDetail(f)).join(' · ');
         }
 
         if (serverData) {
             const d = serverData;
-            if(d.shortened&&d.resolvedUrl) checks.push({label:'Shortened Link',ok:null,detail:`This is a short link — it actually leads to: ${d.resolvedUrl}`});
 
+            // Shortened link notice
+            if(d.shortened && d.resolvedUrl)
+                checks.push({label:'Shortened Link', ok:null, detail:`This is a short link — it actually leads to: ${d.resolvedUrl}`});
+
+            // HTTPS
             checks.push({label:'HTTPS',
                 ok:!!d.httpsOk,
                 detail:d.httpsOk
                     ? 'Your connection to this site is private and encrypted'
                     : 'This site does not use encryption — avoid entering any personal info here'});
 
+            // Reachable
             checks.push({label:'Reachable',
                 ok:d.reachable!==false,
                 detail:d.reachable
                     ? 'The website is online and responding normally'
                     : 'We couldn\'t reach this website — it may be offline or blocking visitors'});
 
-            checks.push({label:'SSL Certificate',
-                ok:!!d.certValid,
-                detail:d.certValid
-                    ? (d.certExpiresDays!=null
-                        ? `The site's security certificate is valid and expires in ${d.certExpiresDays} days`
-                        : 'The site has a valid security certificate')
-                    : 'The site\'s security certificate is missing or expired — this is a red flag'});
+            // SSL Certificate
+            {
+                const certDetail = d.certValid
+                    ? (d.selfSignedCert
+                        ? 'Certificate is present but self-signed — not issued by a trusted authority'
+                        : d.certExpiresSoon
+                            ? `Certificate is valid but expires very soon (${d.certExpiresDays} days) — suspicious`
+                            : d.certExpiresDays != null
+                                ? `Security certificate is valid and expires in ${d.certExpiresDays} days`
+                                : 'The site has a valid security certificate')
+                    : 'The site\'s security certificate is missing or expired — this is a red flag';
+                checks.push({label:'SSL Certificate',
+                    ok: d.certValid && !d.selfSignedCert && !d.certExpiresSoon,
+                    detail: certDetail});
+            }
 
-            checks.push({label:'Blacklist',
-                ok:!d.blacklisted,
-                detail:d.blacklisted
-                    ? 'This domain has been flagged as dangerous in our records'
-                    : 'This domain is not on any known danger list'});
+            // Blacklist / brand spoof / pattern match — unified as "Threat Database"
+            {
+                const isFlagged = d.blacklisted || d.brandSpoof || d.patternMatch;
+                let threatDetail;
+                if (d.blacklisted) {
+                    threatDetail = 'This domain is on our known-dangerous list — do NOT proceed';
+                } else if (d.brandSpoof) {
+                    threatDetail = `This domain is impersonating "${d.spoofedBrand}" — it is NOT the real website`;
+                } else if (d.patternMatch) {
+                    threatDetail = 'This domain matches known phishing patterns (suspicious name structure)';
+                } else {
+                    threatDetail = 'Domain not found on any known threat list';
+                }
+                checks.push({label:'Threat Database', ok:!isFlagged, detail:threatDetail});
+            }
 
+            // Connection safety (HTTP downgrade)
             checks.push({label:'Connection Safety',
                 ok:!d.redirectsToHttp,
                 detail:d.redirectsToHttp
-                    ? 'This site starts secure but then drops your protection mid-way — a warning sign'
+                    ? 'This site starts secure but then drops your protection — a warning sign'
                     : 'Your connection stays protected throughout'});
 
-            if(d.domainAgeDays!=null){
-                const ageOk=d.domainAgeDays>=30;
-                const years = Math.floor(d.domainAgeDays/365);
-                const months = Math.floor((d.domainAgeDays%365)/30);
-                const ageText = years>0
+            // Domain age
+            if(d.domainAgeDays != null) {
+                const ageOk = d.domainAgeDays >= 30;
+                const years  = Math.floor(d.domainAgeDays / 365);
+                const months = Math.floor((d.domainAgeDays % 365) / 30);
+                const ageText = years > 0
                     ? `${years} year${years>1?'s':''}${months>0?` and ${months} month${months>1?'s':''}`:''}` 
-                    : `${months>0?months+' month'+(months>1?'s':''):d.domainAgeDays+' days'}`;
+                    : `${months>0 ? months+' month'+(months>1?'s':'') : d.domainAgeDays+' days'}`;
                 checks.push({label:'Domain Age',
                     ok:ageOk,
                     detail:ageOk
                         ? `This website has been around for ${ageText} — a good sign of legitimacy`
-                        : `This website was created only ${ageText} ago — brand new sites are often used for scams`});
+                        : `This website was registered only ${ageText} ago — brand-new domains are a major phishing red flag`});
             } else {
-                checks.push({label:'Domain Age',ok:null,detail:'We couldn\'t determine how old this website is'});
+                checks.push({label:'Domain Age', ok:null, detail:'We couldn\'t determine how old this website is'});
             }
 
-            if(Array.isArray(d.contentFlags)&&d.contentFlags.length){
-                const highFlags=d.contentFlags.filter(f=>f.severity==='high');
-                const friendlyDetail = friendlyContentDetail(d.contentFlags);
-                checks.push({label:'Page Content',ok:false,detail:friendlyDetail + ' (some legitimate sites like Facebook or Google may also trigger content warnings — this could still be safe if the URL looks correct)'});
-                if(highFlags.length){
-                    level='danger';
-                    reason=friendlyContentDetail(highFlags);
-                } else if(level!=='danger'){
-                    level='hazard';
-                    reason='This page has some suspicious content — proceed with caution';
+            // Content / URL / DNS flags
+            if (Array.isArray(d.contentFlags) && d.contentFlags.length) {
+                const highFlags   = d.contentFlags.filter(f => f.severity === 'high');
+                const mediumFlags = d.contentFlags.filter(f => f.severity === 'medium');
+                // Render each flag as its own check row for clarity
+                for (const f of d.contentFlags) {
+                    const isHigh = f.severity === 'high';
+                    checks.push({
+                        label: flagTypeLabel(f.type),
+                        ok: false,
+                        detail: friendlyFlagDetail(f)
+                    });
+                }
+                if (highFlags.length) {
+                    level  = 'danger';
+                    reason = friendlyFlagDetail(highFlags[0]);
+                } else if (mediumFlags.length && level !== 'danger') {
+                    level  = 'hazard';
+                    reason = 'This page has suspicious characteristics — proceed with caution';
                 }
             } else {
-                checks.push({label:'Page Content',ok:true,detail:'Nothing suspicious was found on this page'});
+                checks.push({label:'Page Content', ok:true, detail:'No suspicious content detected on this page'});
             }
 
-            if(d.blacklisted)           {level='danger';reason='This website has been reported as dangerous';}
-            else if(d.reachable===false) {level='danger';reason='We couldn\'t reach this site — it may not exist or could be taken down';}
-            else if(level==='danger')   {/* already set */}
-            else {
-                const anyBad=!d.httpsOk||d.redirectsToHttp||!d.certValid||(d.domainAgeDays!=null&&d.domainAgeDays<30);
-                if(anyBad)             {level='hazard';reason='We found one or more things worth being careful about';}
-                else if(level==='hazard'){/* keep */}
-                else                   {level='safe';reason=`All ${checks.filter(c=>c.ok!==null).length} checks passed — this link looks safe`;}
+            // Use server-computed verdict & score as ground truth
+            // These override client-side guesses
+            if (d.verdict) level = d.verdict;
+
+            // Determine reason string from verdict
+            if (!level) level = 'safe';
+            if (level === 'danger') {
+                if (!reason || reason === 'Could not complete all checks') {
+                    if (d.blacklisted)        reason = '🚨 This website is on our known-dangerous list — do NOT visit';
+                    else if (d.brandSpoof)    reason = `🚨 This site is impersonating "${d.spoofedBrand}" — this is a phishing site`;
+                    else if (d.patternMatch)  reason = '🚨 URL structure matches known phishing patterns';
+                    else                      reason = '🚨 Multiple high-risk signals detected — avoid this site';
+                }
+            } else if (level === 'hazard') {
+                if (!reason || reason === 'Could not complete all checks')
+                    reason = '⚠️ One or more warning signs found — double-check before proceeding';
+            } else {
+                reason = `✅ All ${checks.filter(c=>c.ok!==null).length} checks passed — this link looks safe`;
             }
+
         } else {
+            // ── No server — fallback client-only checks ──────────────────────
             let reachable=false;
             try {
                 const ctrl=new AbortController();const tid=setTimeout(()=>ctrl.abort(),5000);
@@ -393,19 +494,23 @@ function calcSafetyScore(checks, level) {
                         ? 'This is a well-known, trusted website'
                         : 'We couldn\'t reach this website'});
             checks.push({label:'SSL Certificate',ok:null,detail:'Full certificate check requires the local server to be running'});
-            checks.push({label:'Blacklist',      ok:null,detail:'Full blacklist check requires the local server to be running'});
-            checks.push({label:'Domain Age',     ok:null,detail:'Domain age check requires the local server to be running'});
+            checks.push({label:'Threat Database', ok:null,detail:'Full threat check requires the local server to be running'});
+            checks.push({label:'Domain Age',      ok:null,detail:'Domain age check requires the local server to be running'});
             if(!reachable&&!isWellKnown){level='danger';reason='We couldn\'t reach this website — it may not exist';}
             else if(!httpsOk)           {level='hazard';reason='This site is not using a secure connection';}
-            else                        {level='safe';  reason='Basic checks passed — this link appears safe';}
+            else                        {level='safe';  reason='Basic checks passed — this link appears safe (run local server for full scan)';}
         }
 
-        const score = calcSafetyScore(checks, level);
+        // Use server risk score directly if available; otherwise fall back to client formula
+        const score = (serverData && typeof serverData.riskScore === 'number')
+            ? serverData.riskScore
+            : calcSafetyScore(checks, level);
+
         const fourBadges = [
-            checks.find(c=>c.label==='HTTPS')          ||{label:'HTTPS',      ok:null,detail:''},
-            checks.find(c=>c.label==='SSL Certificate') ||{label:'SSL',        ok:null,detail:''},
-            checks.find(c=>c.label==='Blacklist')       ||{label:'Blacklist',  ok:null,detail:''},
-            checks.find(c=>c.label==='Domain Age')      ||{label:'Domain Age', ok:null,detail:''},
+            checks.find(c=>c.label==='HTTPS')           ||{label:'HTTPS',           ok:null,detail:''},
+            checks.find(c=>c.label==='SSL Certificate')  ||{label:'SSL Certificate', ok:null,detail:''},
+            checks.find(c=>c.label==='Threat Database')  ||{label:'Threat Database', ok:null,detail:''},
+            checks.find(c=>c.label==='Domain Age')       ||{label:'Domain Age',      ok:null,detail:''},
         ];
 
         stopLoadingSteps();
