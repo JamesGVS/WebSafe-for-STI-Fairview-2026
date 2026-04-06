@@ -1,12 +1,18 @@
 /*UNIVERSAL*/
-* {
+*, *::before, *::after {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    overflow-x: hidden;
 }
 
 body{
     background-color: #dbebba;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    overflow-x: hidden;
 }
 
 /* HEADER */
@@ -23,7 +29,7 @@ body{
 }
 
 #head_logo img {
-    width: 100px;
+    width: 125px;
     height: 100px;
     margin-right: 20px;
     border-radius: 50%;
@@ -474,6 +480,7 @@ body{
 
 .websafe-why-section {
     max-width: 1100px;
+    width: 100%;
     margin: 80px auto;
     padding: 20px;
     font-family: 'Inter', sans-serif;
@@ -529,8 +536,8 @@ body{
 }
 
 .circle-image {
-    width: 450px;
-    height: 450px;
+    width: min(450px, 100%);
+    height: min(450px, 100vw);
     border-radius: 50%;
     overflow: hidden;
 }
@@ -638,13 +645,14 @@ body{
 
 /* CSS-Only Laptop Illustration */
 .websafe-module .ws-laptop {
-    width: 320px;
+    width: min(320px, 90%);
     height: 180px;
     background: #e4e7eb;
     border: 12px solid #111;
     border-radius: 12px;
     position: relative;
     margin: 0 auto;
+    overflow: visible;
 }
 
 .websafe-module .ws-laptop::after {
@@ -652,7 +660,7 @@ body{
     position: absolute;
     bottom: -22px;
     left: -30px;
-    width: 380px;
+    width: calc(100% + 60px);
     height: 10px;
     background: #bdc3c7;
     border-radius: 0 0 12px 12px;
@@ -718,9 +726,9 @@ body{
 
 .ws-main-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 15px; color: #000; }
 
-.ws-desc { color: #585d63; max-width: 750px; margin: 0 auto 15px; line-height: 1.6; }
+.ws-desc { color: #585d63; max-width: 750px; margin: 0 auto 15px; line-height: 1.6; display: block; }
 
-.ws-sub-heading { margin-bottom: 50px; font-weight: 500; color: #2c333a; }
+.ws-sub-heading { display: block; width: 100%; text-align: center; margin-bottom: 50px; font-weight: 500; color: #2c333a; }
 
 /* Grid & Dotted Line */
 .ws-grid {
@@ -973,4 +981,165 @@ body{
     font-size: 13px;
     text-align: center;
     padding: 10px 0;
+}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE — unified mobile / tablet fixes
+   Covers: header, About Us button, link checker, results
+   ══════════════════════════════════════════════════════ */
+
+/* ── Tablet (≤768px) ─────────────────────────────────── */
+@media (max-width: 768px) {
+
+    /* Header */
+    #head_logo {
+        height: auto;
+        padding: 14px 16px;
+        gap: 0;
+        position: relative;   /* anchor for the About button */
+    }
+
+    #head_logo img {
+        width: 52px;
+        height: 52px;
+        margin-right: 12px;
+    }
+
+    #head_logo h1 {
+        font-size: 28px;
+        padding: 8px 0;
+    }
+
+    /* About Us button — fixed top-right */
+    #btn_head {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        font-size: 13px;
+        padding: 7px 13px;
+        margin: 0;
+        float: none;
+        border-radius: 7px;
+    }
+
+    /* About modal box */
+    #about_box {
+        padding: 24px 18px 20px;
+    }
+
+    #about_cards {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Link Checker section */
+    #link_checker {
+        padding: 28px 14px 18px;
+    }
+
+    #link_checker h1 {
+        font-size: 26px;
+    }
+
+    #link_checker p {
+        font-size: 15px;
+    }
+
+    #link_checker form input[type="text"] {
+        width: 100%;
+        font-size: 15px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        box-sizing: border-box;
+    }
+
+    /* Buttons row */
+    .controls {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    #link_checker button {
+        width: 100%;
+        max-width: 360px;
+        font-size: 15px;
+        padding: 13px 20px;
+        border-radius: 8px;
+    }
+
+    /* Results: stack vertically on mobile */
+    #results_row {
+        flex-direction: column;
+        align-items: center;
+        padding: 0 10px;
+        gap: 14px;
+    }
+
+    #results_row #link_status,
+    #results_row #preview_area {
+        flex: none;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* Result card — full width, smaller padding */
+    #link_status > div {
+        max-width: 100% !important;
+        margin: 12px 0 0 !important;
+    }
+
+    /* Scan history */
+    #ws_history_section {
+        padding: 32px 14px 40px;
+    }
+
+    /* Info section typography scale-down */
+    .section-title       { font-size: 1.6rem; margin-bottom: 36px; }
+    .ws-main-title       { font-size: 1.6rem; }
+    .websafe-module h1   { font-size: 1.7rem; }
+    .ws-title            { font-size: 1.8rem; }
+    .ws-grid-title       { font-size: 1.5rem; margin-bottom: 36px; }
+}
+
+/* ── Small mobile (≤480px) ───────────────────────────── */
+@media (max-width: 480px) {
+
+    #head_logo img { width: 42px; height: 42px; }
+    #head_logo h1  { font-size: 22px; }
+
+    #btn_head {
+        font-size: 12px;
+        padding: 6px 10px;
+        top: 10px;
+        right: 10px;
+    }
+
+    #link_checker h1 { font-size: 20px; }
+    #link_checker p  { font-size: 13px; }
+
+    #link_checker form input[type="text"] {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+
+    #link_checker button {
+        font-size: 14px;
+        padding: 11px 16px;
+    }
+
+    /* Result card header text */
+    #link_status > div div[style*="font-size:18px"] {
+        font-size: 15px !important;
+    }
+
+    /* Badge row: allow wrapping */
+    #link_status > div div[style*="flex-wrap:wrap"] {
+        gap: 6px !important;
+    }
+
+    /* Check list rows — smaller text */
+    #link_status > div div[style*="font-size:13px"] {
+        font-size: 12px !important;
+    }
 }
