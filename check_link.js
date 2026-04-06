@@ -1,5 +1,94 @@
-// check_link.js — WebSafe v5
-// Improvements: safety score, animated loading steps, scan history, better messages
+// check_link.js — WebSafe v7 TIGHTPACK
+// Changes from v6:
+//   • Strict URL validation — gibberish/random strings show "Invalid URL" error
+//   • Free site builder detection (Wix, Weebly, WordPress.com, etc.)
+//   • Crypto wallet brand on free hosting = automatic danger
+//   • Google Safe Browsing + VirusTotal results displayed
+//   • Preview button also validates strictly before proceeding
+
+// ─── Strict URL validation ────────────────────────────────────────────────────
+/**
+ * Returns a normalized URL string, or null if the input is not a real URL.
+ * Gibberish like "snawkd nskan", "asdfjkl.qwer", single words, etc. → null.
+ */
+function normalizeURL(raw) {
+    if (!raw) return null;
+    raw = String(raw).trim();
+    if (!raw || raw.length < 4) return null;
+
+    // Reject input containing spaces unless it could be a URL with spaces (unlikely)
+    if (/\s/.test(raw)) return null;
+
+    let withProto = raw;
+    if (!/^[a-z][a-z0-9+\-.]*:\/\//i.test(raw)) {
+        withProto = 'https://' + raw;
+    }
+
+    let parsed;
+    try { parsed = new URL(withProto); } catch (e) { return null; }
+
+    const host = parsed.hostname;
+    if (!host || host.length < 4) return null;
+    if (!host.includes('.')) return null;
+
+    const parts = host.split('.');
+    const tld = parts[parts.length - 1];
+
+    // TLD must be 2+ letters only
+    if (!/^[a-zA-Z]{2,}$/.test(tld)) return null;
+
+    // Each hostname label must be valid
+    for (const part of parts) {
+        if (part.length === 0) return null;
+        if (!/^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?$/.test(part)) return null;
+    }
+
+    // Gibberish heuristic: labels >= 5 chars with no vowels are likely random
+    const vowels = /[aeiou]/i;
+    for (const part of parts) {
+        if (part.length >= 5 && !vowels.test(part)) return null;
+    }
+
+    // Second gibberish check: if label looks like random consonant cluster
+    // (e.g. "nsnkd", "brtls", "zxcvb") — consonant ratio > 90% on long labels
+    for (const part of parts) {
+        if (part.length >= 6) {
+            const consonants = (part.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length;
+            if (consonants / part.length > 0.88) return null;
+        }
+    }
+
+    return parsed.href;
+}
+
+/**
+ * Renders the same-style "Invalid URL" error card in the status element.
+ */
+function showInvalidUrlError(statusEl) {
+    if (!statusEl) return;
+    statusEl.innerHTML = `
+        <div style="max-width:580px;margin:16px auto 0;border-radius:10px;background:#fff5f5;border:2px solid #dc2626;box-shadow:0 4px 14px rgba(220,38,38,.12);overflow:hidden;font-family:inherit;text-align:left;">
+            <div style="display:flex;align-items:center;gap:14px;padding:15px 20px;background:#dc2626;border-bottom:3px solid #991b1b;">
+                <span style="width:28px;height:28px;border-radius:50%;background:#ffffff44;display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:900;color:#fff;">✕</span>
+                <div style="flex:1">
+                    <div style="font-size:18px;font-weight:700;color:#fff">Invalid URL</div>
+                    <div style="font-size:12px;color:#fecaca;margin-top:4px">The input you entered is not a recognisable web address</div>
+                </div>
+            </div>
+            <div style="padding:14px 20px;background:#fff5f5;">
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                    <div style="display:flex;align-items:flex-start;gap:10px;border-radius:7px;padding:8px 12px;background:#FEF2F2;border:1px solid #fecaca;">
+                        <span style="width:9px;height:9px;border-radius:50%;background:#dc2626;display:inline-block;margin-top:4px;flex-shrink:0"></span>
+                        <div>
+                            <span style="font-weight:700;color:#dc2626;font-size:13px">Invalid URL</span>
+                            <span style="color:#64748b;font-size:12px;margin-left:6px">— Enter a valid web address, e.g. <code style="background:#fee2e2;padding:1px 6px;border-radius:4px;font-size:11px">https://example.com</code></span>
+                        </div>
+                    </div>
+                    <p style="font-size:12px;color:#94a3b8;padding:2px 4px;">A valid URL must have a real domain and extension (like .com, .net, .ph). Random text, made-up words, or incomplete addresses won't be accepted.</p>
+                </div>
+            </div>
+        </div>`;
+}
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 function showSpinner() {
@@ -9,15 +98,6 @@ function showSpinner() {
 function hideSpinner() {
     const s = document.getElementById('loading_spinner');
     if (s) s.style.display = 'none';
-}
-function normalizeURL(raw) {
-    if (!raw) return null;
-    raw = String(raw).trim();
-    if (!raw) return null;
-    if (!/^https?:\/\//i.test(raw) && !/^[a-z]+:\/\//i.test(raw)) raw = 'https://' + raw;
-    try { return new URL(raw).href; } catch (e) {
-        try { return new URL('https://' + raw).href; } catch (e2) { return null; }
-    }
 }
 
 // ─── Scan History (session only) ─────────────────────────────────────────────
@@ -50,12 +130,14 @@ function renderHistory() {
 
 // ─── Animated loading steps ───────────────────────────────────────────────────
 const LOADING_STEPS = [
+    'Validating URL format...',
     'Looking up the website...',
-    'Checking if the connection is secure...',
-    'Checking how old this website is...',
-    'Checking against known dangerous sites...',
-    'Reading what\'s on the page...',
-    'Putting together your safety report...',
+    'Checking connection security...',
+    'Checking domain age...',
+    'Scanning threat databases...',
+    'Checking Google Safe Browsing...',
+    'Scanning page for phishing signals...',
+    'Generating your safety report...',
 ];
 let _loadingInterval = null;
 function startLoadingSteps() {
@@ -72,72 +154,130 @@ function stopLoadingSteps() {
     if (_loadingInterval) { clearInterval(_loadingInterval); _loadingInterval = null; }
 }
 
-// ─── Safety Score Calculator ──────────────────────────────────────────────────
-// Weighted scoring: each check contributes a fixed number of points.
-// Unknown (null) checks contribute half their weight as a neutral penalty.
-// Final score is clamped to realistic bands per verdict level.
+// ─── Safety Score Calculator (client-side fallback) ───────────────────────────
 const CHECK_WEIGHTS = {
-    'HTTPS':           25,   // Fundamental — no HTTPS is a big red flag
-    'SSL Certificate': 20,   // Encryption validity
-    'Blacklist':       20,   // Known-bad domain list
-    'Domain Age':      15,   // Very new domains are suspicious
-    'Reachable':       10,   // Site must respond
-    'HTTP Redirect':   5,    // HTTPS → HTTP downgrade
-    'Content Scan':    5,    // Suspicious page content
-    'Shortened Link':  0,    // Informational only, no score impact
+    'HTTPS':                25,
+    'SSL Certificate':      20,
+    'Threat Database':      20,
+    'Google Safe Browsing': 20,
+    'Domain Age':           15,
+    'Reachable':            10,
+    'Connection Safety':     5,
+    'Page Content':          5,
+    'Shortened Link':        0,
 };
-const DEFAULT_WEIGHT = 5;   // fallback for any unlisted check label
-
+const DEFAULT_WEIGHT = 5;
 function calcSafetyScore(checks, level) {
-    let earned = 0;
-    let possible = 0;
-
+    let earned = 0, possible = 0;
     checks.forEach(ch => {
         const w = CHECK_WEIGHTS[ch.label] ?? DEFAULT_WEIGHT;
-        if (w === 0) return; // informational check, skip
+        if (w === 0) return;
         possible += w;
         if (ch.ok === true)  earned += w;
-        else if (ch.ok === null) earned += w * 0.5; // uncertain = half credit
-        // ch.ok === false → 0 points
+        else if (ch.ok === null) earned += w * 0.5;
     });
-
-    // If no scoreable checks ran, return a neutral score
     if (possible === 0) return 50;
-
     const raw = Math.round((earned / possible) * 100);
-
-    // Clamp to believable ranges per verdict so the score and badge always agree
     if (level === 'danger') return Math.min(raw, 29);
     if (level === 'hazard') return Math.min(Math.max(raw, 30), 64);
-    return Math.max(raw, 65); // safe
+    return Math.max(raw, 65);
 }
 
-// ─── Flag type → human label ──────────────────────────────────────────────────
+// ─── Flag label map ───────────────────────────────────────────────────────────
 function flagTypeLabel(type) {
     const map = {
-        'brand-impersonation':      'Brand Impersonation',
-        'keywords-high':            'High-Risk Phrases',
-        'keywords-medium':          'Suspicious Phrases',
-        'multiple-password-fields': 'Credential Harvesting',
-        'form-external-post':       'Data Theft Risk',
-        'hidden-iframe':            'Hidden Frame',
-        'meta-redirect':            'Silent Redirect',
-        'obfuscation':              'Code Obfuscation',
-        'base64-payload':           'Hidden Payload',
-        'base64-large':             'Hidden Payload',
-        'fake-trust-badges':        'Fake Security Badges',
-        'ip-address':               'Raw IP Address',
-        'at-sign-url':              'URL Spoofing',
-        'dash-heavy-domain':        'Suspicious Domain Name',
-        'suspicious-tld':           'Suspicious Domain Extension',
-        'excessive-subdomains':     'Subdomain Spoofing',
-        'brand-in-subdomain':       'Brand Spoofing',
-        'long-url':                 'Obfuscated URL',
-        'encoded-hostname':         'Encoded Hostname',
-        'dynamic-dns':              'Dynamic DNS Abuse',
-        'suspicious-hosting':       'Suspicious Hosting',
+        'brand-impersonation':       'Brand Impersonation',
+        'keywords-high':             'High-Risk Phrases',
+        'keywords-medium':           'Suspicious Phrases',
+        'multiple-password-fields':  'Credential Harvesting',
+        'form-external-post':        'Data Theft Risk',
+        'hidden-iframe':             'Hidden Frame',
+        'meta-redirect':             'Silent Redirect',
+        'obfuscation':               'Code Obfuscation',
+        'base64-payload':            'Hidden Payload',
+        'base64-large':              'Hidden Payload',
+        'fake-trust-badges':         'Fake Security Badges',
+        'ip-address':                'Raw IP Address',
+        'at-sign-url':               'URL Spoofing',
+        'dash-heavy-domain':         'Suspicious Domain Name',
+        'suspicious-tld':            'Suspicious Domain Extension',
+        'excessive-subdomains':      'Subdomain Spoofing',
+        'brand-in-subdomain':        'Brand Spoofing',
+        'long-url':                  'Obfuscated URL',
+        'encoded-hostname':          'Encoded Hostname',
+        'dynamic-dns':               'Dynamic DNS Abuse',
+        'suspicious-hosting':        'Suspicious Hosting',
+        'free-site-builder':         'Free Site Builder (Phishing Risk)',
+        'crypto-brand-on-free-host': 'Crypto Brand on Free Hosting',
+        'wix-phishing':              'Wix-Hosted Phishing Site',
+        'google-safebrowsing':       'Google Safe Browsing Alert',
+        'virustotal-flag':           'VirusTotal Malicious Flag',
+        'disposable-hosting':        'Disposable/Free Hosting',
+        'dangerous-protocol':        'Dangerous Protocol',
     };
     return map[type] || 'Suspicious Signal';
+}
+
+// ─── Friendly flag details ────────────────────────────────────────────────────
+function friendlyFlagDetail(f) {
+    switch(f.type) {
+        case 'brand-impersonation':
+            return f.detail || 'This page is pretending to be a brand it isn\'t — a classic phishing tactic';
+        case 'keywords-high':
+            { const kws = Array.isArray(f.detail) ? f.detail : [f.detail];
+              return `Contains high-risk phrases (${kws.map(k=>`"${k}"`).join(', ')}) — strongly associated with phishing`; }
+        case 'keywords-medium':
+            { const kws = Array.isArray(f.detail) ? f.detail : [f.detail];
+              return `Contains suspicious phrases (${kws.map(k=>`"${k}"`).join(', ')}) — verify the URL is correct`; }
+        case 'multiple-password-fields':
+            return f.detail || 'Multiple password fields detected — possible credential harvesting';
+        case 'form-external-post':
+            return f.detail || 'This page sends your data to a different server — common in phishing attacks';
+        case 'hidden-iframe':
+            return f.detail || 'Hidden frame detected — may be used for silent tracking or clickjacking';
+        case 'meta-redirect':
+            return f.detail || 'Page silently redirects to another domain — often used in phishing relay attacks';
+        case 'obfuscation':
+            return f.detail || 'Scrambled/hidden code detected — often used to conceal malicious behaviour';
+        case 'base64-payload': case 'base64-large':
+            return f.detail || 'Large encoded data blobs found — may be hiding malicious content';
+        case 'fake-trust-badges':
+            return f.detail || 'Multiple fake "security verified" claims — a common scam site tactic';
+        case 'ip-address':
+            return f.detail || 'URL uses a raw IP address instead of a domain — almost always suspicious';
+        case 'at-sign-url':
+            return f.detail || 'URL contains @ symbol — can be used to disguise the real destination';
+        case 'dash-heavy-domain':
+            return f.detail || 'Over-hyphenated domain — a common pattern in phishing domains';
+        case 'suspicious-tld':
+            return f.detail || 'Domain uses a TLD frequently abused for scams';
+        case 'excessive-subdomains':
+            return f.detail || 'Unusual subdomain depth — often used to make phishing URLs look legitimate';
+        case 'brand-in-subdomain':
+            return f.detail || 'A trusted brand is used in the subdomain to impersonate the real site';
+        case 'long-url':
+            return f.detail || 'Unusually long URL — often used to obscure the real destination';
+        case 'encoded-hostname':
+            return f.detail || 'Percent-encoded characters in the hostname — common phishing obfuscation';
+        case 'dynamic-dns':
+            return f.detail || 'Uses a free dynamic DNS service — frequently abused in phishing campaigns';
+        case 'suspicious-hosting':
+            return f.detail || 'Hosted on an IP range associated with bulletproof hosting';
+        case 'free-site-builder':
+            return f.detail || 'Site is hosted on a free website builder — commonly abused for phishing pages';
+        case 'crypto-brand-on-free-host':
+            return f.detail || 'A crypto wallet or financial brand is referenced on a free hosting platform — extremely high phishing risk';
+        case 'wix-phishing':
+            return f.detail || 'This site is hosted on Wix and shows crypto/financial brand content — a known phishing vector. Legitimate services never use free website builders.';
+        case 'google-safebrowsing':
+            return f.detail || 'Google Safe Browsing has flagged this URL as dangerous';
+        case 'virustotal-flag':
+            return f.detail || 'Multiple antivirus engines on VirusTotal flagged this URL as malicious';
+        case 'disposable-hosting':
+            return f.detail || 'Hosted on a known free/disposable platform used for temporary scam sites';
+        default:
+            return f.detail || 'Suspicious signal detected';
+    }
 }
 
 // ─── Check Link module ────────────────────────────────────────────────────────
@@ -153,15 +293,12 @@ function flagTypeLabel(type) {
         if (safetyEl) { safetyEl.textContent = ''; safetyEl.className = ''; }
         const pa = document.getElementById('preview_area');
         if (pa) pa.style.display = 'none';
-        // Wipe preview content too so stale buttons/screenshots never survive a URL change
-        const pActions = document.getElementById('preview_actions');
-        if (pActions) pActions.innerHTML = '';
-        const pChecks = document.getElementById('preview_checks');
-        if (pChecks) pChecks.innerHTML = '';
-        const pTitle = document.getElementById('preview_title');
-        if (pTitle) pTitle.textContent = '';
-        const pDomain = document.getElementById('preview_domain');
-        if (pDomain) pDomain.textContent = '';
+        ['preview_actions','preview_checks'].forEach(id => {
+            const el = document.getElementById(id); if (el) el.innerHTML = '';
+        });
+        ['preview_title','preview_domain'].forEach(id => {
+            const el = document.getElementById(id); if (el) el.textContent = '';
+        });
     }
     if (input) {
         input.addEventListener('input', () => {
@@ -203,10 +340,11 @@ function flagTypeLabel(type) {
 
         const header = document.createElement('div');
         header.style.cssText = `display:flex;align-items:center;gap:14px;padding:15px 20px;background:#1E3A8A;border-bottom:3px solid ${t.accent};`;
-        const resolvedBanner = data.shortened && data.resolvedUrl ? `<div style="margin-top:6px;padding:5px 10px;background:#0f2460;border-radius:6px;font-size:11px;color:#93c5fd;">🔗 Shortened → <span style="color:#fff;font-weight:700;word-break:break-all">${data.resolvedUrl}</span></div>` : '';
+        const resolvedBanner = data.shortened && data.resolvedUrl
+            ? `<div style="margin-top:6px;padding:5px 10px;background:#0f2460;border-radius:6px;font-size:11px;color:#93c5fd;">🔗 Shortened → <span style="color:#fff;font-weight:700;word-break:break-all">${data.resolvedUrl}</span></div>`
+            : '';
         const scoreColor = level==='safe'?'#16a34a':level==='hazard'?'#d97706':'#dc2626';
         const scoreCircle = `<div style="flex-shrink:0;width:52px;height:52px;border-radius:50%;border:3px solid ${scoreColor};display:flex;flex-direction:column;align-items:center;justify-content:center;background:#ffffff11;"><span style="font-size:16px;font-weight:900;color:${scoreColor};line-height:1">${score}</span><span style="font-size:8px;color:#93c5fd;letter-spacing:.5px">SCORE</span></div>`;
-
         header.innerHTML = `${t.icon}<div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:700;color:#F8FAFC">${t.label}${data.shortened?' <span style="font-size:12px;background:#ffffff22;padding:2px 8px;border-radius:10px;vertical-align:middle">Shortened</span>':''}</div><div style="font-size:12px;color:#93c5fd;margin-top:4px">${reason||''}</div>${resolvedBanner}</div>${scoreCircle}`;
         card.appendChild(header);
 
@@ -259,13 +397,25 @@ function flagTypeLabel(type) {
 
     async function checkLink() {
         if (!input || !btn) return;
-        const raw        = input.value || '';
-        _lastValue       = raw.trim();
-        const normalized = normalizeURL(raw);
+        const raw = input.value || '';
+        _lastValue = raw.trim();
         clearResults();
 
+        // ── Empty check ───────────────────────────────────────────────────────
+        if (!raw.trim()) {
+            if (statusEl) statusEl.innerHTML = `<p style="color:#dc2626;margin-top:8px;font-weight:600">⚠️ Please enter a URL to scan.</p>`;
+            return;
+        }
+
+        // ── STRICT URL validation — shows Invalid URL card for gibberish ──────
+        const normalized = normalizeURL(raw);
         if (!normalized) {
-            if (statusEl) statusEl.innerHTML = `<p style="color:#dc2626;margin-top:8px;font-weight:600">⚠️ Please enter a valid URL.</p>`;
+            showInvalidUrlError(statusEl);
+            if (input) {
+                input.style.border = '2px solid #dc2626';
+                input.style.boxShadow = '0 0 0 3px rgba(220,38,38,0.15)';
+                setTimeout(() => { input.style.border = ''; input.style.boxShadow = ''; }, 2500);
+            }
             return;
         }
 
@@ -276,253 +426,184 @@ function flagTypeLabel(type) {
         let level  = null;
         let reason = 'Could not complete all checks';
         let checks = [];
-
         let serverData = null;
+
         try {
             const apiUrl = '/api/check?url=' + encodeURIComponent(normalized);
             console.log('[WebSafe] Calling:', apiUrl);
             const res = await fetch(apiUrl);
-            console.log('[WebSafe] API status:', res.status);
-            if (res.ok) { const j=await res.json(); if(j&&j.ok) serverData=j; }
-            else { console.warn('[WebSafe] API non-OK:', res.status); }
+            if (res.ok) { const j = await res.json(); if (j && j.ok) serverData = j; }
+            else console.warn('[WebSafe] API non-OK:', res.status);
         } catch(e) { console.warn('[WebSafe] API failed:', e.message); }
-
-        // ── Friendly label mapping for content/URL/DNS flags from the server ────
-        function friendlyFlagDetail(f) {
-            switch(f.type) {
-                case 'brand-impersonation':
-                    return f.detail || 'This page is pretending to be a brand it isn\'t — a classic phishing tactic';
-                case 'keywords-high':
-                    { const kws = Array.isArray(f.detail) ? f.detail : [f.detail];
-                      return `Contains high-risk phrases (${kws.map(k=>`"${k}"`).join(', ')}) — strongly associated with phishing`; }
-                case 'keywords-medium':
-                    { const kws = Array.isArray(f.detail) ? f.detail : [f.detail];
-                      return `Contains suspicious phrases (${kws.map(k=>`"${k}"`).join(', ')}) — verify the URL is correct`; }
-                case 'multiple-password-fields':
-                    return f.detail || 'Multiple password fields detected — possible credential harvesting';
-                case 'form-external-post':
-                    return f.detail || 'This page sends your data to a different server — common in phishing attacks';
-                case 'hidden-iframe':
-                    return f.detail || 'Hidden frame detected — may be used for silent tracking or clickjacking';
-                case 'meta-redirect':
-                    return f.detail || 'Page silently redirects to another domain — often used in phishing relay attacks';
-                case 'obfuscation':
-                    return f.detail || 'Scrambled/hidden code detected — often used to conceal malicious behaviour';
-                case 'base64-payload': case 'base64-large':
-                    return f.detail || 'Large encoded data blobs found — may be hiding malicious content';
-                case 'fake-trust-badges':
-                    return f.detail || 'Multiple fake "security verified" claims — a common scam site tactic';
-                case 'ip-address':
-                    return f.detail || 'URL uses a raw IP address instead of a domain — almost always suspicious';
-                case 'at-sign-url':
-                    return f.detail || 'URL contains @ symbol — can be used to disguise the real destination';
-                case 'dash-heavy-domain':
-                    return f.detail || 'Over-hyphenated domain — a common pattern in phishing domains';
-                case 'suspicious-tld':
-                    return f.detail || 'Domain uses a TLD frequently abused for scams';
-                case 'excessive-subdomains':
-                    return f.detail || 'Unusual subdomain depth — often used to make phishing URLs look legitimate';
-                case 'brand-in-subdomain':
-                    return f.detail || 'A trusted brand is used in the subdomain to impersonate the real site';
-                case 'long-url':
-                    return f.detail || 'Unusually long URL — often used to obscure the real destination';
-                case 'encoded-hostname':
-                    return f.detail || 'Percent-encoded characters in the hostname — common phishing obfuscation';
-                case 'dynamic-dns':
-                    return f.detail || 'Uses a free dynamic DNS service — frequently abused in phishing campaigns';
-                case 'suspicious-hosting':
-                    return f.detail || 'Hosted on an IP range associated with bulletproof hosting';
-                default:
-                    return f.detail || 'Suspicious signal detected';
-            }
-        }
-
-        function friendlyContentDetail(flags) {
-            return flags.map(f => friendlyFlagDetail(f)).join(' · ');
-        }
 
         if (serverData) {
             const d = serverData;
 
-            // Shortened link notice
-            if(d.shortened && d.resolvedUrl)
-                checks.push({label:'Shortened Link', ok:null, detail:`This is a short link — it actually leads to: ${d.resolvedUrl}`});
+            // Shortened link
+            if (d.shortened && d.resolvedUrl)
+                checks.push({label:'Shortened Link', ok:null, detail:`Short link resolves to: ${d.resolvedUrl}`});
 
             // HTTPS
-            checks.push({label:'HTTPS',
-                ok:!!d.httpsOk,
-                detail:d.httpsOk
-                    ? 'Your connection to this site is private and encrypted'
-                    : 'This site does not use encryption — avoid entering any personal info here'});
+            checks.push({label:'HTTPS', ok:!!d.httpsOk,
+                detail: d.httpsOk
+                    ? 'Connection is private and encrypted'
+                    : 'Site does not use encryption — avoid entering personal info'});
 
             // Reachable
-            checks.push({label:'Reachable',
-                ok:d.reachable!==false,
-                detail:d.reachable
-                    ? 'The website is online and responding normally'
-                    : 'We couldn\'t reach this website — it may be offline or blocking visitors'});
+            checks.push({label:'Reachable', ok:d.reachable!==false,
+                detail: d.reachable ? 'Website is online and responding' : 'Could not reach this website'});
 
             // SSL Certificate
-            {
-                const certDetail = d.certValid
-                    ? (d.selfSignedCert
-                        ? 'Certificate is present but self-signed — not issued by a trusted authority'
-                        : d.certExpiresSoon
-                            ? `Certificate is valid but expires very soon (${d.certExpiresDays} days) — suspicious`
-                            : d.certExpiresDays != null
-                                ? `Security certificate is valid and expires in ${d.certExpiresDays} days`
-                                : 'The site has a valid security certificate')
-                    : 'The site\'s security certificate is missing or expired — this is a red flag';
-                checks.push({label:'SSL Certificate',
-                    ok: d.certValid && !d.selfSignedCert && !d.certExpiresSoon,
-                    detail: certDetail});
-            }
+            const certDetail = d.certValid
+                ? (d.selfSignedCert
+                    ? 'Certificate is self-signed — not issued by a trusted authority'
+                    : d.certExpiresSoon
+                        ? `Certificate expires in ${d.certExpiresDays} days — suspicious`
+                        : `Security certificate valid (expires in ${d.certExpiresDays ?? '?'} days)`)
+                : 'Security certificate is missing or expired — red flag';
+            checks.push({label:'SSL Certificate', ok: d.certValid && !d.selfSignedCert && !d.certExpiresSoon, detail: certDetail});
 
-            // Blacklist / brand spoof / pattern match — unified as "Threat Database"
-            {
-                const isFlagged = d.blacklisted || d.brandSpoof || d.patternMatch;
-                let threatDetail;
-                if (d.blacklisted) {
-                    threatDetail = 'This domain is on our known-dangerous list — do NOT proceed';
-                } else if (d.brandSpoof) {
-                    threatDetail = `This domain is impersonating "${d.spoofedBrand}" — it is NOT the real website`;
-                } else if (d.patternMatch) {
-                    threatDetail = 'This domain matches known phishing patterns (suspicious name structure)';
-                } else {
-                    threatDetail = 'Domain not found on any known threat list';
-                }
-                checks.push({label:'Threat Database', ok:!isFlagged, detail:threatDetail});
-            }
+            // Threat database
+            const isFlagged = d.blacklisted || d.brandSpoof || d.patternMatch;
+            checks.push({label:'Threat Database', ok:!isFlagged,
+                detail: d.blacklisted
+                    ? 'Domain is on known-dangerous list — do NOT proceed'
+                    : d.brandSpoof
+                        ? `Domain is impersonating "${d.spoofedBrand}" — NOT the real website`
+                        : d.patternMatch
+                            ? 'Domain matches known phishing patterns'
+                            : 'Not found on any known threat list'});
 
-            // Connection safety (HTTP downgrade)
-            checks.push({label:'Connection Safety',
-                ok:!d.redirectsToHttp,
-                detail:d.redirectsToHttp
-                    ? 'This site starts secure but then drops your protection — a warning sign'
-                    : 'Your connection stays protected throughout'});
+            // Connection safety
+            checks.push({label:'Connection Safety', ok:!d.redirectsToHttp,
+                detail: d.redirectsToHttp
+                    ? 'Site starts secure then drops encryption — warning sign'
+                    : 'Connection stays protected throughout'});
 
             // Domain age
-            if(d.domainAgeDays != null) {
+            if (d.domainAgeDays != null) {
                 const ageOk = d.domainAgeDays >= 30;
                 const years  = Math.floor(d.domainAgeDays / 365);
                 const months = Math.floor((d.domainAgeDays % 365) / 30);
                 const ageText = years > 0
-                    ? `${years} year${years>1?'s':''}${months>0?` and ${months} month${months>1?'s':''}`:''}` 
+                    ? `${years} year${years>1?'s':''}${months>0?` and ${months} month${months>1?'s':''}`:''}`
                     : `${months>0 ? months+' month'+(months>1?'s':'') : d.domainAgeDays+' days'}`;
-                checks.push({label:'Domain Age',
-                    ok:ageOk,
-                    detail:ageOk
-                        ? `This website has been around for ${ageText} — a good sign of legitimacy`
-                        : `This website was registered only ${ageText} ago — brand-new domains are a major phishing red flag`});
+                checks.push({label:'Domain Age', ok:ageOk,
+                    detail: ageOk
+                        ? `Domain has been around for ${ageText} — legitimate sign`
+                        : `Domain was registered only ${ageText} ago — new domains are a major phishing red flag`});
             } else {
-                checks.push({label:'Domain Age', ok:null, detail:'We couldn\'t determine how old this website is'});
+                checks.push({label:'Domain Age', ok:null, detail:'Could not determine domain age'});
+            }
+
+            // Google Safe Browsing (v7)
+            if (d.googleSafeBrowsing != null) {
+                checks.push({label:'Google Safe Browsing', ok:!d.googleSafeBrowsing,
+                    detail: d.googleSafeBrowsing
+                        ? `Google Safe Browsing flagged this as: ${d.safeBrowsingThreat || 'MALWARE/PHISHING'}`
+                        : 'Google Safe Browsing: no threats detected'});
+            }
+
+            // VirusTotal (v7)
+            if (d.virusTotalPositives != null) {
+                const vtOk = d.virusTotalPositives === 0;
+                checks.push({label:'VirusTotal Scan', ok:vtOk,
+                    detail: vtOk
+                        ? 'VirusTotal: no engines flagged this URL'
+                        : `${d.virusTotalPositives} of ${d.virusTotalTotal} antivirus engines flagged this URL as malicious`});
+            }
+
+            // Free site builder warning (v7)
+            if (d.freeSiteBuilder) {
+                checks.push({label:'Free Site Builder', ok:false,
+                    detail: d.freeSiteBuilderDetail || 'Hosted on a free website builder — frequently abused for phishing'});
             }
 
             // Content / URL / DNS flags
             if (Array.isArray(d.contentFlags) && d.contentFlags.length) {
                 const highFlags   = d.contentFlags.filter(f => f.severity === 'high');
                 const mediumFlags = d.contentFlags.filter(f => f.severity === 'medium');
-                // Render each flag as its own check row for clarity
                 for (const f of d.contentFlags) {
-                    const isHigh = f.severity === 'high';
-                    checks.push({
-                        label: flagTypeLabel(f.type),
-                        ok: false,
-                        detail: friendlyFlagDetail(f)
-                    });
+                    checks.push({ label: flagTypeLabel(f.type), ok: false, detail: friendlyFlagDetail(f) });
                 }
-                if (highFlags.length) {
-                    level  = 'danger';
-                    reason = friendlyFlagDetail(highFlags[0]);
-                } else if (mediumFlags.length && level !== 'danger') {
-                    level  = 'hazard';
-                    reason = 'This page has suspicious characteristics — proceed with caution';
-                }
+                if (highFlags.length) { level = 'danger'; reason = friendlyFlagDetail(highFlags[0]); }
+                else if (mediumFlags.length && level !== 'danger') { level = 'hazard'; reason = 'Page has suspicious characteristics — proceed with caution'; }
             } else {
-                checks.push({label:'Page Content', ok:true, detail:'No suspicious content detected on this page'});
+                checks.push({label:'Page Content', ok:true, detail:'No suspicious content detected'});
             }
 
-            // Use server-computed verdict & score as ground truth
-            // These override client-side guesses
             if (d.verdict) level = d.verdict;
-
-            // Determine reason string from verdict
             if (!level) level = 'safe';
+
+            // Final reason string
             if (level === 'danger') {
                 if (!reason || reason === 'Could not complete all checks') {
-                    if (d.blacklisted)        reason = '🚨 This website is on our known-dangerous list — do NOT visit';
-                    else if (d.brandSpoof)    reason = `🚨 This site is impersonating "${d.spoofedBrand}" — this is a phishing site`;
-                    else if (d.patternMatch)  reason = '🚨 URL structure matches known phishing patterns';
-                    else                      reason = '🚨 Multiple high-risk signals detected — avoid this site';
+                    if (d.googleSafeBrowsing)  reason = '🚨 Google Safe Browsing has flagged this URL as dangerous';
+                    else if (d.blacklisted)    reason = '🚨 This website is on our known-dangerous list — do NOT visit';
+                    else if (d.brandSpoof)     reason = `🚨 This site is impersonating "${d.spoofedBrand}" — phishing site`;
+                    else if (d.freeSiteBuilder) reason = '🚨 Phishing brand content detected on a free hosting platform';
+                    else if (d.patternMatch)   reason = '🚨 URL matches known phishing patterns';
+                    else                       reason = '🚨 Multiple high-risk signals detected — avoid this site';
                 }
             } else if (level === 'hazard') {
                 if (!reason || reason === 'Could not complete all checks')
-                    reason = '⚠️ One or more warning signs found — double-check before proceeding';
+                    reason = '⚠️ Warning signs found — double-check before proceeding';
             } else {
                 reason = `✅ All ${checks.filter(c=>c.ok!==null).length} checks passed — this link looks safe`;
             }
 
         } else {
-            // ── No server — fallback client-only checks ──────────────────────
-            let reachable=false;
+            // ── Client-only fallback (no server) ────────────────────────────
+            let reachable = false;
             try {
-                const ctrl=new AbortController();const tid=setTimeout(()=>ctrl.abort(),5000);
-                const r=await fetch(normalized,{method:'HEAD',signal:ctrl.signal});
-                clearTimeout(tid);reachable=r.ok||r.type==='opaque';
-            } catch(e){
-                try{
-                    const ctrl2=new AbortController();const tid2=setTimeout(()=>ctrl2.abort(),5000);
-                    const r2=await fetch(normalized,{method:'GET',signal:ctrl2.signal});
-                    clearTimeout(tid2);reachable=r2.ok||r2.type==='opaque';
-                } catch(e2){reachable=false;}
+                const ctrl = new AbortController(); const tid = setTimeout(()=>ctrl.abort(), 5000);
+                const r = await fetch(normalized, {method:'HEAD', signal:ctrl.signal});
+                clearTimeout(tid); reachable = r.ok || r.type === 'opaque';
+            } catch(e) {
+                try {
+                    const ctrl2 = new AbortController(); const tid2 = setTimeout(()=>ctrl2.abort(), 5000);
+                    const r2 = await fetch(normalized, {method:'GET', signal:ctrl2.signal});
+                    clearTimeout(tid2); reachable = r2.ok || r2.type === 'opaque';
+                } catch(e2) { reachable = false; }
             }
-            const WELL_KNOWN=['youtube.com','www.youtube.com','google.com','www.google.com','facebook.com','fb.com','twitter.com','x.com','instagram.com','microsoft.com','apple.com','amazon.com','wikipedia.org','linkedin.com','reddit.com','yahoo.com','github.com','www.github.com','github.io','netflix.com','twitch.tv','discord.com','tiktok.com','spotify.com','stackoverflow.com','paypal.com'];
-            let hostname='';
-            try{hostname=new URL(normalized).hostname.toLowerCase();}catch(e){}
-            const isWellKnown=WELL_KNOWN.includes(hostname);
-            const httpsOk=normalized.startsWith('https://');
-            checks.push({label:'HTTPS',
-                ok:httpsOk,
-                detail:httpsOk
-                    ? 'Your connection to this site is private and encrypted'
-                    : 'This site does not use encryption — avoid entering personal info here'});
-            checks.push({label:'Reachable',
-                ok:reachable||isWellKnown,
-                detail:reachable
-                    ? 'The website is online and responding'
-                    : isWellKnown
-                        ? 'This is a well-known, trusted website'
-                        : 'We couldn\'t reach this website'});
-            checks.push({label:'SSL Certificate',ok:null,detail:'Full certificate check requires the local server to be running'});
-            checks.push({label:'Threat Database', ok:null,detail:'Full threat check requires the local server to be running'});
-            checks.push({label:'Domain Age',      ok:null,detail:'Domain age check requires the local server to be running'});
-            if(!reachable&&!isWellKnown){level='danger';reason='We couldn\'t reach this website — it may not exist';}
-            else if(!httpsOk)           {level='hazard';reason='This site is not using a secure connection';}
-            else                        {level='safe';  reason='Basic checks passed — this link appears safe (run local server for full scan)';}
+            const WELL_KNOWN = ['youtube.com','google.com','facebook.com','twitter.com','x.com','instagram.com','microsoft.com','apple.com','amazon.com','wikipedia.org','linkedin.com','reddit.com','github.com','netflix.com','discord.com','tiktok.com','spotify.com','paypal.com'];
+            let hostname = '';
+            try { hostname = new URL(normalized).hostname.toLowerCase(); } catch(e) {}
+            const isWellKnown = WELL_KNOWN.some(d => hostname === d || hostname.endsWith('.' + d));
+            const httpsOk = normalized.startsWith('https://');
+            checks.push({label:'HTTPS', ok:httpsOk, detail:httpsOk?'Connection encrypted':'Site not encrypted — avoid entering personal info'});
+            checks.push({label:'Reachable', ok:reachable||isWellKnown, detail:reachable?'Website responding':isWellKnown?'Well-known trusted website':'Could not reach website'});
+            checks.push({label:'SSL Certificate', ok:null, detail:'Full certificate check requires local server'});
+            checks.push({label:'Threat Database', ok:null, detail:'Full threat check requires local server'});
+            checks.push({label:'Domain Age', ok:null, detail:'Domain age check requires local server'});
+            if (!reachable && !isWellKnown) { level='danger'; reason='Could not reach this website — may not exist'; }
+            else if (!httpsOk)              { level='hazard'; reason='Site is not using a secure connection'; }
+            else                            { level='safe';   reason='Basic checks passed (run local server for full scan)'; }
         }
 
-        // Use server risk score directly if available; otherwise fall back to client formula
         const score = (serverData && typeof serverData.riskScore === 'number')
             ? serverData.riskScore
             : calcSafetyScore(checks, level);
 
         const fourBadges = [
-            checks.find(c=>c.label==='HTTPS')           ||{label:'HTTPS',           ok:null,detail:''},
-            checks.find(c=>c.label==='SSL Certificate')  ||{label:'SSL Certificate', ok:null,detail:''},
-            checks.find(c=>c.label==='Threat Database')  ||{label:'Threat Database', ok:null,detail:''},
-            checks.find(c=>c.label==='Domain Age')       ||{label:'Domain Age',      ok:null,detail:''},
+            checks.find(c=>c.label==='HTTPS')                ||{label:'HTTPS',                ok:null,detail:''},
+            checks.find(c=>c.label==='SSL Certificate')      ||{label:'SSL Certificate',      ok:null,detail:''},
+            checks.find(c=>c.label==='Threat Database')      ||{label:'Threat Database',      ok:null,detail:''},
+            checks.find(c=>c.label==='Google Safe Browsing') || checks.find(c=>c.label==='Domain Age') ||{label:'Domain Age',ok:null,detail:''},
         ];
 
         stopLoadingSteps();
-        renderResultCard({level,reason,checks,fourBadges,score,shortened:!!(serverData&&serverData.shortened),resolvedUrl:serverData&&serverData.resolvedUrl});
-        logSafetyReport(normalized,level,reason,checks);
-        addToHistory(normalized,level);
-        btn.disabled=false;
+        renderResultCard({level, reason, checks, fourBadges, score,
+            shortened: !!(serverData && serverData.shortened),
+            resolvedUrl: serverData && serverData.resolvedUrl});
+        logSafetyReport(normalized, level, reason, checks);
+        addToHistory(normalized, level);
+        btn.disabled = false;
         hideSpinner();
     }
 
-    if(btn)   btn.addEventListener('click',checkLink);
-    if(input) input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();checkLink();}});
+    if (btn)   btn.addEventListener('click', checkLink);
+    if (input) input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); checkLink(); } });
 })();
 
 
@@ -531,77 +612,89 @@ function flagTypeLabel(type) {
     const previewBtn  = document.getElementById('preview_btn');
     const previewArea = document.getElementById('preview_area');
     const pvDomain    = document.getElementById('preview_domain');
-    const pvTitle     = document.getElementById('preview_title');
-    const pvDesc      = document.getElementById('preview_description');
-    const pvFavicon   = document.getElementById('preview_favicon');
     const pvChecks    = document.getElementById('preview_checks');
     const pvActions   = document.getElementById('preview_actions');
 
     if (!previewBtn) return;
 
-    const style=document.createElement('style');
-    style.textContent=`@keyframes ws-shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}.ws-skel{background:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%);background-size:600px 100%;animation:ws-shimmer 1.4s infinite linear;border-radius:6px;}`;
+    const style = document.createElement('style');
+    style.textContent = `@keyframes ws-shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}.ws-skel{background:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%);background-size:600px 100%;animation:ws-shimmer 1.4s infinite linear;border-radius:6px;}`;
     document.head.appendChild(style);
 
-    function setPreviewVisible(v){if(previewArea)previewArea.style.display=v?'block':'none';}
-    function resetPreviewContent(){
-        if(pvTitle)pvTitle.textContent='';if(pvDomain)pvDomain.textContent='';if(pvDesc)pvDesc.textContent='';
-        if(pvFavicon){pvFavicon.src='';pvFavicon.style.display='none';}
-        if(pvChecks)pvChecks.innerHTML='';if(pvActions)pvActions.innerHTML='';
+    function setPreviewVisible(v) { if (previewArea) previewArea.style.display = v ? 'block' : 'none'; }
+    function resetPreviewContent() {
+        if (pvDomain) pvDomain.textContent = '';
+        if (pvChecks) pvChecks.innerHTML = '';
+        if (pvActions) pvActions.innerHTML = '';
     }
-    function makeBrowserBar(hostname){
-        const bar=document.createElement('div');
-        bar.style.cssText='background:#1E3A8A;padding:10px 14px;display:flex;align-items:center;gap:8px;';
-        bar.innerHTML=`<span style="width:10px;height:10px;border-radius:50%;background:#ffffff44;display:inline-block"></span><span style="width:10px;height:10px;border-radius:50%;background:#ffffff44;display:inline-block"></span><span style="width:10px;height:10px;border-radius:50%;background:#ffffff44;display:inline-block"></span><div style="flex:1;background:#ffffff22;border-radius:20px;padding:5px 14px;margin-left:6px;"><span style="color:#93c5fd;font-size:12px;font-weight:600">${hostname}</span></div>`;
+    function makeBrowserBar(hostname) {
+        const bar = document.createElement('div');
+        bar.style.cssText = 'background:#1E3A8A;padding:10px 14px;display:flex;align-items:center;gap:8px;';
+        bar.innerHTML = `<span style="width:10px;height:10px;border-radius:50%;background:#ffffff44;display:inline-block"></span><span style="width:10px;height:10px;border-radius:50%;background:#ffffff44;display:inline-block"></span><span style="width:10px;height:10px;border-radius:50%;background:#ffffff44;display:inline-block"></span><div style="flex:1;background:#ffffff22;border-radius:20px;padding:5px 14px;margin-left:6px;"><span style="color:#93c5fd;font-size:12px;font-weight:600">${hostname}</span></div>`;
         return bar;
     }
-    function makeWrapper(){
-        const w=document.createElement('div');
-        w.style.cssText='width:100%;max-width:640px;margin:12px auto 0;border:2px solid #1E3A8A;border-radius:10px;overflow:hidden;background:#ffffff;';
+    function makeWrapper() {
+        const w = document.createElement('div');
+        w.style.cssText = 'width:100%;max-width:640px;margin:12px auto 0;border:2px solid #1E3A8A;border-radius:10px;overflow:hidden;background:#ffffff;';
         return w;
     }
-    function renderSkeleton(container,hostname){
-        container.innerHTML='';container.appendChild(makeBrowserBar(hostname));
-        const body=document.createElement('div');body.style.cssText='padding:20px;display:flex;flex-direction:column;gap:12px;min-height:280px;';
-        const hero=document.createElement('div');hero.className='ws-skel';hero.style.cssText='height:120px;width:100%;';body.appendChild(hero);
-        [[100],[80],[90],[60]].forEach(([w])=>{const line=document.createElement('div');line.className='ws-skel';line.style.cssText=`height:14px;width:${w}%;`;body.appendChild(line);});
-        const status=document.createElement('p');status.style.cssText='text-align:center;color:#94a3b8;font-size:13px;margin-top:8px;';status.textContent='📸 Taking screenshot… this may take up to 15 seconds';body.appendChild(status);
+    function renderSkeleton(container, hostname) {
+        container.innerHTML = ''; container.appendChild(makeBrowserBar(hostname));
+        const body = document.createElement('div'); body.style.cssText = 'padding:20px;display:flex;flex-direction:column;gap:12px;min-height:280px;';
+        const hero = document.createElement('div'); hero.className = 'ws-skel'; hero.style.cssText = 'height:120px;width:100%;'; body.appendChild(hero);
+        [[100],[80],[90],[60]].forEach(([w]) => { const line=document.createElement('div');line.className='ws-skel';line.style.cssText=`height:14px;width:${w}%;`;body.appendChild(line); });
+        const status = document.createElement('p'); status.style.cssText = 'text-align:center;color:#94a3b8;font-size:13px;margin-top:8px;'; status.textContent = '📸 Taking screenshot… this may take up to 15 seconds'; body.appendChild(status);
         container.appendChild(body);
     }
-    function tryLoadImage(url,ms){
-        return new Promise(resolve=>{
-            const img=new Image();const tid=setTimeout(()=>{img.src='';resolve(null);},ms);
-            img.onload=()=>{clearTimeout(tid);resolve(img.src);};img.onerror=()=>{clearTimeout(tid);resolve(null);};img.src=url;
+    function tryLoadImage(url, ms) {
+        return new Promise(resolve => {
+            const img = new Image(); const tid = setTimeout(() => { img.src=''; resolve(null); }, ms);
+            img.onload = () => { clearTimeout(tid); resolve(img.src); };
+            img.onerror = () => { clearTimeout(tid); resolve(null); };
+            img.src = url;
         });
     }
-    async function getScreenshot(url){
-        const enc=encodeURIComponent(url);
-        const sources=[`https://image.thum.io/get/width/900/crop/600/noanimate/${url}`,`https://shot.screenshotapi.net/screenshot?url=${enc}&width=1280&height=768&output=image&file_type=png&wait_for_event=load`,`https://mini.s-shot.ru/1024x768/PNG/1024/Z100/?${url}`];
-        for(const src of sources){const r=await tryLoadImage(src,10000);if(r)return r;}
+    async function getScreenshot(url) {
+        const enc = encodeURIComponent(url);
+        const sources = [
+            `https://image.thum.io/get/width/900/crop/600/noanimate/${url}`,
+            `https://shot.screenshotapi.net/screenshot?url=${enc}&width=1280&height=768&output=image&file_type=png&wait_for_event=load`,
+            `https://mini.s-shot.ru/1024x768/PNG/1024/Z100/?${url}`,
+        ];
+        for (const src of sources) { const r = await tryLoadImage(src, 10000); if (r) return r; }
         return null;
     }
 
-    previewBtn.addEventListener('click',async()=>{
-        const inputEl=document.getElementById('link_input');if(!inputEl)return;
-        const normalized=normalizeURL(inputEl.value||'');
-        if(!normalized){alert('Please enter a valid URL first.');return;}
-        setPreviewVisible(true);resetPreviewContent();showSpinner();
-        let hostname='';try{hostname=new URL(normalized).hostname;}catch(e){}
-        if(pvDomain)pvDomain.textContent=hostname;
-        if(pvActions){
-            pvActions.innerHTML='';const wrapper=makeWrapper();pvActions.appendChild(wrapper);
-            renderSkeleton(wrapper,hostname);
-            const shot=await getScreenshot(normalized);hideSpinner();
-            wrapper.innerHTML='';wrapper.appendChild(makeBrowserBar(hostname));
-            if(shot){
-                const img=document.createElement('img');img.src=shot;img.alt=`Preview of ${hostname}`;img.style.cssText='width:100%;height:auto;display:block;';wrapper.appendChild(img);
+    previewBtn.addEventListener('click', async () => {
+        const inputEl = document.getElementById('link_input'); if (!inputEl) return;
+        const raw = inputEl.value || '';
+
+        // ── STRICT validation on preview ───────────────────────────────────
+        if (!raw.trim()) { alert('Please enter a URL first.'); return; }
+        const normalized = normalizeURL(raw);
+        if (!normalized) {
+            const statusEl = document.getElementById('link_status');
+            showInvalidUrlError(statusEl);
+            return;
+        }
+
+        setPreviewVisible(true); resetPreviewContent(); showSpinner();
+        let hostname = ''; try { hostname = new URL(normalized).hostname; } catch(e) {}
+        if (pvDomain) pvDomain.textContent = hostname;
+        if (pvActions) {
+            pvActions.innerHTML = ''; const wrapper = makeWrapper(); pvActions.appendChild(wrapper);
+            renderSkeleton(wrapper, hostname);
+            const shot = await getScreenshot(normalized); hideSpinner();
+            wrapper.innerHTML = ''; wrapper.appendChild(makeBrowserBar(hostname));
+            if (shot) {
+                const img = document.createElement('img'); img.src = shot; img.alt = `Preview of ${hostname}`; img.style.cssText = 'width:100%;height:auto;display:block;'; wrapper.appendChild(img);
             } else {
-                const fb=document.createElement('div');fb.style.cssText='padding:50px 20px;text-align:center;';
-                fb.innerHTML=`<span style="font-size:48px">🌐</span><p style="color:#1E3A8A;font-weight:700;font-size:16px;margin:12px 0 6px">${hostname}</p><p style="color:#94a3b8;font-size:13px;margin:0">Screenshot unavailable — this site may block preview services</p>`;
+                const fb = document.createElement('div'); fb.style.cssText = 'padding:50px 20px;text-align:center;';
+                fb.innerHTML = `<span style="font-size:48px">🌐</span><p style="color:#1E3A8A;font-weight:700;font-size:16px;margin:12px 0 6px">${hostname}</p><p style="color:#94a3b8;font-size:13px;margin:0">Screenshot unavailable — this site may block preview services</p>`;
                 wrapper.appendChild(fb);
             }
-            const a=document.createElement('a');a.href=normalized;a.target='_blank';a.rel='noopener noreferrer';a.textContent='🔗 Open in new tab';
-            a.style.cssText='display:inline-block;margin:12px 0 4px;padding:9px 20px;background:#1E3A8A;color:#F8FAFC;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;border:2px solid #000;';
+            const a = document.createElement('a'); a.href = normalized; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = '🔗 Open in new tab';
+            a.style.cssText = 'display:inline-block;margin:12px 0 4px;padding:9px 20px;background:#1E3A8A;color:#F8FAFC;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;border:2px solid #000;';
             pvActions.appendChild(a);
         }
     });
