@@ -15,8 +15,22 @@ function normalizeURL(raw) {
     raw = String(raw).trim();
     if (!raw) return null;
     if (!/^https?:\/\//i.test(raw) && !/^[a-z]+:\/\//i.test(raw)) raw = 'https://' + raw;
-    try { return new URL(raw).href; } catch (e) {
-        try { return new URL('https://' + raw).href; } catch (e2) { return null; }
+    try {
+        const parsed = new URL(raw);
+        // Must have a dot in the hostname so bare words like "hello" are rejected
+        if (!parsed.hostname.includes('.')) return null;
+        // The TLD (part after last dot) must be at least 2 chars (e.g. .io, .ph, .com)
+        const tld = parsed.hostname.split('.').pop();
+        if (!tld || tld.length < 2) return null;
+        return parsed.href;
+    } catch (e) {
+        try {
+            const parsed2 = new URL('https://' + raw);
+            if (!parsed2.hostname.includes('.')) return null;
+            const tld2 = parsed2.hostname.split('.').pop();
+            if (!tld2 || tld2.length < 2) return null;
+            return parsed2.href;
+        } catch (e2) { return null; }
     }
 }
 
@@ -237,7 +251,21 @@ function calcSafetyScore(checks, level) {
         clearResults();
 
         if (!normalized) {
-            if (statusEl) statusEl.innerHTML = `<p style="color:#dc2626;margin-top:8px;font-weight:600">⚠️ Please enter a valid URL.</p>`;
+            if (statusEl) statusEl.innerHTML = `
+                <div style="max-width:580px;margin:16px auto 0;border-radius:10px;background:#ffffff;border:2px solid #1E3A8A;box-shadow:0 4px 14px rgba(30,58,138,.15);overflow:hidden;font-family:inherit;text-align:left;">
+                    <div style="display:flex;align-items:center;gap:14px;padding:15px 20px;background:#1E3A8A;border-bottom:3px solid #dc2626;">
+                        <span style="width:28px;height:28px;border-radius:50%;background:#dc2626;display:inline-block;box-shadow:0 0 10px #dc262688;flex-shrink:0"></span>
+                        <div style="flex:1;min-width:0">
+                            <div style="font-size:18px;font-weight:700;color:#F8FAFC">Invalid URL</div>
+                            <div style="font-size:12px;color:#93c5fd;margin-top:4px">Please enter a valid web address to scan</div>
+                        </div>
+                    </div>
+                    <div style="padding:16px 20px;background:#fff5f5;border-left:4px solid #dc2626;">
+                        <p style="margin:0;color:#991b1b;font-size:14px;font-weight:600;">⚠️ No valid URL detected.</p>
+                        <p style="margin:8px 0 0;color:#6b7280;font-size:13px;">Make sure the address includes a domain and extension, for example:<br>
+                        <strong style="color:#1E3A8A">example.com</strong> &nbsp;or&nbsp; <strong style="color:#1E3A8A">https://example.com</strong></p>
+                    </div>
+                </div>`;
             return;
         }
 
@@ -397,7 +425,25 @@ function calcSafetyScore(checks, level) {
     previewBtn.addEventListener('click',async()=>{
         const inputEl=document.getElementById('link_input');if(!inputEl)return;
         const normalized=normalizeURL(inputEl.value||'');
-        if(!normalized){alert('Please enter a valid URL first.');return;}
+        if(!normalized){
+            const statusEl=document.getElementById('link_status');
+            if(statusEl) statusEl.innerHTML = `
+                <div style="max-width:580px;margin:16px auto 0;border-radius:10px;background:#ffffff;border:2px solid #1E3A8A;box-shadow:0 4px 14px rgba(30,58,138,.15);overflow:hidden;font-family:inherit;text-align:left;">
+                    <div style="display:flex;align-items:center;gap:14px;padding:15px 20px;background:#1E3A8A;border-bottom:3px solid #dc2626;">
+                        <span style="width:28px;height:28px;border-radius:50%;background:#dc2626;display:inline-block;box-shadow:0 0 10px #dc262688;flex-shrink:0"></span>
+                        <div style="flex:1;min-width:0">
+                            <div style="font-size:18px;font-weight:700;color:#F8FAFC">Invalid URL</div>
+                            <div style="font-size:12px;color:#93c5fd;margin-top:4px">Please enter a valid web address to preview</div>
+                        </div>
+                    </div>
+                    <div style="padding:16px 20px;background:#fff5f5;border-left:4px solid #dc2626;">
+                        <p style="margin:0;color:#991b1b;font-size:14px;font-weight:600;">⚠️ No valid URL detected.</p>
+                        <p style="margin:8px 0 0;color:#6b7280;font-size:13px;">Make sure the address includes a domain and extension, for example:<br>
+                        <strong style="color:#1E3A8A">example.com</strong> &nbsp;or&nbsp; <strong style="color:#1E3A8A">https://example.com</strong></p>
+                    </div>
+                </div>`;
+            return;
+        }
         setPreviewVisible(true);resetPreviewContent();showSpinner();
         let hostname='';try{hostname=new URL(normalized).hostname;}catch(e){}
         if(pvDomain)pvDomain.textContent=hostname;
