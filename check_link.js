@@ -214,6 +214,9 @@ function flagTypeLabel(type) {
         'virustotal-flag':           'VirusTotal Malicious Flag',
         'disposable-hosting':        'Disposable/Free Hosting',
         'dangerous-protocol':        'Dangerous Protocol',
+        'high-entropy-domain':       'Random-Looking Domain',
+        'homograph-attack':          'Homograph/Lookalike Attack',
+        'numeric-substitution':      'Numeric Letter Substitution',
     };
     return map[type] || 'Suspicious Signal';
 }
@@ -275,6 +278,12 @@ function friendlyFlagDetail(f) {
             return f.detail || 'Multiple antivirus engines on VirusTotal flagged this URL as malicious';
         case 'disposable-hosting':
             return f.detail || 'Hosted on a known free/disposable platform used for temporary scam sites';
+        case 'high-entropy-domain':
+            return f.detail || 'Domain name appears algorithmically generated — typical of phishing infrastructure';
+        case 'homograph-attack':
+            return f.detail || 'Hostname uses lookalike characters from non-Latin scripts to impersonate a real website';
+        case 'numeric-substitution':
+            return f.detail || 'Numbers replace letters in the domain to impersonate a real brand (e.g. g00gle, p4ypal)';
         default:
             return f.detail || 'Suspicious signal detected';
     }
@@ -592,12 +601,39 @@ function friendlyFlagDetail(f) {
             checks.find(c=>c.label==='Google Safe Browsing') || checks.find(c=>c.label==='Domain Age') ||{label:'Domain Age',ok:null,detail:''},
         ];
 
+        // ── Extra client-side heuristic flags (entropy, homograph, etc.) ──────
+        if (typeof window._wsExtraHeuristics === 'function') {
+            const extra = window._wsExtraHeuristics(normalized);
+            for (const f of extra) {
+                if (!checks.some(c => c.label === f.label)) {
+                    checks.push(f);
+                    if (level !== 'danger') level = 'hazard';
+                }
+            }
+        }
+
         stopLoadingSteps();
         renderResultCard({level, reason, checks, fourBadges, score,
             shortened: !!(serverData && serverData.shortened),
             resolvedUrl: serverData && serverData.resolvedUrl});
         logSafetyReport(normalized, level, reason, checks);
         addToHistory(normalized, level);
+
+        // ── Show "Open Live Frame" button below result card ──────────────────
+        const openBtn = document.getElementById('open_live_frame_btn');
+        if (openBtn) {
+            openBtn.style.display = 'inline-block';
+            openBtn.onclick = () => {
+                if (typeof window._wsOpenLiveFrame === 'function')
+                    window._wsOpenLiveFrame(normalized, level);
+            };
+            const toggleRow = document.getElementById('live_frame_toggle_row');
+            if (toggleRow) toggleRow.style.display = 'block';
+            // Store for live frame module
+            window._wsLastUrl   = normalized;
+            window._wsLastLevel = level;
+        }
+
         btn.disabled = false;
         hideSpinner();
     }
@@ -698,4 +734,217 @@ function friendlyFlagDetail(f) {
             pvActions.appendChild(a);
         }
     });
+})();
+
+
+// ─── PhishTank-style Live Site Frame ──────────────────────────────────────────
+(function () {
+    // ── State ──────────────────────────────────────────────────────────────────
+    let _currentUrl = '';
+    let _currentLevel = 'safe';
+
+    const section    = document.getElementById('live_frame_section');
+    const iframe     = document.getElementById('live_frame_iframe');
+    const hostname_el= document.getElementById('live_frame_hostname');
+    const lock_el    = document.getElementById('live_frame_lock');
+    const verdictBar = document.getElementById('live_frame_verdict_bar');
+    const blockedDiv = document.getElementById('live_frame_blocked');
+    const closeBtn   = document.getElementById('live_frame_close_btn');
+    const reportBtn  = document.getElementById('live_frame_report_btn');
+    const openBtn    = document.getElementById('open_live_frame_btn');
+
+    // Report modal elements
+    const reportModal   = document.getElementById('report_modal');
+    const reportUrlEl   = document.getElementById('report_url_display');
+    const reportReason  = document.getElementById('report_reason');
+    const reportNotes   = document.getElementById('report_notes');
+    const reportSubmit  = document.getElementById('report_submit_btn');
+    const reportThanks  = document.getElementById('report_thanks');
+
+    // ── Expose openLiveFrame so check_link module can call it ──────────────────
+    window._wsOpenLiveFrame = function(url, level) {
+        if (!section || !iframe) return;
+        _currentUrl   = url;
+        _currentLevel = level || 'safe';
+
+        let hostname = '';
+        let isHttps  = false;
+        try { const u = new URL(url); hostname = u.hostname; isHttps = u.protocol === 'https:'; } catch(e) {}
+
+        // URL bar
+        if (hostname_el) hostname_el.textContent = hostname;
+        if (lock_el) lock_el.textContent = isHttps ? '🔒' : '⚠️';
+
+        // Verdict banner
+        if (verdictBar) {
+            const msgs = {
+                safe:   '✅ This link passed all safety checks. Browsing in sandboxed preview.',
+                hazard: '⚠️ Warning signs detected. Review results before interacting.',
+                danger: '🚨 DANGEROUS — This site has been flagged. Do NOT enter any personal information.',
+            };
+            verdictBar.textContent  = msgs[level] || msgs.safe;
+            verdictBar.className    = 'lf-' + (level || 'safe');
+            verdictBar.style.display= 'flex';
+        }
+
+        // Load iframe
+        if (blockedDiv) blockedDiv.style.display = 'none';
+        if (iframe) {
+            iframe.src = url;
+            // Detect X-Frame-Options block — iframe load error or blank
+            const tid = setTimeout(() => {
+                try {
+                    // If contentDocument is null or cross-origin inaccessible that's normal.
+                    // We show blocked UI only if onerror fires.
+                } catch(e) {}
+            }, 5000);
+            iframe.onerror = () => {
+                clearTimeout(tid);
+                if (blockedDiv) blockedDiv.style.display = 'flex';
+                iframe.style.display = 'none';
+            };
+        }
+
+        section.style.display = 'block';
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (openBtn) openBtn.style.display = 'none';
+    };
+
+    // ── Close button ───────────────────────────────────────────────────────────
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            if (section) section.style.display = 'none';
+            if (iframe)  { iframe.src = 'about:blank'; iframe.style.display = 'block'; }
+            if (blockedDiv) blockedDiv.style.display = 'none';
+        });
+    }
+
+    // ── Open Live Frame button (shown after a scan) ────────────────────────────
+    if (openBtn) {
+        openBtn.addEventListener('click', () => {
+            if (_currentUrl) window._wsOpenLiveFrame(_currentUrl, _currentLevel);
+        });
+    }
+
+    // ── Report Phishing button ─────────────────────────────────────────────────
+    if (reportBtn) {
+        reportBtn.addEventListener('click', () => {
+            if (!reportModal) return;
+            if (reportUrlEl)  reportUrlEl.textContent = _currentUrl || '(unknown URL)';
+            if (reportReason) reportReason.value = '';
+            if (reportNotes)  reportNotes.value  = '';
+            if (reportThanks) reportThanks.style.display = 'none';
+            if (reportSubmit) reportSubmit.disabled = false;
+            reportModal.style.display = 'flex';
+        });
+    }
+
+    // ── Submit report ──────────────────────────────────────────────────────────
+    if (reportSubmit) {
+        reportSubmit.addEventListener('click', () => {
+            const reason = reportReason ? reportReason.value : '';
+            const notes  = reportNotes  ? reportNotes.value.trim()  : '';
+            if (!reason) { alert('Please select a reason.'); return; }
+
+            // Save to localStorage as community reports log
+            try {
+                const reports = JSON.parse(localStorage.getItem('ws_reports') || '[]');
+                reports.unshift({
+                    url:    _currentUrl,
+                    reason, notes,
+                    time:   new Date().toISOString(),
+                });
+                if (reports.length > 50) reports.pop();
+                localStorage.setItem('ws_reports', JSON.stringify(reports));
+            } catch(e) {}
+
+            if (reportThanks)  reportThanks.style.display  = 'inline';
+            if (reportSubmit)  reportSubmit.disabled        = true;
+            setTimeout(() => { if (reportModal) reportModal.style.display = 'none'; }, 1800);
+        });
+    }
+})();
+
+
+// ─── Extra Client-Side Phishing Heuristics (PhishTank-style signals) ──────────
+// Runs before the server call and injects extra flags into the result card.
+(function () {
+    /**
+     * Shannon entropy of a string — high entropy = random-looking = suspicious
+     */
+    function entropy(str) {
+        const freq = {};
+        for (const c of str) freq[c] = (freq[c] || 0) + 1;
+        const len = str.length;
+        let e = 0;
+        for (const c in freq) {
+            const p = freq[c] / len;
+            e -= p * Math.log2(p);
+        }
+        return e;
+    }
+
+    /**
+     * Detect homograph / lookalike characters (Punycode spoofing)
+     * e.g. "раypal.com" uses Cyrillic 'р' and 'а'
+     */
+    function hasHomographChars(hostname) {
+        // Non-ASCII chars in the hostname hint at IDN homograph attack
+        return /[^\x00-\x7F]/.test(hostname);
+    }
+
+    /**
+     * Detect excessive numeric substitution (p4yp4l, g00gle, amaz0n)
+     */
+    function hasNumericSubstitution(hostname) {
+        return /[a-z][0-9][a-z]|[0-9]{2,}/i.test(hostname.replace(/\./g, ''));
+    }
+
+    /**
+     * Detect known brand names buried deep in subdomains
+     */
+    const BRANDS = ['paypal','google','facebook','amazon','apple','microsoft','netflix','gcash','bdo','bpi','maya','binance','coinbase','metamask','exodus'];
+    function brandInSubdomain(hostname) {
+        const parts = hostname.split('.');
+        if (parts.length <= 2) return null;
+        const sub = parts.slice(0, -2).join('.');
+        for (const b of BRANDS) {
+            if (sub.toLowerCase().includes(b)) return b;
+        }
+        return null;
+    }
+
+    /**
+     * Detect data: or javascript: URIs
+     */
+    function hasDangerousProtocol(url) {
+        return /^(data:|javascript:|vbscript:)/i.test(url.trim());
+    }
+
+    // Expose so check_link module can call it after normalising the URL
+    window._wsExtraHeuristics = function(url) {
+        const flags = [];
+        let hostname = '';
+        try { hostname = new URL(url).hostname.toLowerCase(); } catch(e) { return flags; }
+
+        if (hasDangerousProtocol(url)) {
+            flags.push({ label: 'Dangerous Protocol', ok: false, detail: 'URL uses a dangerous protocol (data:/javascript:) — never visit' });
+        }
+        if (hasHomographChars(hostname)) {
+            flags.push({ label: 'Homograph Attack', ok: false, detail: 'Hostname contains non-ASCII characters — possible lookalike spoofing (e.g. Cyrillic letters)' });
+        }
+        const domainPart = hostname.replace(/^www\./, '');
+        const domainEntropy = entropy(domainPart.replace(/\./g, ''));
+        if (domainEntropy > 3.8 && domainPart.length > 12) {
+            flags.push({ label: 'High Domain Entropy', ok: false, detail: `Domain name looks randomly generated (entropy ${domainEntropy.toFixed(2)}) — common in phishing infrastructure` });
+        }
+        if (hasNumericSubstitution(hostname)) {
+            flags.push({ label: 'Numeric Substitution', ok: false, detail: 'Numbers replacing letters detected (e.g. g00gle, p4ypal) — classic URL spoofing technique' });
+        }
+        const brand = brandInSubdomain(hostname);
+        if (brand) {
+            flags.push({ label: 'Brand Buried in Subdomain', ok: false, detail: `"${brand}" appears deep in the subdomain path — designed to trick you into thinking it's the real site` });
+        }
+        return flags;
+    };
 })();

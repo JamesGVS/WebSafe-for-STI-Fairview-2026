@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+ 
     <link rel="icon" href="/images/logo_circle.png">
     <link rel="stylesheet" href="main.css">  
  <title>WebSafe</title>
 </head>
 <body>
-
+ 
 <header id="head_logo"> 
     <img src="images/logo_square.jpg" alt="logo">
     <h1>WebSafe</h1>
 </header>
-
+ 
     <button id="btn_head" onclick="document.getElementById('about_modal').style.display='flex'">About Us</button>
-
+ 
 <!-- About Us Modal -->
 <div id="about_modal" onclick="if(event.target===this)this.style.display='none'">
     <div id="about_box">
@@ -46,16 +46,16 @@
         </div>
     </div>
 </div>
-
+ 
 <section id="link_checker">
-
+ 
  <h1>IS IT WEBSAFE?</h1>
  <p>Before we go, let's check and see! Tap below to see if this link's websafe for you and me!</p>
-
+ 
  <form onsubmit="return false;">
      <input id="link_input" type="text" placeholder="Input the URL/Link deemed to be suspicious">
  </form>
-
+ 
  <div class="controls">
      <button id="check_btn" type="button">  Verify Security</button>
      <button id="preview_btn" type="button">Preview Now</button>
@@ -63,11 +63,11 @@
  <div id="loading_spinner" aria-hidden="true"></div>
  <!-- safety_status kept hidden for JS compatibility -->
  <span id="safety_status" aria-hidden="true"></span>
-
+ 
  <!-- Results row: side-by-side when both open, centered when only one -->
  <div id="results_row">
      <div id="link_status" aria-live="polite"></div>
-
+ 
      <div id="preview_area" aria-live="polite">
          <div id="preview_card">
              <img id="preview_favicon" src="" alt="favicon">
@@ -81,12 +81,79 @@
          <div id="preview_checks"></div>
      </div>
  </div>
-
+ 
+ <!-- PhishTank-style Live Site Frame -->
+ <div id="live_frame_section" style="display:none;margin:24px auto 0;max-width:900px;width:100%;">
+     <div id="live_frame_toolbar">
+         <div id="live_frame_dots">
+             <span></span><span></span><span></span>
+         </div>
+         <div id="live_frame_urlbar">
+             <span id="live_frame_lock">🔒</span>
+             <span id="live_frame_hostname"></span>
+         </div>
+         <div id="live_frame_actions">
+             <button id="live_frame_report_btn" title="Report as phishing">🚩 Report Phishing</button>
+             <button id="live_frame_close_btn" title="Close preview">✕</button>
+         </div>
+     </div>
+     <div id="live_frame_verdict_bar" style="display:none;"></div>
+     <div id="live_frame_wrapper">
+         <iframe id="live_frame_iframe"
+             sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+             referrerpolicy="no-referrer"
+             loading="lazy"
+             title="Live site preview">
+         </iframe>
+         <div id="live_frame_blocked" style="display:none;">
+             <div id="live_frame_blocked_inner">
+                 <div style="font-size:52px;margin-bottom:12px;">🚫</div>
+                 <h3>Preview Blocked</h3>
+                 <p>This site refused to load in a frame (X-Frame-Options). Use the screenshot preview instead or visit directly.</p>
+             </div>
+         </div>
+     </div>
+     <!-- Report Phishing Modal (PhishTank-style) -->
+     <div id="report_modal" onclick="if(event.target===this)this.style.display='none'">
+         <div id="report_box">
+             <button id="report_close" onclick="document.getElementById('report_modal').style.display='none'">&#x2715;</button>
+             <div id="report_header">
+                 <span style="font-size:28px">🚩</span>
+                 <h2>Report Phishing URL</h2>
+             </div>
+             <p id="report_desc">Help protect others — flag this URL as a phishing site.</p>
+             <div id="report_url_display"></div>
+             <div id="report_fields">
+                 <label>Why do you think this is phishing?</label>
+                 <select id="report_reason">
+                     <option value="">— Select a reason —</option>
+                     <option value="brand-impersonation">Impersonates a real brand/bank</option>
+                     <option value="login-harvest">Fake login page stealing credentials</option>
+                     <option value="crypto-scam">Crypto/wallet scam</option>
+                     <option value="prize-scam">Fake prize or reward claim</option>
+                     <option value="malware">Distributes malware</option>
+                     <option value="other">Other suspicious activity</option>
+                 </select>
+                 <label style="margin-top:12px">Additional notes (optional)</label>
+                 <textarea id="report_notes" placeholder="Describe what you saw on the page..."></textarea>
+             </div>
+             <div id="report_footer">
+                 <button id="report_submit_btn">Submit Report</button>
+                 <span id="report_thanks" style="display:none">✅ Thank you! Report logged.</span>
+             </div>
+         </div>
+     </div>
+ </div>
+ 
+ <div style="text-align:center;margin-top:10px;margin-bottom:4px;" id="live_frame_toggle_row" style="display:none;">
+     <button id="open_live_frame_btn" style="display:none;">🌐 Open Live Frame</button>
+ </div>
+ 
 </section>
-
+ 
 <section id="info_section">
-
-
+ 
+ 
 <section class="websafe-why-section">
     <h2 class="section-title">What WebSafe Does</h2>
     
@@ -96,7 +163,7 @@
                 <p>WebSafe is a user-friendly online tool designed to help you verify links before visiting them. Just paste any URL into the platform to get an instant preview of the website, including its title and description. WebSafe also performs safety checks to determine if a link is safe, potentially risky, or harmful, giving you the information you need to browse confidently and avoid phishing scams or other online threats.</p>
             </div>
         </div>
-
+ 
         <div class="why-image-wrapper">
             <div class="circle-image">
                 <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" alt="Person using WebSafe">
@@ -109,14 +176,14 @@
         </div>
     </div>
 </section>
-
-
+ 
+ 
 <section class="websafe-module">
     <div class="ws-header">
         <h1>Why Users Should Choose WebSafe</h1>
         <p>WebSafe is a tool for verifying whether any given URL is harboring known <a href="#" class="ws-link">phishing</a> strains.</p>
     </div>
-
+ 
     <div class="ws-flex-grid">
         <div class="ws-graphic">
             <div class="ws-laptop">
@@ -127,20 +194,20 @@
                 </div>
             </div>
         </div>
-
+ 
         <div class="ws-content">
             <div class="ws-block">
                 <p>You should choose WebSafe because it makes your online browsing safer and easier. With phishing scams becoming more common, WebSafe offers a simple way to check if a link is trustworthy without needing any tech skills. It’s designed for everyone, so you can feel confident when browsing the internet. By using WebSafe, you can protect yourself from identity theft and financial loss, making your online experience both safer and more enjoyable. can you make this paragraph a little more like an info on a website and make it a little shorter.
             </div>
     </div>
 </section>
-
+ 
 <section class="ws-how-module">
     <div class="ws-container">
         <h1 class="ws-main-title">How does WebSafe work?</h1>
         <p class="ws-desc">WebSafe is a free tool designed to verify URLs, helping users avoid malware, phishing attempts, and counterfeit websites.</p>
         <p class="ws-sub-heading">Here’s how it works:</p>
-
+ 
         <div class="ws-grid">
             <div class="ws-box">
                 <div class="ws-icon">
@@ -149,7 +216,7 @@
                 <h3>Paste</h3>
                 <p>Paste the URL or link you want to check to quickly scan it and find out if it’s safe to visit before clicking.</p>
             </div>
-
+ 
             <div class="ws-box">
                 <div class="ws-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#4661ff" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
@@ -157,7 +224,7 @@
                 <h3>Click</h3>
                 <p>Click the “Verify Security" button to run a fast and easy security scan, so you can quickly find out if a link is safe before visiting it.</p>
             </div>
-
+ 
             <div class="ws-box">
                 <div class="ws-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#4661ff" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -187,19 +254,19 @@
                 The analysis engine is trained on diverse datasets of verified safe and malicious connections, including metrics like origin verification and burst latency. For every request, WebSafe generates a safety score that suggests its reliability, providing a vital, student-engineered defensive layer for those who prioritize network security.
             </p>
         </div>
-
-
-
+ 
+ 
+ 
     </div>
 </section>
-
-
+ 
+ 
 <section class="ws-how-module">
     <div class="ws-container">
         <h1 class="ws-main-title">How does WebSafe work?</h1>
         <p class="ws-desc">WebSafe is a free tool designed to verify URLs, helping users avoid malware, phishing attempts, and counterfeit websites.</p>
         <p class="ws-sub-heading">Here's how it works:</p>
-
+ 
         <div class="ws-grid">
             <div class="ws-box">
                 <div class="ws-icon">
@@ -208,7 +275,7 @@
                 <h3>Paste</h3>
                 <p>Paste the URL or link you want to check to quickly scan it and find out if it's safe to visit before clicking.</p>
             </div>
-
+ 
             <div class="ws-box">
                 <div class="ws-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#4661ff" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
@@ -216,7 +283,7 @@
                 <h3>Click</h3>
                 <p>Click the "Verify Security" button to run a fast and easy security scan, so you can quickly find out if a link is safe before visiting it.</p>
             </div>
-
+ 
             <div class="ws-box">
                 <div class="ws-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#4661ff" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -227,12 +294,12 @@
         </div>
     </div>
 </section>
-
+ 
 <section class="ws-grid-section">
     <div class="ws-grid-container">
         
         <h2 class="ws-grid-title">What to Do if You Encounter a Phishing Scam in the Philippines</h2>
-
+ 
         <div class="ws-features-grid">
             
             <div class="ws-feature-item">
@@ -246,7 +313,7 @@
                     <p>Smart: Call 1511 or report via the Smart app.</p>
                 </div>
             </div>
-
+ 
             <div class="ws-feature-item">
                 <div class="ws-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
@@ -256,10 +323,10 @@
                     <p>Philippine National Police (PNP) - Cybercrime Division
 Contact: Report the incident through the PNP Cybercrime Group.
                     <p>Hotline: Call (+632) 724-3660.</p>
-                    <p>Email: Send reports to <a href="mailto:james.geoffreyvs@gmail.com">james.geoffreyvs@gmail.com</a>.</p>
+                    <p>Email: Send reports to <a href="/cdn-cgi/l/email-protection#93f9f2fef6e0bdf4f6fcf5f5e1f6eae5e0d3f4fef2faffbdf0fcfe"><span class="__cf_email__" data-cfemail="bcd6ddd1d9cf92dbd9d3dadaced9c5cacffcdbd1ddd5d092dfd3d1">[email&#160;protected]</span></a>.</p>
                 </div>
             </div>
-
+ 
             <div class="ws-feature-item">
                 <div class="ws-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
@@ -269,7 +336,7 @@ Contact: Report the incident through the PNP Cybercrime Group.
                     <p>Financial Institutions: If sensitive information (like bank details) has been shared, contact your bank or relevant financial institution immediately.</p>
                 </div>
             </div>
-
+ 
             <div class="ws-feature-item">
                 <div class="ws-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
@@ -279,7 +346,7 @@ Contact: Report the incident through the PNP Cybercrime Group.
                     <p>Avoid Engaging: Do not click on any links or respond to messages from the suspected phishing source.</p>
                 </div>
             </div>
-
+ 
             <div class="ws-feature-item">
                 <div class="ws-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
@@ -287,10 +354,10 @@ Contact: Report the incident through the PNP Cybercrime Group.
                 <div class="ws-feature-text">
                     <h3>Report to Anti-Cybercrime Organizations</h3>
                     <p>Department of Information and Communications Technology (DICT)
-Forward Reports: Email phishing scams to <a href="mailto:james.geoffreyvs@gmail.com">james.geoffreyvs@gmail.com</a> or visit the DICT website for more resources.</p>
+Forward Reports: Email phishing scams to <a href="/cdn-cgi/l/email-protection#6d070c00081e430a08020b0b1f08141b1e2d0a000c0401430e0200"><span class="__cf_email__" data-cfemail="c0aaa1ada5b3eea7a5afa6a6b2a5b9b6b380a7ada1a9aceea3afad">[email&#160;protected]</span></a> or visit the DICT website for more resources.</p>
                 </div>
             </div>
-
+ 
             <div class="ws-feature-item">
                 <div class="ws-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
@@ -300,11 +367,11 @@ Forward Reports: Email phishing scams to <a href="mailto:james.geoffreyvs@gmail.
                     <p>Take Screenshots: Capture images of the email, message, or website involved in the phishing attempt to use as evidence when reporting.</p>
                 </div>
             </div>
-
+ 
         </div>
     </div>
 </section>
-
+ 
 </section><!-- end #info_section -->
 
 <!-- ── Scan History ──────────────────────────────────────────────────────────── -->

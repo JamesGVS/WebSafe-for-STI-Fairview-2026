@@ -334,6 +334,37 @@ function analyzeUrlStructure(urlStr) {
             detail: 'URL uses a dangerous protocol (data:, javascript:, or vbscript:)' });
     }
 
+    // ── PhishTank-style: Shannon entropy of domain ────────────────────────────
+    // High-entropy domains (random-generated) are a strong phishing signal
+    function shannonEntropy(str) {
+        const freq = {};
+        for (const c of str) freq[c] = (freq[c] || 0) + 1;
+        const len = str.length;
+        let e = 0;
+        for (const c in freq) { const p = freq[c]/len; e -= p * Math.log2(p); }
+        return e;
+    }
+    const domainNoTld = labels.slice(0, -1).join('').replace(/-/g, '');
+    if (domainNoTld.length > 10) {
+        const ent = shannonEntropy(domainNoTld);
+        if (ent > 3.8) {
+            flags.push({ type: 'high-entropy-domain', severity: 'medium',
+                detail: `Domain name entropy is ${ent.toFixed(2)} — statistically random-looking, typical of algorithmically-generated phishing domains` });
+        }
+    }
+
+    // ── PhishTank-style: IDN Homograph / non-ASCII hostname ──────────────────
+    if (/[^\x00-\x7F]/.test(hostname)) {
+        flags.push({ type: 'homograph-attack', severity: 'high',
+            detail: 'Hostname contains non-ASCII characters — possible IDN homograph attack using lookalike letters (e.g. Cyrillic "а" instead of Latin "a")' });
+    }
+
+    // ── Numeric letter substitution (g00gle, p4ypal) ─────────────────────────
+    if (/[a-z][0-9][a-z]/i.test(hostname.replace(/\./g, ''))) {
+        flags.push({ type: 'numeric-substitution', severity: 'high',
+            detail: 'Numbers replacing letters detected in domain — a classic brand-spoofing technique (e.g. g00gle, p4ypal)' });
+    }
+
     return flags;
 }
 
