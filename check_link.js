@@ -15,22 +15,8 @@ function normalizeURL(raw) {
     raw = String(raw).trim();
     if (!raw) return null;
     if (!/^https?:\/\//i.test(raw) && !/^[a-z]+:\/\//i.test(raw)) raw = 'https://' + raw;
-    try {
-        const parsed = new URL(raw);
-        // Must have a dot in the hostname so bare words like "hello" are rejected
-        if (!parsed.hostname.includes('.')) return null;
-        // The TLD (part after last dot) must be at least 2 chars (e.g. .io, .ph, .com)
-        const tld = parsed.hostname.split('.').pop();
-        if (!tld || tld.length < 2) return null;
-        return parsed.href;
-    } catch (e) {
-        try {
-            const parsed2 = new URL('https://' + raw);
-            if (!parsed2.hostname.includes('.')) return null;
-            const tld2 = parsed2.hostname.split('.').pop();
-            if (!tld2 || tld2.length < 2) return null;
-            return parsed2.href;
-        } catch (e2) { return null; }
+    try { return new URL(raw).href; } catch (e) {
+        try { return new URL('https://' + raw).href; } catch (e2) { return null; }
     }
 }
 
@@ -64,12 +50,12 @@ function renderHistory() {
 
 // ─── Animated loading steps ───────────────────────────────────────────────────
 const LOADING_STEPS = [
-    'Resolving domain...',
-    'Checking HTTPS & SSL certificate...',
-    'Looking up domain age via WHOIS...',
-    'Scanning for blacklisted domains...',
-    'Analyzing page content...',
-    'Calculating safety score...',
+    'Looking up the website...',
+    'Checking if the connection is secure...',
+    'Checking how old this website is...',
+    'Checking against known dangerous sites...',
+    'Reading what\'s on the page...',
+    'Putting together your safety report...',
 ];
 let _loadingInterval = null;
 function startLoadingSteps() {
@@ -251,21 +237,7 @@ function calcSafetyScore(checks, level) {
         clearResults();
 
         if (!normalized) {
-            if (statusEl) statusEl.innerHTML = `
-                <div style="max-width:580px;margin:16px auto 0;border-radius:10px;background:#ffffff;border:2px solid #1E3A8A;box-shadow:0 4px 14px rgba(30,58,138,.15);overflow:hidden;font-family:inherit;text-align:left;">
-                    <div style="display:flex;align-items:center;gap:14px;padding:15px 20px;background:#1E3A8A;border-bottom:3px solid #dc2626;">
-                        <span style="width:28px;height:28px;border-radius:50%;background:#dc2626;display:inline-block;box-shadow:0 0 10px #dc262688;flex-shrink:0"></span>
-                        <div style="flex:1;min-width:0">
-                            <div style="font-size:18px;font-weight:700;color:#F8FAFC">Invalid URL</div>
-                            <div style="font-size:12px;color:#93c5fd;margin-top:4px">Please enter a valid web address to scan</div>
-                        </div>
-                    </div>
-                    <div style="padding:16px 20px;background:#fff5f5;border-left:4px solid #dc2626;">
-                        <p style="margin:0;color:#991b1b;font-size:14px;font-weight:600;">⚠️ No valid URL detected.</p>
-                        <p style="margin:8px 0 0;color:#6b7280;font-size:13px;">Make sure the address includes a domain and extension, for example:<br>
-                        <strong style="color:#1E3A8A">example.com</strong> &nbsp;or&nbsp; <strong style="color:#1E3A8A">https://example.com</strong></p>
-                    </div>
-                </div>`;
+            if (statusEl) statusEl.innerHTML = `<p style="color:#dc2626;margin-top:8px;font-weight:600">⚠️ Please enter a valid URL.</p>`;
             return;
         }
 
@@ -287,36 +259,108 @@ function calcSafetyScore(checks, level) {
             else { console.warn('[WebSafe] API non-OK:', res.status); }
         } catch(e) { console.warn('[WebSafe] API failed:', e.message); }
 
+        // ── Friendly label mapping for content flags from the server ──────────
+        function friendlyContentDetail(flags) {
+            const messages = [];
+            for (const f of flags) {
+                if (f.type === 'base64-large') {
+                    messages.push('The page contains hidden or encoded data — this is a common trick used by scam sites');
+                } else if (f.type === 'obfuscation') {
+                    messages.push('The page is using scrambled code that tries to hide what it\'s doing');
+                } else if (f.type === 'form-external-post') {
+                    const dest = (f.detail||'').replace('form posts to ','').trim();
+                    messages.push(`This page sends your info to a different website (${dest||'unknown'}) — a common sign of phishing`);
+                } else if (f.type === 'keywords') {
+                    const kws = Array.isArray(f.detail) ? f.detail : [f.detail];
+                    const readableKws = kws.map(k => `"${k}"`).join(', ');
+                    if (f.severity === 'high') {
+                        messages.push(`Contains sensitive phrases like ${readableKws} — be very careful`);
+                    } else {
+                        messages.push(`Contains phrases often used in scam messages like ${readableKws}`);
+                    }
+                } else {
+                    // Fallback: still readable
+                    messages.push('Suspicious content was detected on this page');
+                }
+            }
+            return messages.join(' · ');
+        }
+
         if (serverData) {
             const d = serverData;
-            if(d.shortened&&d.resolvedUrl) checks.push({label:'Shortened Link',ok:null,detail:`Resolves to: ${d.resolvedUrl}`});
-            checks.push({label:'HTTPS',         ok:!!d.httpsOk,        detail:d.httpsOk?'Secure connection':'No HTTPS — data may not be encrypted'});
-            checks.push({label:'Reachable',      ok:d.reachable!==false,detail:d.reachable?`HTTP ${d.statusCode||'—'}`:'Site could not be reached'});
-            checks.push({label:'SSL Certificate',ok:!!d.certValid,      detail:d.certValid?(d.certExpiresDays!=null?`Expires in ${d.certExpiresDays} days`:'Valid'):'Invalid or missing certificate'});
-            checks.push({label:'Blacklist',      ok:!d.blacklisted,     detail:d.blacklisted?'Domain is on our blacklist':'Not found on blacklist'});
-            checks.push({label:'HTTP Redirect',  ok:!d.redirectsToHttp, detail:d.redirectsToHttp?'HTTPS redirects to HTTP (downgrade)':'No insecure redirect'});
+            if(d.shortened&&d.resolvedUrl) checks.push({label:'Shortened Link',ok:null,detail:`This is a short link — it actually leads to: ${d.resolvedUrl}`});
+
+            checks.push({label:'HTTPS',
+                ok:!!d.httpsOk,
+                detail:d.httpsOk
+                    ? 'Your connection to this site is private and encrypted'
+                    : 'This site does not use encryption — avoid entering any personal info here'});
+
+            checks.push({label:'Reachable',
+                ok:d.reachable!==false,
+                detail:d.reachable
+                    ? 'The website is online and responding normally'
+                    : 'We couldn\'t reach this website — it may be offline or blocking visitors'});
+
+            checks.push({label:'SSL Certificate',
+                ok:!!d.certValid,
+                detail:d.certValid
+                    ? (d.certExpiresDays!=null
+                        ? `The site's security certificate is valid and expires in ${d.certExpiresDays} days`
+                        : 'The site has a valid security certificate')
+                    : 'The site\'s security certificate is missing or expired — this is a red flag'});
+
+            checks.push({label:'Blacklist',
+                ok:!d.blacklisted,
+                detail:d.blacklisted
+                    ? 'This domain has been flagged as dangerous in our records'
+                    : 'This domain is not on any known danger list'});
+
+            checks.push({label:'Connection Safety',
+                ok:!d.redirectsToHttp,
+                detail:d.redirectsToHttp
+                    ? 'This site starts secure but then drops your protection mid-way — a warning sign'
+                    : 'Your connection stays protected throughout'});
+
             if(d.domainAgeDays!=null){
                 const ageOk=d.domainAgeDays>=30;
-                checks.push({label:'Domain Age',ok:ageOk,detail:ageOk?`${d.domainAgeDays} days old`:`Only ${d.domainAgeDays} days old — very new domain`});
+                const years = Math.floor(d.domainAgeDays/365);
+                const months = Math.floor((d.domainAgeDays%365)/30);
+                const ageText = years>0
+                    ? `${years} year${years>1?'s':''}${months>0?` and ${months} month${months>1?'s':''}`:''}` 
+                    : `${months>0?months+' month'+(months>1?'s':''):d.domainAgeDays+' days'}`;
+                checks.push({label:'Domain Age',
+                    ok:ageOk,
+                    detail:ageOk
+                        ? `This website has been around for ${ageText} — a good sign of legitimacy`
+                        : `This website was created only ${ageText} ago — brand new sites are often used for scams`});
             } else {
-                checks.push({label:'Domain Age',ok:null,detail:'Could not retrieve WHOIS data'});
+                checks.push({label:'Domain Age',ok:null,detail:'We couldn\'t determine how old this website is'});
             }
+
             if(Array.isArray(d.contentFlags)&&d.contentFlags.length){
                 const highFlags=d.contentFlags.filter(f=>f.severity==='high');
-                checks.push({label:'Content Scan',ok:false,detail:d.contentFlags.map(f=>f.detail||f.type).join('; ')});
-                if(highFlags.length){level='danger';reason=highFlags.map(f=>f.detail||f.type).join('; ');}
-                else if(level!=='danger'){level='hazard';reason='Suspicious content detected';}
+                const friendlyDetail = friendlyContentDetail(d.contentFlags);
+                checks.push({label:'Page Content',ok:false,detail:friendlyDetail});
+                if(highFlags.length){
+                    level='danger';
+                    reason=friendlyContentDetail(highFlags);
+                } else if(level!=='danger'){
+                    level='hazard';
+                    reason='This page has some suspicious content — proceed with caution';
+                }
             } else {
-                checks.push({label:'Content Scan',ok:true,detail:'No suspicious content found'});
+                checks.push({label:'Page Content',ok:true,detail:'Nothing suspicious was found on this page'});
             }
-            if(d.blacklisted)           {level='danger';reason='Blacklisted domain';}
-            else if(d.reachable===false) {level='danger';reason='Site is not reachable';}
+
+            if(d.blacklisted)           {level='danger';reason='This website has been reported as dangerous';}
+            else if(d.reachable===false) {level='danger';reason='We couldn\'t reach this site — it may not exist or could be taken down';}
             else if(level==='danger')   {/* already set */}
             else {
                 const anyBad=!d.httpsOk||d.redirectsToHttp||!d.certValid||(d.domainAgeDays!=null&&d.domainAgeDays<30);
-                if(anyBad)             {level='hazard';reason='One or more security concerns detected';}
+                if(anyBad)             {level='hazard';reason='We found one or more things worth being careful about';}
                 else if(level==='hazard'){/* keep */}
-                else                   {level='safe';reason=`All ${checks.filter(c=>c.ok!==null).length} checks passed`;}
+                else                   {level='safe';reason=`All ${checks.filter(c=>c.ok!==null).length} checks passed — this link looks safe`;}
             }
         } else {
             let reachable=false;
@@ -336,14 +380,24 @@ function calcSafetyScore(checks, level) {
             try{hostname=new URL(normalized).hostname.toLowerCase();}catch(e){}
             const isWellKnown=WELL_KNOWN.includes(hostname);
             const httpsOk=normalized.startsWith('https://');
-            checks.push({label:'HTTPS',         ok:httpsOk,               detail:httpsOk?'Secure connection':'No HTTPS'});
-            checks.push({label:'Reachable',      ok:reachable||isWellKnown,detail:reachable?'Site responded':isWellKnown?'Well-known site':'Could not reach site'});
-            checks.push({label:'SSL Certificate',ok:null,detail:'Server check unavailable'});
-            checks.push({label:'Blacklist',      ok:null,detail:'Server check unavailable'});
-            checks.push({label:'Domain Age',     ok:null,detail:'Server check unavailable'});
-            if(!reachable&&!isWellKnown){level='danger';reason='Site not reachable';}
-            else if(!httpsOk)           {level='hazard';reason='No HTTPS detected';}
-            else                        {level='safe';  reason='Basic checks passed';}
+            checks.push({label:'HTTPS',
+                ok:httpsOk,
+                detail:httpsOk
+                    ? 'Your connection to this site is private and encrypted'
+                    : 'This site does not use encryption — avoid entering personal info here'});
+            checks.push({label:'Reachable',
+                ok:reachable||isWellKnown,
+                detail:reachable
+                    ? 'The website is online and responding'
+                    : isWellKnown
+                        ? 'This is a well-known, trusted website'
+                        : 'We couldn\'t reach this website'});
+            checks.push({label:'SSL Certificate',ok:null,detail:'Full certificate check requires the local server to be running'});
+            checks.push({label:'Blacklist',      ok:null,detail:'Full blacklist check requires the local server to be running'});
+            checks.push({label:'Domain Age',     ok:null,detail:'Domain age check requires the local server to be running'});
+            if(!reachable&&!isWellKnown){level='danger';reason='We couldn\'t reach this website — it may not exist';}
+            else if(!httpsOk)           {level='hazard';reason='This site is not using a secure connection';}
+            else                        {level='safe';  reason='Basic checks passed — this link appears safe';}
         }
 
         const score = calcSafetyScore(checks, level);
@@ -425,25 +479,7 @@ function calcSafetyScore(checks, level) {
     previewBtn.addEventListener('click',async()=>{
         const inputEl=document.getElementById('link_input');if(!inputEl)return;
         const normalized=normalizeURL(inputEl.value||'');
-        if(!normalized){
-            const statusEl=document.getElementById('link_status');
-            if(statusEl) statusEl.innerHTML = `
-                <div style="max-width:580px;margin:16px auto 0;border-radius:10px;background:#ffffff;border:2px solid #1E3A8A;box-shadow:0 4px 14px rgba(30,58,138,.15);overflow:hidden;font-family:inherit;text-align:left;">
-                    <div style="display:flex;align-items:center;gap:14px;padding:15px 20px;background:#1E3A8A;border-bottom:3px solid #dc2626;">
-                        <span style="width:28px;height:28px;border-radius:50%;background:#dc2626;display:inline-block;box-shadow:0 0 10px #dc262688;flex-shrink:0"></span>
-                        <div style="flex:1;min-width:0">
-                            <div style="font-size:18px;font-weight:700;color:#F8FAFC">Invalid URL</div>
-                            <div style="font-size:12px;color:#93c5fd;margin-top:4px">Please enter a valid web address to preview</div>
-                        </div>
-                    </div>
-                    <div style="padding:16px 20px;background:#fff5f5;border-left:4px solid #dc2626;">
-                        <p style="margin:0;color:#991b1b;font-size:14px;font-weight:600;">⚠️ No valid URL detected.</p>
-                        <p style="margin:8px 0 0;color:#6b7280;font-size:13px;">Make sure the address includes a domain and extension, for example:<br>
-                        <strong style="color:#1E3A8A">example.com</strong> &nbsp;or&nbsp; <strong style="color:#1E3A8A">https://example.com</strong></p>
-                    </div>
-                </div>`;
-            return;
-        }
+        if(!normalized){alert('Please enter a valid URL first.');return;}
         setPreviewVisible(true);resetPreviewContent();showSpinner();
         let hostname='';try{hostname=new URL(normalized).hostname;}catch(e){}
         if(pvDomain)pvDomain.textContent=hostname;
