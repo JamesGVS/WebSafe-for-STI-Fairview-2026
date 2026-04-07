@@ -7,6 +7,7 @@
 
 html {
     overflow-x: hidden;
+    scroll-behavior: smooth;
 }
 
 body{
@@ -55,6 +56,12 @@ body{
     float: right;
     margin-right: 20px;
     margin-top: 10px;
+    font-weight: 600;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+#btn_head:active {
+    transform: scale(0.96);
 }
 
 #btn_head:hover {
@@ -84,6 +91,13 @@ body{
     font-size: 18px;
     border-radius: 15px;
     border: 2px solid #728c36;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+#link_checker form input[type="text"]:focus {
+    border-color: #546925;
+    box-shadow: 0 0 0 3px rgba(114, 140, 54, 0.2);
 }
 
 #link_checker h1 {
@@ -122,6 +136,13 @@ body{
     cursor: pointer;
     margin-top: 15px;
     border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+
+#link_checker button:active {
+    transform: scale(0.97);
 }
 
 #link_checker button:hover {
@@ -372,6 +393,12 @@ body{
     border: 2px solid #91b935;
     border-radius: 10px;
     padding: 16px;
+    transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.about_card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(84, 105, 37, 0.2);
 }
 
 .about_icon {
@@ -764,11 +791,17 @@ body{
 .ws-box {
     flex: 1;
     padding: 40px 30px;
-    background-color: #f6f7f8; /* Light gray fill inside the box */
+    background-color: #f6f7f8;
     border-radius: 20px;
     text-align: left;
     position: relative;
     z-index: 1;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ws-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(70, 97, 255, 0.1);
 }
 
 .ws-icon { width: 40px; height: 40px; margin-bottom: 25px; }
@@ -918,6 +951,11 @@ body{
     display: flex;
     align-items: flex-start;
     gap: 20px;
+    transition: transform 0.18s;
+}
+
+.ws-feature-item:hover {
+    transform: translateX(4px);
 }
 
 /* Icon Styling */
@@ -985,6 +1023,12 @@ body{
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+#ws_history_list > div:hover {
+    background: #e8f0d4 !important;
+    border-color: #728c36 !important;
+    transition: background 0.15s, border-color 0.15s;
 }
 
 #ws_history_empty {
@@ -1155,272 +1199,3 @@ body{
     }
 }
 
-/* ══════════════════════════════════════════════════════
-   PHISHTANK-STYLE LIVE SITE FRAME
-   ══════════════════════════════════════════════════════ */
-
-#live_frame_section {
-    border: 2px solid #1E3A8A;
-    border-radius: 12px;
-    overflow: hidden;
-    background: #fff;
-    box-shadow: 0 8px 32px rgba(30,58,138,.18);
-    padding: 0;
-    width: 100%;
-}
-
-#live_frame_toolbar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #1E3A8A;
-    padding: 10px 16px;
-    min-height: 48px;
-}
-
-#live_frame_dots {
-    display: flex;
-    gap: 6px;
-    flex-shrink: 0;
-}
-#live_frame_dots span {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #ffffff44;
-    display: inline-block;
-}
-
-#live_frame_urlbar {
-    flex: 1;
-    background: #ffffff18;
-    border-radius: 20px;
-    padding: 5px 14px;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    min-width: 0;
-    overflow: hidden;
-}
-#live_frame_lock { font-size: 13px; flex-shrink: 0; }
-#live_frame_hostname {
-    color: #e0eaff;
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-#live_frame_actions {
-    display: flex;
-    gap: 8px;
-    flex-shrink: 0;
-}
-
-#live_frame_report_btn {
-    background: #dc2626;
-    color: #fff;
-    border: none;
-    border-radius: 7px;
-    padding: 6px 13px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background .15s;
-    margin-top: 0;
-}
-#live_frame_report_btn:hover { background: #991b1b; }
-
-#live_frame_close_btn {
-    background: #ffffff22;
-    color: #fff;
-    border: none;
-    border-radius: 7px;
-    padding: 6px 11px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 0;
-}
-#live_frame_close_btn:hover { background: #ffffff44; }
-
-#live_frame_verdict_bar {
-    padding: 8px 18px;
-    font-size: 13px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-#live_frame_verdict_bar.lf-safe   { background: #d1fae5; color: #065f46; border-bottom: 2px solid #16a34a; }
-#live_frame_verdict_bar.lf-hazard { background: #fef3c7; color: #92400e; border-bottom: 2px solid #d97706; }
-#live_frame_verdict_bar.lf-danger { background: #fee2e2; color: #991b1b; border-bottom: 2px solid #dc2626; }
-
-#live_frame_wrapper {
-    position: relative;
-    width: 100%;
-    height: 520px;
-    background: #f8fafc;
-}
-
-#live_frame_iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    display: block;
-}
-
-#live_frame_blocked {
-    position: absolute;
-    inset: 0;
-    background: #f8fafc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-#live_frame_blocked_inner {
-    max-width: 340px;
-    padding: 32px;
-}
-#live_frame_blocked_inner h3 { color: #1E3A8A; font-size: 1.2rem; margin-bottom: 8px; }
-#live_frame_blocked_inner p  { color: #64748b; font-size: 0.95rem; line-height: 1.5; }
-
-#open_live_frame_btn {
-    display: inline-block;
-    margin: 0 auto;
-    background: #1E3A8A;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 22px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background .15s;
-    margin-top: 0;
-}
-#open_live_frame_btn:hover { background: #162d70; }
-
-/* ── Report Phishing Modal ── */
-#report_modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.55);
-    backdrop-filter: blur(3px);
-    z-index: 2000;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    animation: fadeInOverlay .2s ease;
-}
-#report_modal[style*="flex"] { display: flex !important; }
-
-#report_box {
-    background: #fff;
-    border: 3px solid #dc2626;
-    border-radius: 14px;
-    max-width: 500px;
-    width: 100%;
-    padding: 32px 28px 24px;
-    position: relative;
-    box-shadow: 0 20px 60px rgba(220,38,38,.18);
-    animation: slideUpModal .22s ease;
-}
-
-#report_close {
-    position: absolute;
-    top: 12px; right: 14px;
-    background: #fee2e2;
-    border: 2px solid #dc2626;
-    border-radius: 50%;
-    width: 32px; height: 32px;
-    font-size: 14px; font-weight: 700;
-    color: #dc2626;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    margin-top: 0; padding: 0;
-}
-#report_close:hover { background: #dc2626; color: #fff; }
-
-#report_header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 10px;
-}
-#report_header h2 { font-size: 1.3rem; color: #991b1b; font-weight: 800; }
-
-#report_desc { color: #64748b; font-size: 14px; margin-bottom: 14px; }
-
-#report_url_display {
-    background: #fee2e2;
-    border: 1px solid #fca5a5;
-    border-radius: 7px;
-    padding: 8px 14px;
-    font-size: 13px;
-    color: #991b1b;
-    font-weight: 700;
-    word-break: break-all;
-    margin-bottom: 16px;
-}
-
-#report_fields label {
-    display: block;
-    font-size: 13px;
-    font-weight: 700;
-    color: #374151;
-    margin-bottom: 6px;
-}
-#report_fields select,
-#report_fields textarea {
-    width: 100%;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 9px 12px;
-    font-size: 14px;
-    font-family: inherit;
-    color: #1f2937;
-    margin-bottom: 4px;
-    box-sizing: border-box;
-    outline: none;
-    transition: border-color .15s;
-}
-#report_fields select:focus,
-#report_fields textarea:focus { border-color: #dc2626; }
-#report_fields textarea { min-height: 80px; resize: vertical; }
-
-#report_footer {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-top: 18px;
-}
-
-#report_submit_btn {
-    background: #dc2626;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 24px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    margin-top: 0;
-    transition: background .15s;
-}
-#report_submit_btn:hover { background: #991b1b; }
-
-#report_thanks {
-    font-size: 14px;
-    font-weight: 700;
-    color: #16a34a;
-}
-
-@media (max-width: 600px) {
-    #live_frame_wrapper { height: 360px; }
-    #live_frame_report_btn { font-size: 11px; padding: 5px 9px; }
-    #live_frame_hostname { font-size: 11px; }
-}

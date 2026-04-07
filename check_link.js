@@ -117,15 +117,25 @@ function renderHistory() {
     }
     const colors = { safe:'#16a34a', hazard:'#d97706', danger:'#dc2626' };
     const labels = { safe:'Safe', hazard:'Warning', danger:'Danger' };
-    el.innerHTML = scanHistory.map(h => `
-        <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:#F8FAFC;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;"
-             onclick="document.getElementById('link_input').value='${h.url}';window.scrollTo({top:0,behavior:'smooth'})">
+    el.innerHTML = '';
+    scanHistory.forEach((h, idx) => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 12px;background:#F8FAFC;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;transition:background 0.15s,border-color 0.15s;';
+        row.innerHTML = `
             <span style="width:10px;height:10px;border-radius:50%;background:${colors[h.level]||'#9ca3af'};flex-shrink:0;display:inline-block"></span>
-            <span style="flex:1;font-size:13px;color:#1E3A8A;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.hostname}</span>
+            <span style="flex:1;font-size:13px;color:#1E3A8A;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
             <span style="font-size:11px;font-weight:700;color:${colors[h.level]||'#9ca3af'}">${labels[h.level]||'?'}</span>
             <span style="font-size:11px;color:#94a3b8">${h.time}</span>
-        </div>
-    `).join('');
+        `;
+        // Set hostname safely (no innerHTML injection)
+        row.querySelectorAll('span')[1].textContent = h.hostname;
+        row.addEventListener('click', () => {
+            const inp = document.getElementById('link_input');
+            if (inp) inp.value = h.url;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        el.appendChild(row);
+    });
 }
 
 // ─── Animated loading steps ───────────────────────────────────────────────────
@@ -309,10 +319,15 @@ function friendlyFlagDetail(f) {
             const el = document.getElementById(id); if (el) el.textContent = '';
         });
     }
+    let _debounceTimer = null;
     if (input) {
         input.addEventListener('input', () => {
             const cur = input.value.trim();
-            if (cur !== _lastValue) { _lastValue = cur; clearResults(); }
+            if (cur !== _lastValue) {
+                _lastValue = cur;
+                clearTimeout(_debounceTimer);
+                _debounceTimer = setTimeout(clearResults, 120);
+            }
         });
     }
 
@@ -579,15 +594,11 @@ function friendlyFlagDetail(f) {
                 'youtube.com','google.com','facebook.com','twitter.com','x.com','instagram.com',
                 'microsoft.com','apple.com','amazon.com','wikipedia.org','linkedin.com','reddit.com',
                 'github.com','netflix.com','discord.com','tiktok.com','spotify.com','paypal.com',
-                'chatgpt.com','openai.com','claude.ai','anthropic.com','gemini.google.com',
-                'scholar.google.com','drive.google.com','docs.google.com','maps.google.com',
-                'mail.google.com','accounts.google.com','play.google.com',
-                'office.com','outlook.com','live.com','bing.com','azure.com',
-                'yahoo.com','twitch.tv','stackoverflow.com','medium.com','substack.com',
-                'zoom.us','slack.com','notion.so','canva.com','figma.com',
-                'gcash.com','bdo.com.ph','bpi.com.ph','metrobank.com.ph',
-                'landbank.com','unionbankph.com','rcbc.com','paymaya.com','maya.ph',
-                'shopee.ph','lazada.com.ph','grab.com','rappler.com','inquirer.net',
+                'chatgpt.com','openai.com','claude.ai','anthropic.com',
+                'scholar.google.com','drive.google.com','docs.google.com','gmail.com',
+                'office.com','outlook.com','bing.com','zoom.us','slack.com',
+                'gcash.com','maya.ph','paymaya.com','bdo.com.ph','bpi.com.ph',
+                'shopee.ph','lazada.com.ph','grab.com',
             ];
             let hostname = '';
             try { hostname = new URL(normalized).hostname.toLowerCase(); } catch(e) {}
@@ -632,13 +643,33 @@ function friendlyFlagDetail(f) {
         logSafetyReport(normalized, level, reason, checks);
         addToHistory(normalized, level);
 
+        // ── Show "Open Live Frame" button below result card ──────────────────
+        const openBtn = document.getElementById('open_live_frame_btn');
+        if (openBtn) {
+            openBtn.style.display = 'inline-block';
+            openBtn.onclick = () => {
+                if (typeof window._wsOpenLiveFrame === 'function')
+                    window._wsOpenLiveFrame(normalized, level);
+            };
+            const toggleRow = document.getElementById('live_frame_toggle_row');
+            if (toggleRow) toggleRow.style.display = 'block';
+            // Store for live frame module
+            window._wsLastUrl   = normalized;
+            window._wsLastLevel = level;
+        }
 
         btn.disabled = false;
         hideSpinner();
     }
 
     if (btn)   btn.addEventListener('click', checkLink);
-    if (input) input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); checkLink(); } });
+    if (input) {
+        input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); checkLink(); } });
+        input.addEventListener('paste', e => {
+            // Auto-trim whitespace from pasted URLs
+            setTimeout(() => { input.value = input.value.trim(); }, 0);
+        });
+    }
 })();
 
 
@@ -734,7 +765,6 @@ function friendlyFlagDetail(f) {
         }
     });
 })();
-
 
 
 // ─── Extra Client-Side Phishing Heuristics (PhishTank-style signals) ──────────

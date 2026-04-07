@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
  
+    <meta name="description" content="WebSafe — check any URL for phishing, malware, and online threats before you click. Free link safety checker.">
     <link rel="icon" href="/images/logo_circle.png">
     <link rel="stylesheet" href="main.css">  
  <title>WebSafe</title>
@@ -20,7 +21,7 @@
 <!-- About Us Modal -->
 <div id="about_modal" onclick="if(event.target===this)closeAboutModal()">
     <div id="about_box">
-        <button id="about_close" onclick="closeAboutModal()">&#x2715;</button>
+        <button id="about_close" onclick="closeAboutModal()" aria-label="Close About Us modal">&#x2715;</button>
         <div id="about_logo_row">
             <img src="images/logo_square.jpg" alt="logo" id="about_logo">
             <h2>WebSafe</h2>
@@ -53,12 +54,12 @@
  <p>Before we go, let's check and see! Tap below to see if this link's websafe for you and me!</p>
  
  <form onsubmit="return false;">
-     <input id="link_input" type="text" placeholder="Input the URL/Link deemed to be suspicious">
+     <input id="link_input" type="text" placeholder="Paste a URL, e.g. https://example.com" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off">
  </form>
  
  <div class="controls">
-     <button id="check_btn" type="button">  Verify Security</button>
-     <button id="preview_btn" type="button">Preview Now</button>
+     <button id="check_btn" type="button">🔍 Verify Security</button>
+     <button id="preview_btn" type="button">👁 Preview Now</button>
  </div>
  <div id="loading_spinner" aria-hidden="true"></div>
  <!-- safety_status kept hidden for JS compatibility -->
@@ -134,6 +135,7 @@
             <div class="ws-block">
                 <p>WebSafe helps you browse with confidence. Simply paste any URL to instantly check whether it’s safe, suspicious, or dangerous — no technical knowledge required. Protect yourself from phishing scams, malware, and deceptive websites before you click.</p>
             </div>
+        </div>
     </div>
 </section>
  
@@ -224,11 +226,11 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                 </div>
                 <div class="ws-feature-text">
-                    <h3> Report To Local Authorities</h3>
+                    <h3>Report To Local Authorities</h3>
                     <p>Philippine National Police (PNP) - Cybercrime Division
 Contact: Report the incident through the PNP Cybercrime Group.
                     <p>Hotline: Call (+632) 724-3660.</p>
-                    <p>Email: Send reports to <a href="/cdn-cgi/l/email-protection#93f9f2fef6e0bdf4f6fcf5f5e1f6eae5e0d3f4fef2faffbdf0fcfe"><span class="__cf_email__" data-cfemail="bcd6ddd1d9cf92dbd9d3dadaced9c5cacffcdbd1ddd5d092dfd3d1">[email&#160;protected]</span></a>.</p>
+                    <p>Email: Send reports to <a href="mailto:pnpacg@pnp.gov.ph">pnpacg@pnp.gov.ph</a>.</p>
                 </div>
             </div>
  
@@ -259,7 +261,7 @@ Contact: Report the incident through the PNP Cybercrime Group.
                 <div class="ws-feature-text">
                     <h3>Report to Anti-Cybercrime Organizations</h3>
                     <p>Department of Information and Communications Technology (DICT)
-Forward Reports: Email phishing scams to <a href="/cdn-cgi/l/email-protection#6d070c00081e430a08020b0b1f08141b1e2d0a000c0401430e0200"><span class="__cf_email__" data-cfemail="c0aaa1ada5b3eea7a5afa6a6b2a5b9b6b380a7ada1a9aceea3afad">[email&#160;protected]</span></a> or visit the DICT website for more resources.</p>
+Forward Reports: Email phishing scams to <a href="mailto:info@dict.gov.ph">info@dict.gov.ph</a> or visit the DICT website for more resources.</p>
                 </div>
             </div>
  
@@ -268,7 +270,7 @@ Forward Reports: Email phishing scams to <a href="/cdn-cgi/l/email-protection#6d
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
                 </div>
                 <div class="ws-feature-text">
-                    <h3>Save Evidences</h3>
+                    <h3>Save Evidence</h3>
                     <p>Take Screenshots: Capture images of the email, message, or website involved in the phishing attempt to use as evidence when reporting.</p>
                 </div>
             </div>

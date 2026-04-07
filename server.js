@@ -31,6 +31,27 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'main.html')));
+
+// ── Simple in-memory rate limiter (10 req/min per IP) ────────────────────────
+const _rateMap = new Map();
+app.use('/api/', (req, res, next) => {
+    const ip  = req.ip || req.connection.remoteAddress || 'unknown';
+    const now = Date.now();
+    const entry = _rateMap.get(ip) || { count: 0, reset: now + 60000 };
+    if (now > entry.reset) { entry.count = 0; entry.reset = now + 60000; }
+    entry.count++;
+    _rateMap.set(ip, entry);
+    if (entry.count > 10) {
+        return res.status(429).json({ ok: false, error: 'Too many requests — please wait a moment.' });
+    }
+    next();
+});
+// Clean up rate map every 5 minutes
+setInterval(() => {
+    const now = Date.now();
+    for (const [ip, entry] of _rateMap) { if (now > entry.reset) _rateMap.delete(ip); }
+}, 300000);
+
 app.use((req, res, next) => {
     console.log(`${new Date().toISOString()}  ${req.method} ${req.originalUrl}`);
     next();
@@ -1155,6 +1176,14 @@ app.get('/api/check', async (req, res) => {
 // ════════════════════════════════════════════════════════════════════════════
 // SECTION 8 — START
 // ════════════════════════════════════════════════════════════════════════════
+
+// Security headers
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next();
+});
 
 app.listen(PORT, () => {
     const url = `http://localhost:${PORT}/main.html`;
