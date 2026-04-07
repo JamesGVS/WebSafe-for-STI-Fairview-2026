@@ -15,12 +15,12 @@
     <h1>WebSafe</h1>
 </header>
  
-    <button id="btn_head" onclick="document.getElementById('about_modal').style.display='flex'">About Us</button>
+    <button id="btn_head" onclick="openAboutModal()">About Us</button>
  
 <!-- About Us Modal -->
-<div id="about_modal" onclick="if(event.target===this)this.style.display='none'">
+<div id="about_modal" onclick="if(event.target===this)closeAboutModal()">
     <div id="about_box">
-        <button id="about_close" onclick="document.getElementById('about_modal').style.display='none'">&#x2715;</button>
+        <button id="about_close" onclick="closeAboutModal()">&#x2715;</button>
         <div id="about_logo_row">
             <img src="images/logo_square.jpg" alt="logo" id="about_logo">
             <h2>WebSafe</h2>
@@ -290,5 +290,32 @@ Forward Reports: Email phishing scams to <a href="/cdn-cgi/l/email-protection#6d
 </section>
 
 <script src="check_link.js"></script>
+<script>
+function openAboutModal() {
+    const modal = document.getElementById('about_modal');
+    const box   = document.getElementById('about_box');
+    modal.style.display = 'flex';
+    // Reset animation so it plays fresh every open
+    box.style.animation   = 'none';
+    modal.style.animation = 'none';
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            box.style.animation   = '';
+            modal.style.animation = '';
+        });
+    });
+}
+function closeAboutModal() {
+    const modal = document.getElementById('about_modal');
+    const box   = document.getElementById('about_box');
+    box.style.animation   = 'slideDownModal 0.2s cubic-bezier(0.4, 0, 1, 1) both';
+    modal.style.animation = 'fadeOutOverlay 0.22s cubic-bezier(0.4, 0, 1, 1) both';
+    modal.addEventListener('animationend', () => {
+        modal.style.display = 'none';
+        box.style.animation   = '';
+        modal.style.animation = '';
+    }, { once: true });
+}
+</script>
 </body>
 </html>

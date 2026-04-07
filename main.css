@@ -255,13 +255,13 @@ body{
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.55);
-    -webkit-backdrop-filter: blur(3px);
-    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
     z-index: 1000;
     justify-content: center;
     align-items: center;
     padding: 20px;
-    animation: fadeInOverlay 0.2s ease;
+    animation: fadeInOverlay 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes fadeInOverlay {
@@ -278,12 +278,23 @@ body{
     padding: 36px 36px 28px;
     position: relative;
     box-shadow: 0 20px 60px rgba(30, 58, 138, 0.25);
-    animation: slideUpModal 0.25s ease;
+    animation: slideUpModal 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: transform, opacity;
 }
 
 @keyframes slideUpModal {
-    from { transform: translateY(30px); opacity: 0; }
-    to   { transform: translateY(0);    opacity: 1; }
+    from { transform: translateY(18px) scale(0.98); opacity: 0; }
+    to   { transform: translateY(0)    scale(1);    opacity: 1; }
+}
+
+@keyframes slideDownModal {
+    from { transform: translateY(0)   scale(1);    opacity: 1; }
+    to   { transform: translateY(14px) scale(0.98); opacity: 0; }
+}
+
+@keyframes fadeOutOverlay {
+    from { opacity: 1; }
+    to   { opacity: 0; }
 }
 
 #about_close {
