@@ -558,7 +558,7 @@ function friendlyFlagDetail(f) {
                 if (!reason || reason === 'Could not complete all checks')
                     reason = '⚠️ Warning signs found — double-check before proceeding';
             } else {
-                reason = `✅ All ${checks.filter(c=>c.ok!==null).length} checks passed — this link looks safe`;
+                reason = `✅ ${checks.filter(c=>c.ok===true).length} of ${checks.filter(c=>c.ok!==null).length} checks passed — this link looks safe`;
             }
 
         } else {
@@ -575,7 +575,20 @@ function friendlyFlagDetail(f) {
                     clearTimeout(tid2); reachable = r2.ok || r2.type === 'opaque';
                 } catch(e2) { reachable = false; }
             }
-            const WELL_KNOWN = ['youtube.com','google.com','facebook.com','twitter.com','x.com','instagram.com','microsoft.com','apple.com','amazon.com','wikipedia.org','linkedin.com','reddit.com','github.com','netflix.com','discord.com','tiktok.com','spotify.com','paypal.com'];
+            const WELL_KNOWN = [
+                'youtube.com','google.com','facebook.com','twitter.com','x.com','instagram.com',
+                'microsoft.com','apple.com','amazon.com','wikipedia.org','linkedin.com','reddit.com',
+                'github.com','netflix.com','discord.com','tiktok.com','spotify.com','paypal.com',
+                'chatgpt.com','openai.com','claude.ai','anthropic.com','gemini.google.com',
+                'scholar.google.com','drive.google.com','docs.google.com','maps.google.com',
+                'mail.google.com','accounts.google.com','play.google.com',
+                'office.com','outlook.com','live.com','bing.com','azure.com',
+                'yahoo.com','twitch.tv','stackoverflow.com','medium.com','substack.com',
+                'zoom.us','slack.com','notion.so','canva.com','figma.com',
+                'gcash.com','bdo.com.ph','bpi.com.ph','metrobank.com.ph',
+                'landbank.com','unionbankph.com','rcbc.com','paymaya.com','maya.ph',
+                'shopee.ph','lazada.com.ph','grab.com','rappler.com','inquirer.net',
+            ];
             let hostname = '';
             try { hostname = new URL(normalized).hostname.toLowerCase(); } catch(e) {}
             const isWellKnown = WELL_KNOWN.some(d => hostname === d || hostname.endsWith('.' + d));
@@ -619,20 +632,6 @@ function friendlyFlagDetail(f) {
         logSafetyReport(normalized, level, reason, checks);
         addToHistory(normalized, level);
 
-        // ── Show "Open Live Frame" button below result card ──────────────────
-        const openBtn = document.getElementById('open_live_frame_btn');
-        if (openBtn) {
-            openBtn.style.display = 'inline-block';
-            openBtn.onclick = () => {
-                if (typeof window._wsOpenLiveFrame === 'function')
-                    window._wsOpenLiveFrame(normalized, level);
-            };
-            const toggleRow = document.getElementById('live_frame_toggle_row');
-            if (toggleRow) toggleRow.style.display = 'block';
-            // Store for live frame module
-            window._wsLastUrl   = normalized;
-            window._wsLastLevel = level;
-        }
 
         btn.disabled = false;
         hideSpinner();
@@ -736,134 +735,6 @@ function friendlyFlagDetail(f) {
     });
 })();
 
-
-// ─── PhishTank-style Live Site Frame ──────────────────────────────────────────
-(function () {
-    // ── State ──────────────────────────────────────────────────────────────────
-    let _currentUrl = '';
-    let _currentLevel = 'safe';
-
-    const section    = document.getElementById('live_frame_section');
-    const iframe     = document.getElementById('live_frame_iframe');
-    const hostname_el= document.getElementById('live_frame_hostname');
-    const lock_el    = document.getElementById('live_frame_lock');
-    const verdictBar = document.getElementById('live_frame_verdict_bar');
-    const blockedDiv = document.getElementById('live_frame_blocked');
-    const closeBtn   = document.getElementById('live_frame_close_btn');
-    const reportBtn  = document.getElementById('live_frame_report_btn');
-    const openBtn    = document.getElementById('open_live_frame_btn');
-
-    // Report modal elements
-    const reportModal   = document.getElementById('report_modal');
-    const reportUrlEl   = document.getElementById('report_url_display');
-    const reportReason  = document.getElementById('report_reason');
-    const reportNotes   = document.getElementById('report_notes');
-    const reportSubmit  = document.getElementById('report_submit_btn');
-    const reportThanks  = document.getElementById('report_thanks');
-
-    // ── Expose openLiveFrame so check_link module can call it ──────────────────
-    window._wsOpenLiveFrame = function(url, level) {
-        if (!section || !iframe) return;
-        _currentUrl   = url;
-        _currentLevel = level || 'safe';
-
-        let hostname = '';
-        let isHttps  = false;
-        try { const u = new URL(url); hostname = u.hostname; isHttps = u.protocol === 'https:'; } catch(e) {}
-
-        // URL bar
-        if (hostname_el) hostname_el.textContent = hostname;
-        if (lock_el) lock_el.textContent = isHttps ? '🔒' : '⚠️';
-
-        // Verdict banner
-        if (verdictBar) {
-            const msgs = {
-                safe:   '✅ This link passed all safety checks. Browsing in sandboxed preview.',
-                hazard: '⚠️ Warning signs detected. Review results before interacting.',
-                danger: '🚨 DANGEROUS — This site has been flagged. Do NOT enter any personal information.',
-            };
-            verdictBar.textContent  = msgs[level] || msgs.safe;
-            verdictBar.className    = 'lf-' + (level || 'safe');
-            verdictBar.style.display= 'flex';
-        }
-
-        // Load iframe
-        if (blockedDiv) blockedDiv.style.display = 'none';
-        if (iframe) {
-            iframe.src = url;
-            // Detect X-Frame-Options block — iframe load error or blank
-            const tid = setTimeout(() => {
-                try {
-                    // If contentDocument is null or cross-origin inaccessible that's normal.
-                    // We show blocked UI only if onerror fires.
-                } catch(e) {}
-            }, 5000);
-            iframe.onerror = () => {
-                clearTimeout(tid);
-                if (blockedDiv) blockedDiv.style.display = 'flex';
-                iframe.style.display = 'none';
-            };
-        }
-
-        section.style.display = 'block';
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        if (openBtn) openBtn.style.display = 'none';
-    };
-
-    // ── Close button ───────────────────────────────────────────────────────────
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            if (section) section.style.display = 'none';
-            if (iframe)  { iframe.src = 'about:blank'; iframe.style.display = 'block'; }
-            if (blockedDiv) blockedDiv.style.display = 'none';
-        });
-    }
-
-    // ── Open Live Frame button (shown after a scan) ────────────────────────────
-    if (openBtn) {
-        openBtn.addEventListener('click', () => {
-            if (_currentUrl) window._wsOpenLiveFrame(_currentUrl, _currentLevel);
-        });
-    }
-
-    // ── Report Phishing button ─────────────────────────────────────────────────
-    if (reportBtn) {
-        reportBtn.addEventListener('click', () => {
-            if (!reportModal) return;
-            if (reportUrlEl)  reportUrlEl.textContent = _currentUrl || '(unknown URL)';
-            if (reportReason) reportReason.value = '';
-            if (reportNotes)  reportNotes.value  = '';
-            if (reportThanks) reportThanks.style.display = 'none';
-            if (reportSubmit) reportSubmit.disabled = false;
-            reportModal.style.display = 'flex';
-        });
-    }
-
-    // ── Submit report ──────────────────────────────────────────────────────────
-    if (reportSubmit) {
-        reportSubmit.addEventListener('click', () => {
-            const reason = reportReason ? reportReason.value : '';
-            const notes  = reportNotes  ? reportNotes.value.trim()  : '';
-            if (!reason) { alert('Please select a reason.'); return; }
-
-            // Save to localStorage as community reports log
-            try {
-                const reports = JSON.parse(localStorage.getItem('ws_reports') || '[]');
-                reports.unshift({
-                    url:    _currentUrl,
-                    reason, notes,
-                    time:   new Date().toISOString(),
-                });
-                if (reports.length > 50) reports.pop();
-                localStorage.setItem('ws_reports', JSON.stringify(reports));
-            } catch(e) {}
-
-            if (reportThanks)  reportThanks.style.display  = 'inline';
-            if (reportSubmit)  reportSubmit.disabled        = true;
-            setTimeout(() => { if (reportModal) reportModal.style.display = 'none'; }, 1800);
-        });
-    }
-})();
 
 
 // ─── Extra Client-Side Phishing Heuristics (PhishTank-style signals) ──────────

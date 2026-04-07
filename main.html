@@ -82,72 +82,7 @@
      </div>
  </div>
  
- <!-- PhishTank-style Live Site Frame -->
- <div id="live_frame_section" style="display:none;margin:24px auto 0;max-width:900px;width:100%;">
-     <div id="live_frame_toolbar">
-         <div id="live_frame_dots">
-             <span></span><span></span><span></span>
-         </div>
-         <div id="live_frame_urlbar">
-             <span id="live_frame_lock">🔒</span>
-             <span id="live_frame_hostname"></span>
-         </div>
-         <div id="live_frame_actions">
-             <button id="live_frame_report_btn" title="Report as phishing">🚩 Report Phishing</button>
-             <button id="live_frame_close_btn" title="Close preview">✕</button>
-         </div>
-     </div>
-     <div id="live_frame_verdict_bar" style="display:none;"></div>
-     <div id="live_frame_wrapper">
-         <iframe id="live_frame_iframe"
-             sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-             referrerpolicy="no-referrer"
-             loading="lazy"
-             title="Live site preview">
-         </iframe>
-         <div id="live_frame_blocked" style="display:none;">
-             <div id="live_frame_blocked_inner">
-                 <div style="font-size:52px;margin-bottom:12px;">🚫</div>
-                 <h3>Preview Blocked</h3>
-                 <p>This site refused to load in a frame (X-Frame-Options). Use the screenshot preview instead or visit directly.</p>
-             </div>
-         </div>
-     </div>
-     <!-- Report Phishing Modal (PhishTank-style) -->
-     <div id="report_modal" onclick="if(event.target===this)this.style.display='none'">
-         <div id="report_box">
-             <button id="report_close" onclick="document.getElementById('report_modal').style.display='none'">&#x2715;</button>
-             <div id="report_header">
-                 <span style="font-size:28px">🚩</span>
-                 <h2>Report Phishing URL</h2>
-             </div>
-             <p id="report_desc">Help protect others — flag this URL as a phishing site.</p>
-             <div id="report_url_display"></div>
-             <div id="report_fields">
-                 <label>Why do you think this is phishing?</label>
-                 <select id="report_reason">
-                     <option value="">— Select a reason —</option>
-                     <option value="brand-impersonation">Impersonates a real brand/bank</option>
-                     <option value="login-harvest">Fake login page stealing credentials</option>
-                     <option value="crypto-scam">Crypto/wallet scam</option>
-                     <option value="prize-scam">Fake prize or reward claim</option>
-                     <option value="malware">Distributes malware</option>
-                     <option value="other">Other suspicious activity</option>
-                 </select>
-                 <label style="margin-top:12px">Additional notes (optional)</label>
-                 <textarea id="report_notes" placeholder="Describe what you saw on the page..."></textarea>
-             </div>
-             <div id="report_footer">
-                 <button id="report_submit_btn">Submit Report</button>
-                 <span id="report_thanks" style="display:none">✅ Thank you! Report logged.</span>
-             </div>
-         </div>
-     </div>
- </div>
- 
- <div style="text-align:center;margin-top:10px;margin-bottom:4px;" id="live_frame_toggle_row" style="display:none;">
-     <button id="open_live_frame_btn" style="display:none;">🌐 Open Live Frame</button>
- </div>
+
  
 </section>
  
@@ -197,41 +132,11 @@
  
         <div class="ws-content">
             <div class="ws-block">
-                <p>You should choose WebSafe because it makes your online browsing safer and easier. With phishing scams becoming more common, WebSafe offers a simple way to check if a link is trustworthy without needing any tech skills. It’s designed for everyone, so you can feel confident when browsing the internet. By using WebSafe, you can protect yourself from identity theft and financial loss, making your online experience both safer and more enjoyable. can you make this paragraph a little more like an info on a website and make it a little shorter.
+                <p>WebSafe helps you browse with confidence. Simply paste any URL to instantly check whether it’s safe, suspicious, or dangerous — no technical knowledge required. Protect yourself from phishing scams, malware, and deceptive websites before you click.</p>
             </div>
     </div>
 </section>
  
-<section class="ws-how-module">
-    <div class="ws-container">
-        <h1 class="ws-main-title">How does WebSafe work?</h1>
-        <p class="ws-desc">WebSafe is a free tool designed to verify URLs, helping users avoid malware, phishing attempts, and counterfeit websites.</p>
-        <p class="ws-sub-heading">Here’s how it works:</p>
- 
-        <div class="ws-grid">
-            <div class="ws-box">
-                <div class="ws-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#4661ff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
-                </div>
-                <h3>Paste</h3>
-                <p>Paste the URL or link you want to check to quickly scan it and find out if it’s safe to visit before clicking.</p>
-            </div>
- 
-            <div class="ws-box">
-                <div class="ws-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#4661ff" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                </div>
-                <h3>Click</h3>
-                <p>Click the “Verify Security" button to run a fast and easy security scan, so you can quickly find out if a link is safe before visiting it.</p>
-            </div>
- 
-            <div class="ws-box">
-                <div class="ws-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#4661ff" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                </div>
-                <h3>Check</h3>
-                <p>Check the results to see if the link is safe, noting any warnings before proceeding to stay protected online.</p>
-            </div>
 <section class="ws-feature-block">
     <div class="ws-container">
         

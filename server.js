@@ -243,6 +243,9 @@ function detectCryptoFinancialContent(html, title) {
 function analyzeHostname(hostname) {
     const h = hostname.toLowerCase().replace(/^www\./, '');
 
+    // Trusted domains are never flagged — they are the real sites
+    if (isTrustedDomain(h)) return { hardBlacklisted: false, patternMatch: false, brandSpoof: false };
+
     if (HARD_BLACKLIST.has(h)) return { hardBlacklisted: true, patternMatch: false, brandSpoof: false };
 
     const parts = h.split('.');
@@ -473,7 +476,24 @@ const TRUSTED_DOMAINS = new Set([
     'tiktok.com','discord.com','twitch.tv','spotify.com','dropbox.com',
     'gcash.com','bdo.com.ph','bpi.com.ph','metrobank.com.ph','landbank.com',
     'unionbankph.com','rcbc.com','paymaya.com','maya.ph',
-    // v7: legitimate crypto brand domains
+    // AI assistants & tools
+    'chatgpt.com','openai.com','claude.ai','anthropic.com','gemini.google.com',
+    'bard.google.com','copilot.microsoft.com','bing.com',
+    // Google subdomains
+    'scholar.google.com','drive.google.com','docs.google.com','maps.google.com',
+    'mail.google.com','accounts.google.com','play.google.com','news.google.com',
+    'translate.google.com','meet.google.com','classroom.google.com',
+    'googleapis.com','gstatic.com','googleusercontent.com',
+    // Microsoft / Office
+    'office.com','outlook.com','live.com','hotmail.com','azure.com',
+    'microsoftonline.com','sharepoint.com','teams.microsoft.com',
+    // Popular productivity & social
+    'zoom.us','slack.com','notion.so','canva.com','figma.com',
+    'medium.com','substack.com','twitch.tv','pinterest.com','tumblr.com',
+    // Philippines-specific
+    'shopee.ph','lazada.com.ph','grab.com','rappler.com','inquirer.net',
+    'philstar.com','abs-cbn.com','gma.com.ph','pna.gov.ph','gov.ph',
+    // Crypto (legitimate)
     'exodus.com','exodus.io','metamask.io','coinbase.com','binance.com',
     'ledger.com','trezor.io','trezor.com',
 ]);
@@ -892,6 +912,9 @@ function calculateRiskScore(signals) {
 }
 
 function determineVerdict(score, signals) {
+    // Trusted domains — always safe, no overrides apply
+    if (signals.isTrusted) return 'safe';
+
     // Hard overrides — no escape
     if (signals.hardBlacklisted || signals.brandSpoof) return 'danger';
     if (signals.googleSafeBrowsing) return 'danger';
@@ -1066,6 +1089,7 @@ app.get('/api/check', async (req, res) => {
 
         // ── Build signals for scoring ──────────────────────────────────────
         const signals = {
+            isTrusted:              isTrustedDomain(resolvedHostname),
             hardBlacklisted:        hostnameAnalysis.hardBlacklisted,
             brandSpoof:             hostnameAnalysis.brandSpoof,
             spoofedBrand:           hostnameAnalysis.spoofedBrand,
