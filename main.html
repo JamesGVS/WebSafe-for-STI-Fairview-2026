@@ -3,88 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
- 
     <meta name="description" content="WebSafe — check any URL for phishing, malware, and online threats before you click. Free link safety checker.">
     <link rel="icon" href="/images/logo_circle.png">
     <link rel="stylesheet" href="main.css">
- <title>WebSafe</title>
+    <title>WebSafe</title>
 </head>
 
-
 <body>
- 
+
 <!-- LOADING SCREEN -->
 <div id="loader">
     <div class="loader-content">
-
-        <!-- Logo Shape -->
         <div class="logo-shape"></div>
-
         <h1>WebSafe</h1>
         <p>Securing your online experience...</p>
-
-        <!-- Dots -->
         <div class="dots">
             <span></span>
             <span></span>
             <span></span>
         </div>
-
     </div>
 </div>
-
 
 <div id="main_content">
 
-<header id="head_logo"> 
-    <img src="images/logo_square.jpg" alt="logo">
+<header id="head_logo">
+    <img src="images/logo_square.jpg" alt="WebSafe logo">
     <h1>WebSafe</h1>
+    <button id="btn_head" onclick="openAboutModal()">About Us</button>
 </header>
- 
+
 <!-- Hamburger Button -->
-<div id="menu_toggle">
-    ☰
-</div>
+<button id="menu_toggle" aria-label="Open navigation menu" aria-expanded="false">
+    <span class="hamburger-bar"></span>
+    <span class="hamburger-bar"></span>
+    <span class="hamburger-bar"></span>
+</button>
 
-<!-- Sidebar Menu -->
-<div id="sidebar_menu">
+<!-- Sidebar overlay -->
+<div id="sidebar_overlay"></div>
 
-    <div class="sidebar-logo">
-        <img src="images/logo_square.jpg" alt="WebSafe Logo">
-        <span>WebSafe</span>
+<!-- Sidebar -->
+<nav id="sidebar_menu" aria-label="Site navigation">
+
+    <div class="sidebar-header">
+        <img src="images/logo_square.jpg" alt="WebSafe logo" class="sidebar-logo-img">
+        <span class="sidebar-logo-name">WebSafe</span>
+        <button class="sidebar-close-btn" id="sidebar_close" aria-label="Close menu">&times;</button>
     </div>
 
-    <a href="#link_checker" class="sidebar-link">
-        <span class="sidebar-icon">🔍</span> Scan a Link
-    </a>
+    <div class="sidebar-section">
+        <p class="sidebar-section-label">Navigation</p>
+        <a href="#link_checker" class="sidebar-link">
+            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Scan a Link
+        </a>
+        <a href="#ws_history_section" class="sidebar-link">
+            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Recent Scans
+        </a>
+        <a href="#websafe-info-anchor" class="sidebar-link">
+            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            What WebSafe Does
+        </a>
+        <a href="#how-it-works-anchor" class="sidebar-link">
+            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            How It Works
+        </a>
+        <a href="#authorities-anchor" class="sidebar-link">
+            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Contact Authorities
+        </a>
+        <a href="#" id="aboutLink" class="sidebar-link">
+            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            About Us
+        </a>
+    </div>
 
-    <!-- Recent Scans inline panel -->
-    <a href="#ws_history_section" class="sidebar-link">
-        <span class="sidebar-icon">🕑</span> Recent Scans
-    </a>
-    <div id="sidebar_history_panel">
+    <!-- Recent Scans mini-panel -->
+    <div class="sidebar-section">
+        <p class="sidebar-section-label">Last Scans This Session</p>
         <div id="sidebar_history_list">
             <p class="sidebar-empty">No scans yet this session</p>
         </div>
     </div>
 
-    <a href="#websafe-info-anchor" class="sidebar-link">
-        <span class="sidebar-icon">ℹ️</span> What WebSafe Does
-    </a>
-    <a href="#how-it-works-anchor" class="sidebar-link">
-        <span class="sidebar-icon">📋</span> How It Works
-    </a>
-    <a href="#authorities-anchor" class="sidebar-link">
-        <span class="sidebar-icon">🚨</span> Contact Authorities
-    </a>
-    <a href="#" id="aboutLink" class="sidebar-link">
-        <span class="sidebar-icon">👥</span> About Us
-    </a>
-
     <div class="sidebar-divider"></div>
 
-    <div class="sidebar-contacts">
-        <p class="sidebar-contacts-title">🇵🇭 Quick Contacts</p>
+    <!-- Quick Contacts -->
+    <div class="sidebar-section">
+        <p class="sidebar-section-label">Quick Contacts (PH)</p>
         <div class="sidebar-contact-item">
             <span>PNP Cybercrime</span>
             <a href="tel:+6327243660">(+632) 724-3660</a>
@@ -98,30 +106,378 @@
             <a href="tel:1511">1511</a>
         </div>
         <div class="sidebar-contact-item">
-            <span>DICT Email</span>
+            <span>DICT</span>
             <a href="mailto:pnpacg@pnp.gov.ph">pnpacg@pnp.gov.ph</a>
         </div>
     </div>
 
+</nav>
+
+<!-- About Us Modal (header button) -->
+<div id="about_modal" onclick="if(event.target===this)closeAboutModal()">
+    <div id="about_box">
+        <button id="about_close" onclick="closeAboutModal()" aria-label="Close About Us modal">&times;</button>
+        <div id="about_logo_row">
+            <img src="images/logo_square.jpg" alt="WebSafe logo" id="about_logo">
+            <h2>WebSafe</h2>
+        </div>
+        <div id="about_divider"></div>
+        <p id="about_tagline">Your trusted link safety checker</p>
+        <div id="about_cards">
+            <div class="about_card">
+                <h3>What We Do</h3>
+                <p>WebSafe scans any URL you paste and runs multiple safety checks — HTTPS, SSL certificate, blacklist, domain age, and content analysis — to tell you if a link is safe, suspicious, or dangerous.</p>
+            </div>
+            <div class="about_card">
+                <h3>How It Works</h3>
+                <p>Paste a suspicious link, hit <strong>Verify Security</strong> to get a full safety report, or hit <strong>Preview Now</strong> to see what the site looks like before visiting it.</p>
+            </div>
+            <div class="about_card">
+                <h3>Why WebSafe</h3>
+                <p>Phishing links and malicious URLs are getting harder to spot. WebSafe gives you a quick second opinion before you click — keeping you and your data protected.</p>
+            </div>
+        </div>
+        <div id="about_footer">
+            <span>Made with care for internet safety</span>
+        </div>
+    </div>
 </div>
 
-<!-- Click-outside overlay -->
-<div id="sidebar_overlay"></div>
+<!-- LINK CHECKER -->
+<section id="link_checker">
+    <h1 id="dynamic_greeting"></h1>
+    <p>Before we go, let's check and see! Paste a link below to find out if it's WebSafe for you.</p>
+    <div class="input-card">
+        <form onsubmit="return false;">
+            <input id="link_input" type="text" placeholder="Paste a URL or link to check">
+        </form>
+        <div class="controls">
+            <button id="check_btn" type="button">Verify Security</button>
+            <button id="preview_btn" type="button">Preview Now</button>
+        </div>
+        <div id="loading_spinner" aria-hidden="true"></div>
+        <span id="safety_status" aria-hidden="true"></span>
+    </div>
+    <div id="results_row">
+        <div id="link_status" aria-live="polite"></div>
+        <div id="preview_area" aria-live="polite">
+            <div id="preview_card">
+                <img id="preview_favicon" src="" alt="favicon">
+                <div>
+                    <h3 id="preview_title"></h3>
+                    <p id="preview_domain"></p>
+                    <p id="preview_description"></p>
+                    <div id="preview_actions"></div>
+                </div>
+            </div>
+            <div id="preview_checks"></div>
+        </div>
+    </div>
+</section>
 
+<!-- WHAT WEBSAFE DOES -->
+<section class="websafe-info" id="websafe-info-anchor">
+  <div class="info-container">
+    <div class="info-text">
+      <span class="badge">Link Verification Tool</span>
+      <h1>What WebSafe<br>Does</h1>
+      <div class="underline"></div>
+      <p>WebSafe is a user-friendly online tool designed to help you verify links before visiting them. Just paste any URL into the platform to get an instant preview of the website, including its title and description.</p>
+      <p>WebSafe also performs safety checks to determine if a link is potentially risky or harmful, giving you the information you need to browse confidently and avoid phishing scams or other online threats.</p>
+      <div class="features">
+        <div class="feature-box">Preview Links</div>
+        <div class="feature-box">Safety Checks</div>
+        <div class="feature-box">Instant Results</div>
+      </div>
+    </div>
+    <div class="info-image">
+      <div class="image-circle">
+        <img src="images/logo_circle.png" alt="WebSafe logo">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY WEBSAFE -->
+<section class="ws-why-section">
+    <div class="ws-why-container">
+        <div class="ws-why-visual">
+            <div class="ws-device">
+                <div class="ws-screen">
+                    <div class="ws-alert"></div>
+                </div>
+            </div>
+        </div>
+        <div class="ws-why-content">
+            <span class="ws-badge">Trusted Protection</span>
+            <h2>Why Users Should Choose WebSafe</h2>
+            <p class="ws-subtext">WebSafe is a tool for verifying whether any given URL is harboring known phishing threats.</p>
+            <div class="ws-card">
+                WebSafe makes online browsing safer and simpler. With phishing scams on the rise, it offers a straightforward way to verify link safety — no technical skills required. Protect yourself from identity theft and financial loss with one quick check.
+            </div>
+            <div class="ws-features">
+                <div class="ws-feature-box"><p>Secure</p></div>
+                <div class="ws-feature-box"><p>Fast</p></div>
+                <div class="ws-feature-box"><p>Preview</p></div>
+                <div class="ws-feature-box"><p>Reliable</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TECH BEHIND WEBSAFE -->
+<section class="ws-feature-block">
+    <div class="ws-container">
+        <div class="ws-content">
+            <h2 class="ws-title">The Technology Behind WebSafe</h2>
+            <p class="ws-text">Developed by students from STI College Fairview, WebSafe is a website URL malware detector designed to identify and neutralize malicious links. Built on a robust Node.js backend and powered by advanced JavaScript analysis engines, the system evaluates incoming connection requests in real time to ensure user safety.</p>
+            <p class="ws-text">Rather than relying on simple blocklists, WebSafe utilizes its JavaScript-driven engine to analyze internet traffic patterns and identify malicious behavior. By leveraging the asynchronous capabilities of Node.js, the system evaluates structural signals such as protocol verification, encryption strength, and server reputation to pinpoint malicious infrastructure.</p>
+            <p class="ws-text">A standout component of the system is its preview feature, which allows users to view the contents of a website without being directed to it first. This provides a safe way to inspect a URL's layout and content within the WebSafe environment, effectively isolating the user from potential browser-based exploits or automatic downloads.</p>
+            <p class="ws-text">The analysis engine is trained on diverse datasets of verified safe and malicious connections, including metrics like origin verification and burst latency. For every request, WebSafe generates a safety score that suggests its reliability, providing a vital, student-engineered defensive layer for those who prioritize network security.</p>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="ws-how-section" id="how-it-works-anchor">
+    <div class="ws-how-container">
+        <span class="ws-how-badge">Simple 3-Step Process</span>
+        <h2 class="ws-how-title">How does WebSafe work?</h2>
+        <p class="ws-how-subtext">WebSafe is a free tool designed to verify URLs, helping users avoid malware, phishing attempts, and counterfeit websites.</p>
+        <p class="ws-how-small">Here's how it works:</p>
+        <div class="ws-steps">
+            <div class="ws-step-card step-blue">
+                <div class="ws-step-icon-num">01</div>
+                <span class="ws-step-number">01</span>
+                <span class="ws-step-label">STEP 01</span>
+                <h3>Paste</h3>
+                <p>Paste the URL or link you want to check to quickly scan it and find out if it's safe to visit before clicking.</p>
+            </div>
+            <div class="ws-step-card step-purple">
+                <div class="ws-step-icon-num">02</div>
+                <span class="ws-step-number">02</span>
+                <span class="ws-step-label">STEP 02</span>
+                <h3>Click</h3>
+                <p>Click the Verify Security button to run a fast security scan and find out if a link is safe before visiting it.</p>
+            </div>
+            <div class="ws-step-card step-green">
+                <div class="ws-step-icon-num">03</div>
+                <span class="ws-step-number">03</span>
+                <span class="ws-step-label">STEP 03</span>
+                <h3>Check</h3>
+                <p>Review the results to see if the link is safe, noting any warnings before proceeding to stay protected online.</p>
+            </div>
+        </div>
+        <div class="ws-result-box">
+            <div class="ws-result-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div>
+                <h4>Fast &amp; Accurate Results</h4>
+                <p>Our advanced scanning technology analyzes URLs in real-time, providing you with instant security assessments so you can browse with confidence.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT AUTHORITIES / PHISHING TIPS -->
+<section class="ws-grid-section" id="authorities-anchor">
+    <div class="ws-grid-container">
+        <h2 class="ws-grid-title">What to Do if You Encounter a Phishing Scam in the Philippines</h2>
+        <div class="ws-features-grid">
+
+            <div class="ws-feature-item">
+                <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+                <div class="ws-feature-text">
+                    <h3>Report To Your Service Provider</h3>
+                    <p>Contact your Internet Service Provider or mobile network to report the phishing attempt. Globe: Call 211 or use the GlobeOne app. Smart: Call 1511 or use the Smart app.</p>
+                </div>
+            </div>
+
+            <div class="ws-feature-item">
+                <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                <div class="ws-feature-text">
+                    <h3>Report To Local Authorities</h3>
+                    <p>Philippine National Police (PNP) Cybercrime Division. Hotline: <a href="tel:+6327243660">(+632) 724-3660</a>. Email: <a href="mailto:pnpacg@pnp.gov.ph">pnpacg@pnp.gov.ph</a>.</p>
+                </div>
+            </div>
+
+            <div class="ws-feature-item">
+                <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></div>
+                <div class="ws-feature-text">
+                    <h3>Notify Affected Entities</h3>
+                    <p>If sensitive information such as bank details has been shared, contact your bank or relevant financial institution immediately.</p>
+                </div>
+            </div>
+
+            <div class="ws-feature-item">
+                <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                <div class="ws-feature-text">
+                    <h3>Do Not Interact</h3>
+                    <p>Do not click on any links or respond to messages from the suspected phishing source.</p>
+                </div>
+            </div>
+
+            <div class="ws-feature-item">
+                <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                <div class="ws-feature-text">
+                    <h3>Report to Anti-Cybercrime Organizations</h3>
+                    <p>Department of Information and Communications Technology (DICT). Email phishing scams to <a href="mailto:pnpacg@pnp.gov.ph">pnpacg@pnp.gov.ph</a> or visit the DICT website for more resources.</p>
+                </div>
+            </div>
+
+            <div class="ws-feature-item">
+                <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <div class="ws-feature-text">
+                    <h3>Save Evidence</h3>
+                    <p>Take screenshots of the email, message, or website involved in the phishing attempt to use as evidence when reporting.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- SCAN HISTORY -->
+<section id="ws_history_section">
+    <div id="ws_history_inner">
+        <h3 id="ws_history_title">Recent Scans This Session</h3>
+        <div id="ws_history_list">
+            <p id="ws_history_empty">No scans yet this session</p>
+        </div>
+    </div>
+</section>
+
+<!-- About Us floating modal (sidebar link) -->
+<div id="aboutModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <div class="about-container">
+      <div class="about-text">
+        <h2>The Technology Behind WebSafe</h2>
+        <p>Developed by students from STI College Fairview, WebSafe is a website URL malware detector designed to identify and neutralize malicious links. Built on a robust Node.js backend and powered by advanced JavaScript analysis engines, the system evaluates incoming connection requests in real time to ensure user safety.</p>
+        <p>Rather than relying on simple blocklists, WebSafe utilizes its JavaScript-driven engine to interpret user traffic patterns and identify suspicious behavior. By leveraging asynchronous Node.js capabilities, the system evaluates protocol verification, encryption strength, and server reputation.</p>
+        <p>A standout feature is the preview system, allowing users to inspect a website safely without visiting it directly — protecting against browser exploits and automatic downloads.</p>
+      </div>
+      <div class="about-image">
+        <img src="your-image.jpg" alt="WebSafe team">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL FLOAT -->
+<div class="social-float">
+    <a href="https://www.facebook.com/profile.php?id=61588343251116" target="_blank" class="social-btn fb" aria-label="Facebook">
+        <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook">
+    </a>
+    <a href="mailto:youremail@gmail.com" target="_blank" class="social-btn gmail" aria-label="Gmail">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="Gmail">
+    </a>
+</div>
+
+<!-- CHAT BUTTON -->
+<div class="chat-toggle" id="chatToggle" aria-label="Open chat assistant">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="26" height="26">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+</div>
+
+<!-- CHAT WINDOW -->
+<div class="chat-widget" id="chatWidget">
+  <div class="chat-header">
+    <span>WebSafe Assistant</span>
+    <button id="closeChat">&times;</button>
+  </div>
+  <div class="chat-body">
+    <div class="bot-message">Hi there! I'm your WebSafe Assistant. Ask me anything about how WebSafe works.</div>
+    <div class="quick-actions">
+      <div class="action">Report a phishing scam</div>
+      <div class="action">Contact authorities</div>
+      <div class="action">Learn about security</div>
+      <div class="action">Get help</div>
+    </div>
+  </div>
+  <div class="chat-footer">
+    <input type="text" placeholder="Ask something...">
+    <button>Send</button>
+  </div>
+</div>
+
+<!-- ─── SCRIPTS ─────────────────────────────────────────────────────────────── -->
+<script src="check_link.js"></script>
 <script>
-const toggle  = document.getElementById("menu_toggle");
-const sidebar = document.getElementById("sidebar_menu");
-const overlay = document.getElementById("sidebar_overlay");
+/* ── Loader ── */
+window.addEventListener("load", () => {
+    setTimeout(() => {
+        document.getElementById("loader").classList.add("hide");
+        document.getElementById("main_content").classList.add("show");
+    }, 2000);
+});
 
-function openSidebar()  { sidebar.classList.add("active");  overlay.classList.add("active"); }
-function closeSidebar() { sidebar.classList.remove("active"); overlay.classList.remove("active"); }
+/* ── Random greeting ── */
+const greetings = [
+    "Hello, User. Are you ready?",
+    "Welcome back, User!",
+    "Good to see you again, User!",
+    "Let's get started, User!",
+    "Ready for another scan, User?",
+    "Let's keep you safe online, User!"
+];
+document.getElementById("dynamic_greeting").textContent =
+    greetings[Math.floor(Math.random() * greetings.length)];
 
-toggle.addEventListener("click", () =>
-    sidebar.classList.contains("active") ? closeSidebar() : openSidebar()
-);
-overlay.addEventListener("click", closeSidebar);
+/* ── About Us modal (header button) ── */
+function openAboutModal() {
+    const modal = document.getElementById("about_modal");
+    const box   = document.getElementById("about_box");
+    modal.style.display = "flex";
+    box.style.animation   = "none";
+    modal.style.animation = "none";
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        box.style.animation   = "";
+        modal.style.animation = "";
+    }));
+}
+function closeAboutModal() {
+    const modal = document.getElementById("about_modal");
+    const box   = document.getElementById("about_box");
+    box.style.animation   = "slideDownModal 0.2s cubic-bezier(0.4,0,1,1) both";
+    modal.style.animation = "fadeOutOverlay 0.22s cubic-bezier(0.4,0,1,1) both";
+    modal.addEventListener("animationend", () => {
+        modal.style.display   = "none";
+        box.style.animation   = "";
+        modal.style.animation = "";
+    }, { once: true });
+}
 
-// Smooth-scroll anchor links and auto-close sidebar
+/* ── Sidebar ── */
+const menuToggle   = document.getElementById("menu_toggle");
+const sidebarEl    = document.getElementById("sidebar_menu");
+const overlayEl    = document.getElementById("sidebar_overlay");
+const sidebarClose = document.getElementById("sidebar_close");
+
+function openSidebar() {
+    sidebarEl.classList.add("active");
+    overlayEl.classList.add("active");
+    menuToggle.setAttribute("aria-expanded", "true");
+    menuToggle.style.opacity = "0";
+    menuToggle.style.pointerEvents = "none";
+    syncSidebarHistory();
+}
+function closeSidebar() {
+    sidebarEl.classList.remove("active");
+    overlayEl.classList.remove("active");
+    menuToggle.setAttribute("aria-expanded", "false");
+    menuToggle.style.opacity = "1";
+    menuToggle.style.pointerEvents = "";
+}
+
+menuToggle.addEventListener("click",   openSidebar);
+sidebarClose.addEventListener("click", closeSidebar);
+overlayEl.addEventListener("click",    closeSidebar);
+
+/* Smooth-scroll anchor links + auto-close */
 document.querySelectorAll("#sidebar_menu .sidebar-link").forEach(link => {
     link.addEventListener("click", e => {
         const href = link.getAttribute("href");
@@ -130,11 +486,25 @@ document.querySelectorAll("#sidebar_menu .sidebar-link").forEach(link => {
             closeSidebar();
             const target = document.querySelector(href);
             if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+        } else {
+            closeSidebar();
         }
     });
 });
 
-// Sync sidebar recent-scans panel with check_link.js scanHistory
+/* Sidebar About Us link -> floating modal */
+document.getElementById("aboutLink").addEventListener("click", e => {
+    e.preventDefault();
+    closeSidebar();
+    document.getElementById("aboutModal").classList.add("show");
+});
+
+/* Floating About modal */
+const floatingModal = document.getElementById("aboutModal");
+document.querySelector(".close-btn").addEventListener("click", () => floatingModal.classList.remove("show"));
+floatingModal.addEventListener("click", e => { if (e.target === floatingModal) floatingModal.classList.remove("show"); });
+
+/* ── Sidebar scan history sync ── */
 function syncSidebarHistory() {
     const panel = document.getElementById("sidebar_history_list");
     if (!panel) return;
@@ -143,15 +513,15 @@ function syncSidebarHistory() {
         return;
     }
     const colors = { safe: "#16a34a", hazard: "#d97706", danger: "#dc2626" };
-    const labels = { safe: "Safe", hazard: "Warning", danger: "Danger" };
+    const labels = { safe: "Safe",    hazard: "Warning",  danger: "Danger"  };
     panel.innerHTML = "";
-    scanHistory.slice(0, 4).forEach(h => {
+    scanHistory.slice(0, 5).forEach(h => {
         const row = document.createElement("div");
         row.className = "sidebar-scan-row";
         row.innerHTML = `
-            <span class="sidebar-scan-dot" style="background:${colors[h.level] || '#9ca3af'}"></span>
+            <span class="sidebar-scan-dot" style="background:${colors[h.level] || "#9ca3af"}"></span>
             <span class="sidebar-scan-host"></span>
-            <span class="sidebar-scan-badge" style="color:${colors[h.level] || '#9ca3af'}">${labels[h.level] || "?"}</span>`;
+            <span class="sidebar-scan-badge" style="color:${colors[h.level] || "#9ca3af"}">${labels[h.level] || "?"}</span>`;
         row.querySelector(".sidebar-scan-host").textContent = h.hostname;
         row.addEventListener("click", () => {
             const inp = document.getElementById("link_input");
@@ -163,597 +533,15 @@ function syncSidebarHistory() {
     });
 }
 setInterval(syncSidebarHistory, 2000);
+
+/* ── Chat widget ── */
+const chatToggleBtn = document.getElementById("chatToggle");
+const chatWidgetEl  = document.getElementById("chatWidget");
+document.getElementById("closeChat").onclick = () => chatWidgetEl.classList.remove("show");
+chatToggleBtn.onclick = () => chatWidgetEl.classList.toggle("show");
 </script>
 
-    <button id="btn_head" onclick="openAboutModal()">About Us</button>
- 
-<!-- About Us Modal -->
-<div id="about_modal" onclick="if(event.target===this)closeAboutModal()">
-    <div id="about_box">
-        <button id="about_close" onclick="closeAboutModal()" aria-label="Close About Us modal">&#x2715;</button>
-        <div id="about_logo_row">
-            <img src="images/logo_square.jpg" alt="logo" id="about_logo">
-            <h2>WebSafe</h2>
-        </div>
-        <div id="about_divider"></div>
-        <p id="about_tagline">Your trusted link safety checker</p>
-        <div id="about_cards">
-            <div class="about_card">
-                <h3>What We Do?</h3>
-                <p>WebSafe scans any URL you paste and runs multiple safety checks — HTTPS, SSL certificate, blacklist, domain age, and content analysis — to tell you if a link is safe, suspicious, or dangerous.</p>
-            </div>
-            <div class="about_card">
-                <h3>How It Works?</h3>
-                <p>Paste a suspicious link, hit <strong>Check Link</strong> to get a full safety report, or hit <strong>Preview</strong> to see what the site looks like before visiting it.</p>
-            </div>
-            <div class="about_card">
-                <h3>Why WebSafe?</h3>
-                <p>Phishing links and malicious URLs are getting harder to spot. WebSafe gives you a quick second opinion before you click — keeping you and your data protected.</p>
-            </div>
-        </div>
-        <div id="about_footer">
-            <span>Made with &#x2764;&#xFE0F; for internet safety</span>
-        </div>
-    </div>
-</div>
-
-<section id="link_checker">
-
-    <h1 id="dynamic_greeting"></h1>
-    <p>
-        Before we go, let's check and see! Tap below to see if this link's websafe for you and me!
-    </p>
-
-    <div class="input-card">
-        <form onsubmit="return false;">
-            <input id="link_input" type="text" placeholder="Input the URL/Link deemed to be suspicious">
-        </form>
-
-        <!-- Controls (fixed duplicate wrapper) -->
-        <div class="controls">
-            <button id="check_btn" type="button">🔍 Verify Security</button>
-            <button id="preview_btn" type="button">👁 Preview Now</button>
-        </div>
-
-        <!-- Loading spinner -->
-        <div id="loading_spinner" aria-hidden="true"></div>
-
-        <!-- safety_status kept hidden for JS compatibility -->
-        <span id="safety_status" aria-hidden="true"></span>
-    </div>
-
-    <!-- Results row -->
-    <div id="results_row">
-
-        <!-- Link status result -->
-        <div id="link_status" aria-live="polite"></div>
-
-        <!-- Preview section -->
-        <div id="preview_area" aria-live="polite">
-            <div id="preview_card">
-                <img id="preview_favicon" src="" alt="favicon">
-
-                <div>
-                    <h3 id="preview_title"></h3>
-                    <p id="preview_domain"></p>
-                    <p id="preview_description"></p>
-                    <div id="preview_actions"></div>
-                </div>
-            </div>
-
-            <div id="preview_checks"></div>
-        </div>
-
-    </div>
-
-</section>
-
-
-</section>
- 
-<!-- WHAT WEBSAFE DOES SECTION -->
-<section class="websafe-info" id="websafe-info-anchor">
-  <div class="info-container">
-
-    <!-- LEFT CONTENT -->
-    <div class="info-text">
-      <span class="badge">🔒 Link Verification Tool</span>
-
-      <h1>What WebSafe<br>Does</h1>
-      <div class="underline"></div>
-
-      <p>
-        WebSafe is a user-friendly online tool designed to help you verify links before visiting them.
-        Just paste any URL into the platform to get an instant preview of the website, including its
-        title and description.
-      </p>
-
-      <p>
-        WebSafe also performs safety checks to determine if a link is potentially risky or harmful,
-        giving you the information you need to browse confidently and avoid phishing scams or other
-        online threats.
-      </p>
-
-      <!-- FEATURES -->
-      <div class="features">
-        <div class="feature-box">👁 Preview Links</div>
-        <div class="feature-box">🛡 Safety Checks</div>
-        <div class="feature-box">⚡ Instant Results</div>
-      </div>
-    </div>
-
-    <!-- RIGHT IMAGE -->
-    <div class="info-image">
-      <div class="image-circle">
-        <img src="your-image.jpg" alt="Picture (Logo natin)">
-      </div>
-    </div>
-
-  </div>
-</section>
- 
- <section class="ws-why-section">
-    <div class="ws-why-container">
-
-        <!-- LEFT VISUAL -->
-        <div class="ws-why-visual">
-            <div class="ws-device">
-                <div class="ws-screen">
-                    <div class="ws-alert"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- RIGHT CONTENT -->
-        <div class="ws-why-content">
-            <span class="ws-badge">Trusted Protection</span>
-
-            <h2>Why Users Should Choose WebSafe</h2>
-
-            <p class="ws-subtext">
-                WebSafe is a tool for verifying whether any given URL is harboring known phishing strains.
-            </p>
-
-            <div class="ws-card">
-                You should choose WebSafe because it makes your online browsing safer and easier. With phishing scams becoming more common, WebSafe offers a simple way to check if a link is trustworthy without needing any tech skills. It's designed for everyone, so you can feel confident when browsing the internet. By using WebSafe, you can protect yourself a little better from identity theft and financial loss, making your online experience both safer and smart enjoyable, can you avoid this paragraph a little more like an info on a website and make it a little shorter.
-            </div>
-
-            <!-- FEATURES -->
-            <div class="ws-features">
-                <div class="ws-feature-box">
-                    <span>🛡️</span>
-                    <p>Secure</p>
-                </div>
-
-                <div class="ws-feature-box">
-                    <span>⚡</span>
-                    <p>Fast</p>
-                </div>
-
-                <div class="ws-feature-box">
-                    <span>👁️</span>
-                    <p>Preview</p>
-                </div>
-
-                <div class="ws-feature-box">
-                    <span>💾</span>
-                    <p>Reliable</p>
-                </div>
-            </div>
-        </div>
-
-    </div>
-</section>
- 
-<section class="ws-feature-block">
-    <div class="ws-container">
-        
-        <div class="ws-content">
-            <h2 class="ws-title">The Technology Behind <br> WebSafe</h2>
-            
-            <p class="ws-text">
-                Developed by students from STI College Fairview, WebSafe is a website URL malware detector designed to identify and neutralize malicious links. Built on a robust Node.js backend and powered by advanced JavaScript analysis engines, the system evaluates incoming connection requests in real time to ensure user safety.
-            </p>
-            
-            <p class="ws-text">
-                Rather than relying on simple blocklists, WebSafe utilizes its JavaScript-driven engine to analyze internet traffic patterns and identify malicious behavior. By leveraging the asynchronous capabilities of Node.js, the system evaluates structural signals such as protocol verification, encryption strength, and server reputation to pinpoint malicious infrastructure.
-            </p>
-            
-            <p class="ws-text">
-                A standout component of the system is its preview feature, which allows users to view the contents of a website without being directed to it first. This provides a safe way to inspect a URL's layout and content within the WebSafe environment, effectively isolating the user from potential browser-based exploits or automatic downloads.
-            </p>
-            
-            <p class="ws-text">
-                The analysis engine is trained on diverse datasets of verified safe and malicious connections, including metrics like origin verification and burst latency. For every request, WebSafe generates a safety score that suggests its reliability, providing a vital, student-engineered defensive layer for those who prioritize network security.
-            </p>
-        </div>
- 
- 
- 
-    </div>
-</section>
- 
-<section class="ws-how-section" id="how-it-works-anchor">
-    <div class="ws-how-container">
-
-        <span class="ws-how-badge">Simple 3-Step Process</span>
-
-        <h2 class="ws-how-title">How does WebSafe work?</h2>
-
-        <p class="ws-how-subtext">
-            WebSafe is a free tool designed to verify URLs, helping users avoid malware, phishing attempts, and counterfeit websites.
-        </p>
-
-        <p class="ws-how-small">Here's how it works:</p>
-
-        <!-- STEPS -->
-        <div class="ws-steps">
-
-            <!-- STEP 1 -->
-            <div class="ws-step-card step-blue">
-                <div class="ws-step-icon">📄</div>
-                <span class="ws-step-number">01</span>
-                <span class="ws-step-label">STEP 01</span>
-                <h3>Paste</h3>
-                <p>Paste the URL or link you want to check to quickly scan it and find out if it's safe to visit before clicking.</p>
-            </div>
-
-            <!-- STEP 2 -->
-            <div class="ws-step-card step-purple">
-                <div class="ws-step-icon">🔗</div>
-                <span class="ws-step-number">02</span>
-                <span class="ws-step-label">STEP 02</span>
-                <h3>Click</h3>
-                <p>Click the "Make Safe?" button to run a fast and easy security scan, so you can quickly find out if a link is safe before visiting it.</p>
-            </div>
-
-            <!-- STEP 3 -->
-            <div class="ws-step-card step-green">
-                <div class="ws-step-icon">✅</div>
-                <span class="ws-step-number">03</span>
-                <span class="ws-step-label">STEP 03</span>
-                <h3>Check</h3>
-                <p>Check the results to see if the link is safe, noting any warnings before proceeding to stay protected online.</p>
-            </div>
-
-        </div>
-
-        <!-- BOTTOM CARD -->
-        <div class="ws-result-box">
-            <span class="ws-result-icon">✨</span>
-            <div>
-                <h4>Fast & Accurate Results</h4>
-                <p>
-                    Our advanced scanning technology analyzes URLs in real-time, providing you with instant security assessments so you can browse with confidence.
-                </p>
-            </div>
-        </div>
-
-    </div>
-</section>
- 
-<section class="ws-grid-section" id="authorities-anchor">
-    <div class="ws-grid-container">
-        
-        <h2 class="ws-grid-title">What to Do if You Encounter a Phishing Scam in the Philippines</h2>
- 
-        <div class="ws-features-grid">
-            
-            <div class="ws-feature-item">
-                <div class="ws-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-                </div>
-                <div class="ws-feature-text">
-                    <h3>Report To Your Service Provider</h3>
-                    <p>ISP or Mobile Operator: Contact your Internet Service Provider or mobile network provider to report the phishing attempt.
-                    <p>Globe: Call 211 or report via the GlobeOne app.</p>
-                    <p>Smart: Call 1511 or report via the Smart app.</p>
-                </div>
-            </div>
- 
-            <div class="ws-feature-item">
-                <div class="ws-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                </div>
-                <div class="ws-feature-text">
-                    <h3>Report To Local Authorities</h3>
-                    <p>Philippine National Police (PNP) - Cybercrime Division
-Contact: Report the incident through the PNP Cybercrime Group.
-                    <p>Hotline: Call (+632) 724-3660.</p>
-                    <p>Email: Send reports to <a href="mailto:pnpacg@pnp.gov.ph">pnpacg@pnp.gov.ph</a>.</p>
-                </div>
-            </div>
- 
-            <div class="ws-feature-item">
-                <div class="ws-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
-                </div>
-                <div class="ws-feature-text">
-                    <h3>Notify Affected Entities</h3>
-                    <p>Financial Institutions: If sensitive information (like bank details) has been shared, contact your bank or relevant financial institution immediately.</p>
-                </div>
-            </div>
- 
-            <div class="ws-feature-item">
-                <div class="ws-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                </div>
-                <div class="ws-feature-text">
-                    <h3>Do Not Interact</h3>
-                    <p>Avoid Engaging: Do not click on any links or respond to messages from the suspected phishing source.</p>
-                </div>
-            </div>
- 
-            <div class="ws-feature-item">
-                <div class="ws-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-                </div>
-                <div class="ws-feature-text">
-                    <h3>Report to Anti-Cybercrime Organizations</h3>
-                    <p>Department of Information and Communications Technology (DICT)
-Forward Reports: Email phishing scams to <a href="mailto:pnpacg@pnp.gov.ph">pnpacg@pnp.gov.ph</a>or visit the DICT website for more resources.</p>
-                </div>
-            </div>
- 
-            <div class="ws-feature-item">
-                <div class="ws-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                </div>
-                <div class="ws-feature-text">
-                    <h3>Save Evidence</h3>
-                    <p>Take Screenshots: Capture images of the email, message, or website involved in the phishing attempt to use as evidence when reporting.</p>
-                </div>
-            </div>
- 
-        </div>
-    </div>
-</section>
- 
-</section><!-- end #info_section -->
-
-<!-- ── Scan History ──────────────────────────────────────────────────────────── -->
-<section id="ws_history_section">
-    <div id="ws_history_inner">
-        <h3 id="ws_history_title">Recent Scans This Session</h3>
-        <div id="ws_history_list">
-            <p id="ws_history_empty">No scans yet this session</p>
-        </div>
-    </div>
-</section>
-
-<script src="check_link.js"></script>
-<script>
-function openAboutModal() {
-    const modal = document.getElementById('about_modal');
-    const box   = document.getElementById('about_box');
-    modal.style.display = 'flex';
-    // Reset animation so it plays fresh every open
-    box.style.animation   = 'none';
-    modal.style.animation = 'none';
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            box.style.animation   = '';
-            modal.style.animation = '';
-        });
-    });
-}
-function closeAboutModal() {
-    const modal = document.getElementById('about_modal');
-    const box   = document.getElementById('about_box');
-    box.style.animation   = 'slideDownModal 0.2s cubic-bezier(0.4, 0, 1, 1) both';
-    modal.style.animation = 'fadeOutOverlay 0.22s cubic-bezier(0.4, 0, 1, 1) both';
-    modal.addEventListener('animationend', () => {
-        modal.style.display = 'none';
-        box.style.animation   = '';
-        modal.style.animation = '';
-    }, { once: true });
-}
-</script>
-
-<script>
-const aboutBtn = document.getElementById("btn_head");
-const aboutPage = document.getElementById("about_page");
-const backBtn = document.getElementById("about_back");
-
-aboutBtn.addEventListener("click", () => {
-    aboutPage.style.display = "block";
-    document.body.style.overflow = "hidden";
-});
-
-backBtn.addEventListener("click", () => {
-    aboutPage.style.display = "none";
-    document.body.style.overflow = "auto";
-});
-</script>
-
-<script>
-function openAboutModal() {
-    const modal = document.getElementById('about_modal');
-    const box   = document.getElementById('about_box');
-    modal.style.display = 'flex';
-
-    box.style.animation = 'none';
-    modal.style.animation = 'none';
-
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            box.style.animation = '';
-            modal.style.animation = '';
-        });
-    });
-}
-
-function closeAboutModal() {
-    const modal = document.getElementById('about_modal');
-    const box   = document.getElementById('about_box');
-
-    box.style.animation = 'slideDownModal 0.2s both';
-    modal.style.animation = 'fadeOutOverlay 0.22s both';
-
-    modal.addEventListener('animationend', () => {
-        modal.style.display = 'none';
-    }, { once: true });
-}
-
-/* Greeting */
-const greetings = [
-    "Hello, User. Are you ready?",
-    "Welcome back, User!",
-    "I'm glad to have you back! ^^",
-    "Good to see you again, User!",
-    "Let’s get started, User!",
-    "Back again? Let’s make it count, User.",
-    "Ready for another scan, User?",
-    "Let’s keep you safe online, User!"
-];
-
-document.getElementById("dynamic_greeting").textContent =
-    greetings[Math.floor(Math.random() * greetings.length)];
-</script>
-
-</div>
-
-<script>
-window.addEventListener("load", () => {
-    const loader = document.getElementById("loader");
-    const main = document.getElementById("main_content");
-
-    setTimeout(() => {
-        loader.classList.add("hide");
-        main.classList.add("show");
-    }, 2000); // keeps loader visible for smooth feel
-});
-</script>
-
-<!-- FB AND IG BUTTON -->
-<div class="social-float">
-
-    <a href="https://www.facebook.com/profile.php?id=61588343251116" target="_blank" class="social-btn fb">
-        <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook">
-    </a>
-
-    <a href="mailto:youremail@gmail.com" target="_blank" class="social-btn gmail">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="Gmail">
-</a>
-
-</div>
-
-<div id="aboutModal" class="modal">
-  <div class="modal-content wide">
-    <span class="close-btn">&times;</span>
-
-    <div class="about-container">
-      
-      <!-- LEFT TEXT -->
-      <div class="about-text">
-        <h2>The Technology Behind WebSafe</h2>
-
-        <p>
-          Developed by students from STI College Fairview, WebSafe is a website URL
-          malware detector designed to identify and neutralize malicious links.
-          Built on a robust Node.js backend and powered by advanced JavaScript
-          analysis engines, the system evaluates incoming connection requests in
-          real time to ensure user safety.
-        </p>
-
-        <p>
-          Rather than relying on simple blocklists, WebSafe utilizes its
-          JavaScript-driven engine to interpret user traffic patterns and identify
-          suspicious behavior. By leveraging asynchronous Node.js capabilities,
-          the system evaluates protocol verification, encryption strength, and
-          server reputation.
-        </p>
-
-        <p>
-          A standout feature is the preview system, allowing users to inspect a
-          website safely without visiting it directly—protecting against browser
-          exploits and automatic downloads.
-        </p>
-
-      </div>
-
-      <!-- RIGHT IMAGE -->
-      <div class="about-image">
-        <img src="your-image.jpg" alt="Basta picture">
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<script>
-  const modal = document.getElementById("aboutModal");
-  const aboutBtn = document.getElementById("aboutLink");
-  const closeBtn = document.querySelector(".close-btn");
-
-  // OPEN MODAL
-  aboutBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    modal.classList.add("show");
-  });
-
-  // CLOSE MODAL (X button)
-  closeBtn.addEventListener("click", () => {
-    modal.classList.remove("show");
-  });
-
-  // CLOSE when clicking outside content
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
-      modal.classList.remove("show");
-    }
-  });
-</script>
-
-     </div>
-</div>
-
-
-<!-- CHAT BUTTON -->
-<div class="chat-toggle" id="chatToggle">⌯⌲</div>
-
-<!-- CHAT WINDOW -->
-<div class="chat-widget" id="chatWidget">
-  <div class="chat-header">
-    <span>WebSafe Buddy</span>
-    <button id="closeChat">✕</button>
-  </div>
-
-  <div class="chat-body">
-    <div class="bot-message">
-      Hi there! I'm your WebSafe Assistant 🤖  
-      Ask me anything about how WebSafe works.
-    </div>
-
-    <div class="quick-actions">
-      <div class="action">Report a phishing scam</div>
-      <div class="action">Contact authorities</div>
-      <div class="action">Learn about security</div>
-      <div class="action">Get help</div>
-    </div>
-  </div>
-
-  <div class="chat-footer">
-    <input type="text" placeholder="Ask something..." />
-    <button>➤</button>
-  </div>
-</div>
-
-
-<script>
-  const chatToggle = document.getElementById("chatToggle");
-  const chatWidget = document.getElementById("chatWidget");
-  const closeChat = document.getElementById("closeChat");
-
-  chatToggle.onclick = () => {
-    chatWidget.classList.toggle("show");
-  };
-
-  closeChat.onclick = () => {
-    chatWidget.classList.remove("show");
-  };
-</script>
-
+</div><!-- /#main_content -->
 
 </body>
 </html>

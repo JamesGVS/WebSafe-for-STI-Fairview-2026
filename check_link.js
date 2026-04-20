@@ -417,7 +417,34 @@ function friendlyFlagDetail(f) {
         }
 
         statusEl.appendChild(card);
-    }
+
+        // ── Report button for dangerous links ────────────────────────────────
+        if (level === 'danger') {
+            const reportBtn = document.createElement('div');
+            reportBtn.style.cssText = 'max-width:580px;margin:10px auto 0;';
+            reportBtn.innerHTML = `
+                <a href="#authorities-anchor"
+                   id="ws_report_danger_btn"
+                   style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px 20px;background:linear-gradient(135deg,#dc2626,#991b1b);color:#ffffff;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:0.3px;box-shadow:0 4px 16px rgba(220,38,38,0.35);transition:transform 0.15s ease,box-shadow 0.15s ease;box-sizing:border-box;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    Report This Dangerous Link to Authorities
+                </a>`;
+            const anchor = reportBtn.querySelector('a');
+            anchor.addEventListener('mouseenter', () => {
+                anchor.style.transform = 'translateY(-2px)';
+                anchor.style.boxShadow = '0 8px 24px rgba(220,38,38,0.45)';
+            });
+            anchor.addEventListener('mouseleave', () => {
+                anchor.style.transform = '';
+                anchor.style.boxShadow = '0 4px 16px rgba(220,38,38,0.35)';
+            });
+            anchor.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector('#authorities-anchor');
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+            statusEl.appendChild(reportBtn);
+        }
 
     async function checkLink() {
         if (!input || !btn) return;
