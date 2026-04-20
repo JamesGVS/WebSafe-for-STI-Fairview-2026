@@ -23,7 +23,7 @@ body {
     justify-content: flex-start;
     align-items: center;
     width: 100%;
-    height: 70px;
+    height: 100px;
     background-color: #131e40;
     padding-left: 70px; /* leave room for the hamburger */
     padding-right: 20px;
@@ -45,28 +45,7 @@ body {
     -webkit-text-stroke: 0px black;
 }
 
-#btn_head {
-    border: none;
-    border-radius: 8px;
-    background-color: #1a56e4;
-    padding: 10px 20px;
-    color: #ffffff;
-    font-size: 16px;
-    cursor: pointer;
-    margin-left: auto;
-    font-weight: 600;
-    transition: background-color 0.2s, transform 0.1s;
-    white-space: nowrap;
-}
 
-#btn_head:active {
-    transform: scale(0.96);
-}
-
-#btn_head:hover {
-    background-color: #0e119f;
-    color: #ffffff;
-}
 
 /* LINK CHECKER */
 #link_checker {
@@ -286,166 +265,190 @@ body {
     text-align: left;
 }
 
-/* ABOUT US MODAL */
-#about_modal {
-    display: none;
+/* ── NEW ABOUT US MODAL ─────────────────────────────────────────────────────── */
+.ws-about-modal {
     position: fixed;
     inset: 0;
-    background: rgba(118, 136, 225, 0.55);
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
-    justify-content: center;
+    z-index: 2000;
+    display: flex;
     align-items: center;
+    justify-content: center;
     padding: 20px;
-    animation: fadeInOverlay 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+    background: rgba(10, 18, 50, 0.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.28s cubic-bezier(0.4,0,0.2,1),
+                visibility 0.28s;
+}
+.ws-about-modal.show {
+    opacity: 1;
+    visibility: visible;
 }
 
-@keyframes fadeInOverlay {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
-#about_box {
-    background: #dbebba;
-    border: 3px solid #546925;
-    border-radius: 16px;
-    max-width: 680px;
+.ws-about-box {
+    background: linear-gradient(160deg, #0f1f50 0%, #1a3a7a 55%, #112060 100%);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 22px;
     width: 100%;
-    padding: 36px 36px 28px;
+    max-width: 740px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06);
     position: relative;
-    box-shadow: 0 20px 60px rgba(30, 58, 138, 0.25);
-    animation: slideUpModal 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
-    will-change: transform, opacity;
+    transform: translateY(28px) scale(0.96);
+    opacity: 0;
+    transition: transform 0.32s cubic-bezier(0.22,1,0.36,1),
+                opacity 0.28s ease;
+}
+.ws-about-modal.show .ws-about-box {
+    transform: translateY(0) scale(1);
+    opacity: 1;
 }
 
-@keyframes slideUpModal {
-    from { transform: translateY(18px) scale(0.98); opacity: 0; }
-    to   { transform: translateY(0)    scale(1);    opacity: 1; }
-}
-
-@keyframes slideDownModal {
-    from { transform: translateY(0)    scale(1);    opacity: 1; }
-    to   { transform: translateY(14px) scale(0.98); opacity: 0; }
-}
-
-@keyframes fadeOutOverlay {
-    from { opacity: 1; }
-    to   { opacity: 0; }
-}
-
-#about_close {
+/* Close button */
+.ws-about-close {
     position: absolute;
-    top: 14px;
-    right: 16px;
-    background: #dbebba;
-    border: 2px solid #546925;
-    border-radius: 50%;
+    top: 16px;
+    right: 18px;
     width: 34px;
     height: 34px;
-    font-size: 15px;
-    font-weight: 700;
-    color: #546925;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.7);
+    font-size: 18px;
+    line-height: 1;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s, color 0.15s;
-    margin-top: 0;
-    padding: 0;
+    transition: background 0.18s, color 0.18s, transform 0.15s;
+    z-index: 1;
+}
+.ws-about-close:hover {
+    background: rgba(255,255,255,0.18);
+    color: #fff;
+    transform: rotate(90deg) scale(1.08);
 }
 
-#about_close:hover {
-    background: #546925;
-    color: #ffffff;
-}
-
-#about_logo_row {
+/* Header band */
+.ws-about-header {
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: 18px;
+    padding: 30px 32px 22px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
-
-#about_logo {
-    width: 60px;
-    height: 60px;
+.ws-about-logo-wrap {
+    flex-shrink: 0;
+    width: 58px;
+    height: 58px;
     border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #546925;
-}
-
-#about_logo_row h2 {
-    font-size: 32px;
-    color: #000000;
-    font-weight: 800;
-    letter-spacing: .5px;
-}
-
-#about_divider {
-    height: 4px;
-    background: #728c36;
-    border-radius: 4px;
-    margin-bottom: 14px;
-}
-
-#about_tagline {
-    font-size: 15px;
-    color: #728c36;
-    margin-bottom: 22px;
-    font-style: italic;
-}
-
-#about_cards {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.2);
     display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-bottom: 24px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    animation: wsPulseRing 2.4s ease-in-out infinite;
 }
-
-.about_card {
-    flex: 1 1 160px;
-    background: #91b935;
-    border: 2px solid #91b935;
-    border-radius: 10px;
-    padding: 16px;
-    transition: transform 0.18s, box-shadow 0.18s;
+.ws-about-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
-
-.about_card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(84, 105, 37, 0.2);
+@keyframes wsPulseRing {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(147,197,253,0.4); }
+    50%       { box-shadow: 0 0 0 8px rgba(147,197,253,0); }
 }
-
-.about_icon {
-    font-size: 24px;
-    display: block;
-    margin-bottom: 8px;
+.ws-about-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 4px;
+    letter-spacing: -0.3px;
 }
-
-.about_card h3 {
-    font-size: 15px;
-    font-weight: 700;
-    color: #3f4f1b;
-    margin-bottom: 6px;
-}
-
-.about_card p {
+.ws-about-subtitle {
     font-size: 13px;
-    color: #374151;
-    line-height: 1.5;
-    background: none;
-    border: none;
-    padding: 0;
+    color: rgba(147,197,253,0.85);
     margin: 0;
 }
 
-#about_footer {
-    text-align: center;
+/* Cards grid */
+.ws-about-body {
+    padding: 24px 32px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.ws-about-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 18px 20px;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: background 0.2s, transform 0.2s;
+}
+.ws-about-card:hover {
+    background: rgba(255,255,255,0.1);
+    transform: translateY(-2px);
+}
+.ws-about-card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #93c5fd;
+    margin: 0 0 6px;
+}
+.ws-about-card p {
     font-size: 13px;
-    color: #dbebba;
-    padding-top: 16px;
-    border-top: 1px solid #e2e8f0;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.6;
+    margin: 0;
+}
+.ws-about-card-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(147,197,253,0.15);
+    border: 1px solid rgba(147,197,253,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #93c5fd;
+}
+
+/* Staggered card animations when modal opens */
+.ws-about-modal.show .ws-anim-1 { animation: wsCardIn 0.38s cubic-bezier(0.22,1,0.36,1) 0.10s both; }
+.ws-about-modal.show .ws-anim-2 { animation: wsCardIn 0.38s cubic-bezier(0.22,1,0.36,1) 0.18s both; }
+.ws-about-modal.show .ws-anim-3 { animation: wsCardIn 0.38s cubic-bezier(0.22,1,0.36,1) 0.26s both; }
+.ws-about-modal.show .ws-anim-4 { animation: wsCardIn 0.38s cubic-bezier(0.22,1,0.36,1) 0.34s both; }
+@keyframes wsCardIn {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Footer */
+.ws-about-footer {
+    text-align: center;
+    font-size: 12px;
+    color: rgba(147,197,253,0.5);
+    padding: 14px 32px 24px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+/* Responsive */
+@media (max-width: 520px) {
+    .ws-about-header { padding: 22px 20px 16px; flex-wrap: wrap; }
+    .ws-about-body   { padding: 18px 16px 14px; }
+    .ws-about-title  { font-size: 18px; }
 }
 
 /* FEATURE SECTIONS */
@@ -1387,98 +1390,6 @@ body {
     font-weight: 600;
 }
 
-/* ABOUT US MODAL (floating) */
-.modal {
-    position: fixed;
-    z-index: 1000;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0,0,0,0.65);
-    backdrop-filter: blur(6px);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-}
-
-.modal.show {
-    opacity: 1;
-    pointer-events: all;
-}
-
-.modal-content {
-    background: #ffffff;
-    color: #1a1a1a;
-    border-radius: 20px;
-    padding: 50px 60px;
-    width: 90%;
-    max-width: 1200px;
-    box-shadow: 0 25px 80px rgba(0,0,0,0.25);
-    transform: translateY(-40px) scale(0.95);
-    opacity: 0;
-    transition: all 0.4s ease;
-}
-
-.modal.show .modal-content {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-}
-
-.about-container {
-    display: flex;
-    gap: 80px;
-    align-items: flex-start;
-    max-width: 1100px;
-    margin: auto;
-    flex-wrap: wrap;
-}
-
-.about-text {
-    flex: 1.1;
-    max-width: 600px;
-    min-width: 300px;
-    transform: translateX(-30px);
-    opacity: 0;
-    transition: all 0.5s ease 0.2s;
-}
-
-.about-text h2 {
-    font-size: 40px;
-    font-weight: 700;
-    color: #2c4a7a;
-    margin-bottom: 20px;
-}
-
-.about-text p {
-    font-size: 16px;
-    line-height: 1.8;
-    color: #555;
-    margin-bottom: 18px;
-}
-
-.about-image {
-    flex: 1;
-    min-width: 300px;
-    display: flex;
-    justify-content: center;
-    transform: translateX(30px);
-    opacity: 0;
-    transition: all 0.5s ease 0.3s;
-}
-
-.about-image img {
-    width: 100%;
-    max-width: 500px;
-    border-radius: 18px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-}
-
-.modal.show .about-text,
-.modal.show .about-image {
-    transform: translateX(0);
-    opacity: 1;
-}
 
 .highlight {
     color: #2563eb;

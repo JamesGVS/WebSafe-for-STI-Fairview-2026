@@ -427,7 +427,7 @@ function friendlyFlagDetail(f) {
                    id="ws_report_danger_btn"
                    style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px 20px;background:linear-gradient(135deg,#dc2626,#991b1b);color:#ffffff;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:0.3px;box-shadow:0 4px 16px rgba(220,38,38,0.35);transition:transform 0.15s ease,box-shadow 0.15s ease;box-sizing:border-box;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    Report This Dangerous Link to Authorities
+                    Report
                 </a>`;
             const anchor = reportBtn.querySelector('a');
             anchor.addEventListener('mouseenter', () => {

@@ -28,9 +28,7 @@
 <div id="main_content">
 
 <header id="head_logo">
-    <img src="images/logo_square.jpg" alt="WebSafe logo">
-    <h1>WebSafe</h1>
-    <button id="btn_head" onclick="openAboutModal()">About Us</button>
+    <img src="images/logo_circle.png" alt="WebSafe logo">
 </header>
 
 <!-- Hamburger Button -->
@@ -113,35 +111,6 @@
 
 </nav>
 
-<!-- About Us Modal (header button) -->
-<div id="about_modal" onclick="if(event.target===this)closeAboutModal()">
-    <div id="about_box">
-        <button id="about_close" onclick="closeAboutModal()" aria-label="Close About Us modal">&times;</button>
-        <div id="about_logo_row">
-            <img src="images/logo_square.jpg" alt="WebSafe logo" id="about_logo">
-            <h2>WebSafe</h2>
-        </div>
-        <div id="about_divider"></div>
-        <p id="about_tagline">Your trusted link safety checker</p>
-        <div id="about_cards">
-            <div class="about_card">
-                <h3>What We Do</h3>
-                <p>WebSafe scans any URL you paste and runs multiple safety checks — HTTPS, SSL certificate, blacklist, domain age, and content analysis — to tell you if a link is safe, suspicious, or dangerous.</p>
-            </div>
-            <div class="about_card">
-                <h3>How It Works</h3>
-                <p>Paste a suspicious link, hit <strong>Verify Security</strong> to get a full safety report, or hit <strong>Preview Now</strong> to see what the site looks like before visiting it.</p>
-            </div>
-            <div class="about_card">
-                <h3>Why WebSafe</h3>
-                <p>Phishing links and malicious URLs are getting harder to spot. WebSafe gives you a quick second opinion before you click — keeping you and your data protected.</p>
-            </div>
-        </div>
-        <div id="about_footer">
-            <span>Made with care for internet safety</span>
-        </div>
-    </div>
-</div>
 
 <!-- LINK CHECKER -->
 <section id="link_checker">
@@ -349,20 +318,67 @@
 </section>
 
 <!-- About Us floating modal (sidebar link) -->
-<div id="aboutModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn">&times;</span>
-    <div class="about-container">
-      <div class="about-text">
-        <h2>The Technology Behind WebSafe</h2>
-        <p>Developed by students from STI College Fairview, WebSafe is a website URL malware detector designed to identify and neutralize malicious links. Built on a robust Node.js backend and powered by advanced JavaScript analysis engines, the system evaluates incoming connection requests in real time to ensure user safety.</p>
-        <p>Rather than relying on simple blocklists, WebSafe utilizes its JavaScript-driven engine to interpret user traffic patterns and identify suspicious behavior. By leveraging asynchronous Node.js capabilities, the system evaluates protocol verification, encryption strength, and server reputation.</p>
-        <p>A standout feature is the preview system, allowing users to inspect a website safely without visiting it directly — protecting against browser exploits and automatic downloads.</p>
+<div id="aboutModal" class="ws-about-modal" aria-modal="true" role="dialog">
+  <div class="ws-about-box">
+
+    <button class="ws-about-close" id="aboutModalClose" aria-label="Close">&times;</button>
+
+    <!-- Header band -->
+    <div class="ws-about-header">
+      <div class="ws-about-logo-wrap">
+        <img src="images/logo_circle.png" alt="WebSafe logo" class="ws-about-logo">
       </div>
-      <div class="about-image">
-        <img src="your-image.jpg" alt="WebSafe team">
+      <div>
+        <h2 class="ws-about-title">The Technology Behind WebSafe</h2>
+        <p class="ws-about-subtitle">Built by STI College Fairview students — for everyone's safety online</p>
       </div>
     </div>
+
+    <!-- Body -->
+    <div class="ws-about-body">
+
+      <div class="ws-about-card ws-anim-1">
+        <div class="ws-about-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div>
+          <p>Developed by students from STI College Fairview, WebSafe is a website URL malware detector designed to identify and neutralize malicious links. Built on a robust Node.js backend and powered by advanced JavaScript analysis engines, the system evaluates incoming connection requests in real time to ensure user safety.</p>
+        </div>
+      </div>
+
+      <div class="ws-about-card ws-anim-2">
+        <div class="ws-about-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <p>Rather than relying on simple blocklists, WebSafe utilizes its JavaScript-driven engine to analyze internet traffic patterns and identify malicious behavior. By leveraging the asynchronous capabilities of Node.js, the system evaluates structural signals such as protocol verification, encryption strength, and server reputation to pinpoint malicious infrastructure.</p>
+        </div>
+      </div>
+
+      <div class="ws-about-card ws-anim-3">
+        <div class="ws-about-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <div>
+          <p>A standout component of the system is its preview feature, which allows users to view the contents of a website without being directed to it first. This provides a safe way to inspect a URL's layout and content within the WebSafe environment, effectively isolating the user from potential browser-based exploits or automatic downloads.</p>
+        </div>
+      </div>
+
+      <div class="ws-about-card ws-anim-4">
+        <div class="ws-about-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div>
+          <p>The analysis engine is trained on diverse datasets of verified safe and malicious connections, including metrics like origin verification and burst latency. For every request, WebSafe generates a safety score that suggests its reliability, providing a vital, student-engineered defensive layer for those who prioritize network security.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="ws-about-footer">
+      <span>Made with care for internet safety · STI College Fairview</span>
+    </div>
+
   </div>
 </div>
 
@@ -418,7 +434,7 @@ window.addEventListener("load", () => {
 /* ── Random greeting ── */
 const greetings = [
     "Hello, User. Are you ready?",
-    "Welcome back, User!",
+    "Welcome, User!",
     "Good to see you again, User!",
     "Let's get started, User!",
     "Ready for another scan, User?",
@@ -427,29 +443,24 @@ const greetings = [
 document.getElementById("dynamic_greeting").textContent =
     greetings[Math.floor(Math.random() * greetings.length)];
 
-/* ── About Us modal (header button) ── */
+/* ── About Us modal (sidebar) ── */
 function openAboutModal() {
-    const modal = document.getElementById("about_modal");
-    const box   = document.getElementById("about_box");
-    modal.style.display = "flex";
-    box.style.animation   = "none";
-    modal.style.animation = "none";
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-        box.style.animation   = "";
-        modal.style.animation = "";
-    }));
+    const m = document.getElementById("aboutModal");
+    m.classList.add("show");
+    // Trigger card animations by re-adding anim class
+    m.querySelectorAll(".ws-about-card").forEach((c, i) => {
+        c.style.animation = "none";
+        c.offsetHeight; // reflow
+        c.style.animation = "";
+    });
 }
 function closeAboutModal() {
-    const modal = document.getElementById("about_modal");
-    const box   = document.getElementById("about_box");
-    box.style.animation   = "slideDownModal 0.2s cubic-bezier(0.4,0,1,1) both";
-    modal.style.animation = "fadeOutOverlay 0.22s cubic-bezier(0.4,0,1,1) both";
-    modal.addEventListener("animationend", () => {
-        modal.style.display   = "none";
-        box.style.animation   = "";
-        modal.style.animation = "";
-    }, { once: true });
+    document.getElementById("aboutModal").classList.remove("show");
 }
+document.getElementById("aboutModalClose").addEventListener("click", closeAboutModal);
+document.getElementById("aboutModal").addEventListener("click", e => {
+    if (e.target === document.getElementById("aboutModal")) closeAboutModal();
+});
 
 /* ── Sidebar ── */
 const menuToggle   = document.getElementById("menu_toggle");
@@ -492,7 +503,7 @@ document.querySelectorAll("#sidebar_menu .sidebar-link").forEach(link => {
     });
 });
 
-/* Sidebar About Us link -> opens header About modal */
+/* Sidebar About Us link -> opens About modal */
 document.getElementById("aboutLink").addEventListener("click", e => {
     e.preventDefault();
     closeSidebar();
