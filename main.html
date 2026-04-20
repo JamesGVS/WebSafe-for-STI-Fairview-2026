@@ -6,7 +6,7 @@
  
     <meta name="description" content="WebSafe — check any URL for phishing, malware, and online threats before you click. Free link safety checker.">
     <link rel="icon" href="/images/logo_circle.png">
-    <link rel="stylesheet" href="main.css">  
+    <link rel="stylesheet" href="main.css">
  <title>WebSafe</title>
 </head>
 
@@ -48,22 +48,121 @@
 
 <!-- Sidebar Menu -->
 <div id="sidebar_menu">
-    <a href="#">Home</a>
-    <a href="#">Recent Scans This Session</a>
-    <a href="#">Contact Local Authorities</a>
-    <a href="#" id="aboutLink">About Us</a>
-    
 
+    <div class="sidebar-logo">
+        <img src="images/logo_square.jpg" alt="WebSafe Logo">
+        <span>WebSafe</span>
+    </div>
+
+    <a href="#link_checker" class="sidebar-link">
+        <span class="sidebar-icon">🔍</span> Scan a Link
+    </a>
+
+    <!-- Recent Scans inline panel -->
+    <a href="#ws_history_section" class="sidebar-link">
+        <span class="sidebar-icon">🕑</span> Recent Scans
+    </a>
+    <div id="sidebar_history_panel">
+        <div id="sidebar_history_list">
+            <p class="sidebar-empty">No scans yet this session</p>
+        </div>
+    </div>
+
+    <a href="#websafe-info-anchor" class="sidebar-link">
+        <span class="sidebar-icon">ℹ️</span> What WebSafe Does
+    </a>
+    <a href="#how-it-works-anchor" class="sidebar-link">
+        <span class="sidebar-icon">📋</span> How It Works
+    </a>
+    <a href="#authorities-anchor" class="sidebar-link">
+        <span class="sidebar-icon">🚨</span> Contact Authorities
+    </a>
+    <a href="#" id="aboutLink" class="sidebar-link">
+        <span class="sidebar-icon">👥</span> About Us
+    </a>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-contacts">
+        <p class="sidebar-contacts-title">🇵🇭 Quick Contacts</p>
+        <div class="sidebar-contact-item">
+            <span>PNP Cybercrime</span>
+            <a href="tel:+6327243660">(+632) 724-3660</a>
+        </div>
+        <div class="sidebar-contact-item">
+            <span>Globe</span>
+            <a href="tel:211">211</a>
+        </div>
+        <div class="sidebar-contact-item">
+            <span>Smart</span>
+            <a href="tel:1511">1511</a>
+        </div>
+        <div class="sidebar-contact-item">
+            <span>DICT Email</span>
+            <a href="mailto:pnpacg@pnp.gov.ph">pnpacg@pnp.gov.ph</a>
+        </div>
+    </div>
 
 </div>
 
-<script>
-const toggle = document.getElementById("menu_toggle");
-const sidebar = document.getElementById("sidebar_menu");
+<!-- Click-outside overlay -->
+<div id="sidebar_overlay"></div>
 
-toggle.addEventListener("click", () => {
-    sidebar.classList.toggle("active");
+<script>
+const toggle  = document.getElementById("menu_toggle");
+const sidebar = document.getElementById("sidebar_menu");
+const overlay = document.getElementById("sidebar_overlay");
+
+function openSidebar()  { sidebar.classList.add("active");  overlay.classList.add("active"); }
+function closeSidebar() { sidebar.classList.remove("active"); overlay.classList.remove("active"); }
+
+toggle.addEventListener("click", () =>
+    sidebar.classList.contains("active") ? closeSidebar() : openSidebar()
+);
+overlay.addEventListener("click", closeSidebar);
+
+// Smooth-scroll anchor links and auto-close sidebar
+document.querySelectorAll("#sidebar_menu .sidebar-link").forEach(link => {
+    link.addEventListener("click", e => {
+        const href = link.getAttribute("href");
+        if (href && href !== "#") {
+            e.preventDefault();
+            closeSidebar();
+            const target = document.querySelector(href);
+            if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    });
 });
+
+// Sync sidebar recent-scans panel with check_link.js scanHistory
+function syncSidebarHistory() {
+    const panel = document.getElementById("sidebar_history_list");
+    if (!panel) return;
+    if (typeof scanHistory === "undefined" || scanHistory.length === 0) {
+        panel.innerHTML = '<p class="sidebar-empty">No scans yet this session</p>';
+        return;
+    }
+    const colors = { safe: "#16a34a", hazard: "#d97706", danger: "#dc2626" };
+    const labels = { safe: "Safe", hazard: "Warning", danger: "Danger" };
+    panel.innerHTML = "";
+    scanHistory.slice(0, 4).forEach(h => {
+        const row = document.createElement("div");
+        row.className = "sidebar-scan-row";
+        row.innerHTML = `
+            <span class="sidebar-scan-dot" style="background:${colors[h.level] || '#9ca3af'}"></span>
+            <span class="sidebar-scan-host"></span>
+            <span class="sidebar-scan-badge" style="color:${colors[h.level] || '#9ca3af'}">${labels[h.level] || "?"}</span>`;
+        row.querySelector(".sidebar-scan-host").textContent = h.hostname;
+        row.addEventListener("click", () => {
+            const inp = document.getElementById("link_input");
+            if (inp) inp.value = h.url;
+            closeSidebar();
+            document.getElementById("link_checker").scrollIntoView({ behavior: "smooth" });
+        });
+        panel.appendChild(row);
+    });
+}
+setInterval(syncSidebarHistory, 2000);
 </script>
 
     <button id="btn_head" onclick="openAboutModal()">About Us</button>
@@ -153,7 +252,7 @@ toggle.addEventListener("click", () => {
 </section>
  
 <!-- WHAT WEBSAFE DOES SECTION -->
-<section class="websafe-info">
+<section class="websafe-info" id="websafe-info-anchor">
   <div class="info-container">
 
     <!-- LEFT CONTENT -->
@@ -274,7 +373,7 @@ toggle.addEventListener("click", () => {
     </div>
 </section>
  
-<section class="ws-how-section">
+<section class="ws-how-section" id="how-it-works-anchor">
     <div class="ws-how-container">
 
         <span class="ws-how-badge">Simple 3-Step Process</span>
@@ -333,7 +432,7 @@ toggle.addEventListener("click", () => {
     </div>
 </section>
  
-<section class="ws-grid-section">
+<section class="ws-grid-section" id="authorities-anchor">
     <div class="ws-grid-container">
         
         <h2 class="ws-grid-title">What to Do if You Encounter a Phishing Scam in the Philippines</h2>

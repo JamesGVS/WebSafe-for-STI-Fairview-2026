@@ -1139,7 +1139,7 @@ body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 1100;
+    z-index: 1098;
     box-shadow: 0 6px 18px rgba(0,0,0,0.2);
     transition: transform 0.2s;
 }
@@ -1639,3 +1639,134 @@ body {
     #link_status > div div[style*="flex-wrap:wrap"]    { gap: 6px !important; }
     #link_status > div div[style*="font-size:13px"]    { font-size: 12px !important; }
 }
+ /* ── Sidebar overlay ── */
+        #sidebar_overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 1098;
+        }
+        #sidebar_overlay.active { display: block; }
+
+        /* ── Sidebar logo row ── */
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 20px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+        .sidebar-logo img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .sidebar-logo span {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: .5px;
+        }
+
+        /* ── Sidebar nav links ── */
+        #sidebar_menu a.sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255,255,255,0.88);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            padding: 11px 24px;
+            border-radius: 8px;
+            transition: background 0.18s, color 0.18s;
+        }
+        #sidebar_menu a.sidebar-link:hover {
+            background: rgba(255,255,255,0.15);
+            color: #ffffff;
+        }
+        .sidebar-icon { font-size: 17px; flex-shrink: 0; }
+
+        /* ── Inline history panel ── */
+        #sidebar_history_panel {
+            margin: 4px 10px 10px;
+            background: rgba(0,0,0,0.25);
+            border-radius: 8px;
+            padding: 8px 10px;
+            max-height: 160px;
+            overflow-y: auto;
+        }
+        .sidebar-empty {
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            padding: 6px 0;
+            margin: 0;
+        }
+        .sidebar-scan-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 4px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .sidebar-scan-row:hover { background: rgba(255,255,255,0.1); }
+        .sidebar-scan-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .sidebar-scan-host {
+            flex: 1;
+            font-size: 12px;
+            color: rgba(255,255,255,0.85);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .sidebar-scan-badge {
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* ── Divider ── */
+        .sidebar-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.12);
+            margin: 10px 16px 14px;
+        }
+
+        /* ── Quick Contacts block ── */
+        .sidebar-contacts {
+            padding: 0 16px 20px;
+        }
+        .sidebar-contacts-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            color: rgba(255,255,255,0.45);
+            margin: 0 0 10px;
+        }
+        .sidebar-contact-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            font-size: 12px;
+        }
+        .sidebar-contact-item span { color: rgba(255,255,255,0.65); }
+        .sidebar-contact-item a {
+            color: #93c5fd;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .sidebar-contact-item a:hover { color: #ffffff; }
+    
