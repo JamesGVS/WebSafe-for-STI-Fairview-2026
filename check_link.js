@@ -43,16 +43,18 @@ function normalizeURL(raw) {
         if (!/^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?$/.test(part)) return null;
     }
 
-    // Gibberish heuristic: labels >= 5 chars with no vowels are likely random
+    // Gibberish heuristic: only check purely alphabetic labels >= 5 chars with no vowels
+    // Skip labels containing numbers — alphanumeric domains like 1137x are legitimate
     const vowels = /[aeiou]/i;
     for (const part of parts) {
-        if (part.length >= 5 && !vowels.test(part)) return null;
+        const isAlphaOnly = /^[a-zA-Z]+$/.test(part);
+        if (isAlphaOnly && part.length >= 5 && !vowels.test(part)) return null;
     }
 
-    // Second gibberish check: if label looks like random consonant cluster
-    // (e.g. "nsnkd", "brtls", "zxcvb") — consonant ratio > 90% on long labels
+    // Second gibberish check: consonant ratio > 88% on long purely-alphabetic labels only
     for (const part of parts) {
-        if (part.length >= 6) {
+        const isAlphaOnly = /^[a-zA-Z]+$/.test(part);
+        if (isAlphaOnly && part.length >= 6) {
             const consonants = (part.match(/[bcdfghjklmnpqrstvwxyz]/gi) || []).length;
             if (consonants / part.length > 0.88) return null;
         }
