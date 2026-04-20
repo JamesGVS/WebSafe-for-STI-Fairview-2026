@@ -787,7 +787,11 @@ function friendlyFlagDetail(f) {
                 fb.innerHTML = `<span style="font-size:48px">🌐</span><p style="color:#1E3A8A;font-weight:700;font-size:16px;margin:12px 0 6px">${hostname}</p><p style="color:#94a3b8;font-size:13px;margin:0">Screenshot unavailable — this site may block preview services</p>`;
                 wrapper.appendChild(fb);
             }
+            // Remove any existing "Open in new tab" link before adding a fresh one
+            const existingLink = pvActions.querySelector('a[data-ws-newtab]');
+            if (existingLink) existingLink.remove();
             const a = document.createElement('a'); a.href = normalized; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = '🔗 Open in new tab';
+            a.setAttribute('data-ws-newtab', '1');
             a.style.cssText = 'display:inline-block;margin:12px 0 4px;padding:9px 20px;background:#1E3A8A;color:#F8FAFC;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;border:2px solid #000;';
             pvActions.appendChild(a);
         }
