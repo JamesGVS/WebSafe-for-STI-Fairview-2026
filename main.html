@@ -72,7 +72,7 @@
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             Contact Authorities
         </a>
-        <a href="#" id="aboutLink" class="sidebar-link">
+        <a href="about_us.html" id="aboutLink" class="sidebar-link">
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             About Us
         </a>
@@ -306,36 +306,6 @@ onlinecims.ocs@gmail.com</a>
     </div>
 </div>
 
-<!-- About Us floating modal (sidebar link) -->
-<div id="aboutModal" class="ws-about-modal" aria-modal="true" role="dialog">
-  <div class="ws-about-box">
-
-    <button class="ws-about-close" id="aboutModalClose" aria-label="Close">&times;</button>
-
-    <div class="ws-about-header">
-      <div class="ws-about-logo-wrap">
-        <img src="images/logo_circle.png" alt="WebSafe logo" class="ws-about-logo">
-      </div>
-      <div>
-        <h2 class="ws-about-title">The Technology Behind WebSafe</h2>
-        <p class="ws-about-subtitle">STI College Fairview · Student Project</p>
-      </div>
-    </div>
-
-    <div class="ws-about-prose">
-      <p>Developed by students from STI College Fairview, WebSafe is a website URL malware detector designed to identify and neutralize malicious links. Built on a robust Node.js backend and powered by advanced JavaScript analysis engines, the system evaluates incoming connection requests in real time to ensure user safety.</p>
-      <p>Rather than relying on simple blocklists, WebSafe utilizes its JavaScript-driven engine to analyze internet traffic patterns and identify malicious behavior. By leveraging the asynchronous capabilities of Node.js, the system evaluates structural signals such as protocol verification, encryption strength, and server reputation to pinpoint malicious infrastructure.</p>
-      <p>A standout component of the system is its preview feature, which allows users to view the contents of a website without being directed to it first. This provides a safe way to inspect a URL's layout and content within the WebSafe environment, effectively isolating the user from potential browser-based exploits or automatic downloads.</p>
-      <p>The analysis engine is trained on diverse datasets of verified safe and malicious connections, including metrics like origin verification and burst latency. For every request, WebSafe generates a safety score that suggests its reliability, providing a vital, student-engineered defensive layer for those who prioritize network security.</p>
-    </div>
-
-   <div class="ws-about-footer">
-      <sp an>Made with care for internet safety · STI College Fairview</span>
-    </div>
-
-  </div>
-</div>
-
 <!-- SOCIAL FLOAT -->
 <div class="social-float">
     <a href="https://www.facebook.com/profile.php?id=61588343251116" target="_blank" class="social-btn fb" aria-label="Facebook">
@@ -397,25 +367,6 @@ const greetings = [
 document.getElementById("dynamic_greeting").textContent =
     greetings[Math.floor(Math.random() * greetings.length)];
 
-/* ── About Us modal (sidebar) ── */
-function openAboutModal() {
-    const m = document.getElementById("aboutModal");
-    m.classList.add("show");
-    // Trigger card animations by re-adding anim class
-    m.querySelectorAll(".ws-about-card").forEach((c, i) => {
-        c.style.animation = "none";
-        c.offsetHeight; // reflow
-        c.style.animation = "";
-    });
-}
-function closeAboutModal() {
-    document.getElementById("aboutModal").classList.remove("show");
-}
-document.getElementById("aboutModalClose").addEventListener("click", closeAboutModal);
-document.getElementById("aboutModal").addEventListener("click", e => {
-    if (e.target === document.getElementById("aboutModal")) closeAboutModal();
-});
-
 /* ── Sidebar ── */
 const menuToggle   = document.getElementById("menu_toggle");
 const sidebarEl    = document.getElementById("sidebar_menu");
@@ -457,11 +408,11 @@ document.querySelectorAll("#sidebar_menu .sidebar-link").forEach(link => {
     });
 });
 
-/* Sidebar About Us link -> opens About modal */
+/* Sidebar About Us link -> navigate to about_us.html */
 document.getElementById("aboutLink").addEventListener("click", e => {
     e.preventDefault();
     closeSidebar();
-    openAboutModal();
+    window.location.href = "about_us.html";
 });
 
 /* ── Sidebar scan history sync ── */
