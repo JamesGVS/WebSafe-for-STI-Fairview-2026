@@ -194,19 +194,6 @@
     </div>
 </section>
 
-<!-- TECH BEHIND WEBSAFE -->
-<section class="ws-feature-block">
-    <div class="ws-container">
-        <div class="ws-content">
-            <h2 class="ws-title">The Technology Behind WebSafe</h2>
-            <p class="ws-text">Developed by students from STI College Fairview, WebSafe is a website URL malware detector designed to identify and neutralize malicious links. Built on a robust Node.js backend and powered by advanced JavaScript analysis engines, the system evaluates incoming connection requests in real time to ensure user safety.</p>
-            <p class="ws-text">Rather than relying on simple blocklists, WebSafe utilizes its JavaScript-driven engine to analyze internet traffic patterns and identify malicious behavior. By leveraging the asynchronous capabilities of Node.js, the system evaluates structural signals such as protocol verification, encryption strength, and server reputation to pinpoint malicious infrastructure.</p>
-            <p class="ws-text">A standout component of the system is its preview feature, which allows users to view the contents of a website without being directed to it first. This provides a safe way to inspect a URL's layout and content within the WebSafe environment, effectively isolating the user from potential browser-based exploits or automatic downloads.</p>
-            <p class="ws-text">The analysis engine is trained on diverse datasets of verified safe and malicious connections, including metrics like origin verification and burst latency. For every request, WebSafe generates a safety score that suggests its reliability, providing a vital, student-engineered defensive layer for those who prioritize network security.</p>
-        </div>
-    </div>
-</section>
-
 <!-- HOW IT WORKS -->
 <section class="ws-how-section" id="how-it-works-anchor">
     <div class="ws-how-container">
@@ -307,15 +294,15 @@
     </div>
 </section>
 
-<!-- SCAN HISTORY -->
-<section id="ws_history_section">
+<!-- SCAN HISTORY (hidden from page; data lives in sidebar only) -->
+<div id="ws_history_section" style="display:none" aria-hidden="true">
     <div id="ws_history_inner">
         <h3 id="ws_history_title">Recent Scans This Session</h3>
         <div id="ws_history_list">
             <p id="ws_history_empty">No scans yet this session</p>
         </div>
     </div>
-</section>
+</div>
 
 <!-- About Us floating modal (sidebar link) -->
 <div id="aboutModal" class="ws-about-modal" aria-modal="true" role="dialog">
