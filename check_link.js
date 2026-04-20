@@ -445,6 +445,7 @@ function friendlyFlagDetail(f) {
             });
             statusEl.appendChild(reportBtn);
         }
+    }
 
     async function checkLink() {
         if (!input || !btn) return;

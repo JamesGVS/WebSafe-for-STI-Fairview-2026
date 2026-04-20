@@ -492,17 +492,12 @@ document.querySelectorAll("#sidebar_menu .sidebar-link").forEach(link => {
     });
 });
 
-/* Sidebar About Us link -> floating modal */
+/* Sidebar About Us link -> opens header About modal */
 document.getElementById("aboutLink").addEventListener("click", e => {
     e.preventDefault();
     closeSidebar();
-    document.getElementById("aboutModal").classList.add("show");
+    openAboutModal();
 });
-
-/* Floating About modal */
-const floatingModal = document.getElementById("aboutModal");
-document.querySelector(".close-btn").addEventListener("click", () => floatingModal.classList.remove("show"));
-floatingModal.addEventListener("click", e => { if (e.target === floatingModal) floatingModal.classList.remove("show"); });
 
 /* ── Sidebar scan history sync ── */
 function syncSidebarHistory() {
