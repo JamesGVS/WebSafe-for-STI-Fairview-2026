@@ -23,15 +23,15 @@ body {
     justify-content: flex-start;
     align-items: center;
     width: 100%;
-    height: 100px;
+    height: 120px;
     background-color: #131e40;
     padding-left: 70px; /* leave room for the hamburger */
     padding-right: 20px;
 }
 
 #head_logo img {
-    width: 125px;
-    height: 100px;
+    width: 150px;
+    height: 140px;
     margin-right: 20px;
     border-radius: 50%;
     object-fit: cover;
@@ -377,62 +377,18 @@ body {
     margin: 0;
 }
 
-/* Cards grid */
-.ws-about-body {
-    padding: 24px 32px 20px;
+/* Prose body */
+.ws-about-prose {
+    padding: 28px 36px 20px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
-}
-.ws-about-card {
-    display: flex;
-    align-items: flex-start;
     gap: 16px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 14px;
-    padding: 18px 20px;
-    opacity: 0;
-    transform: translateY(16px);
-    transition: background 0.2s, transform 0.2s;
 }
-.ws-about-card:hover {
-    background: rgba(255,255,255,0.1);
-    transform: translateY(-2px);
-}
-.ws-about-card h3 {
+.ws-about-prose p {
     font-size: 14px;
-    font-weight: 700;
-    color: #93c5fd;
-    margin: 0 0 6px;
-}
-.ws-about-card p {
-    font-size: 13px;
-    color: rgba(255,255,255,0.75);
-    line-height: 1.6;
+    color: rgba(255,255,255,0.78);
+    line-height: 1.75;
     margin: 0;
-}
-.ws-about-card-icon {
-    flex-shrink: 0;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: rgba(147,197,253,0.15);
-    border: 1px solid rgba(147,197,253,0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #93c5fd;
-}
-
-/* Staggered card animations when modal opens */
-.ws-about-modal.show .ws-anim-1 { animation: wsCardIn 0.38s cubic-bezier(0.22,1,0.36,1) 0.10s both; }
-.ws-about-modal.show .ws-anim-2 { animation: wsCardIn 0.38s cubic-bezier(0.22,1,0.36,1) 0.18s both; }
-.ws-about-modal.show .ws-anim-3 { animation: wsCardIn 0.38s cubic-bezier(0.22,1,0.36,1) 0.26s both; }
-.ws-about-modal.show .ws-anim-4 { animation: wsCardIn 0.38s cubic-bezier(0.22,1,0.36,1) 0.34s both; }
-@keyframes wsCardIn {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Footer */
@@ -1084,6 +1040,17 @@ body {
     font-size: 1rem;
     line-height: 1.5;
     color: #4a5568;
+}
+
+.ws-feature-text p a {
+    color: #2563eb;
+    text-decoration: underline;
+    font-weight: 600;
+    transition: color 0.18s;
+}
+
+.ws-feature-text p a:hover {
+    color: #1a3c5d;
 }
 
 /* SCAN HISTORY */
