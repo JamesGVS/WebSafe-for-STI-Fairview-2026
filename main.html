@@ -449,6 +449,7 @@ function closeAboutModal() {
         modal.style.animation = '';
     }, { once: true });
 }
+</script>
 
 <script>
 const aboutBtn = document.getElementById("btn_head");
@@ -497,19 +498,18 @@ function closeAboutModal() {
 
 /* Greeting */
 const greetings = [
-    "Hello, Daryn. Are you ready?",
-    "Welcome back, Daryn!",
+    "Hello, User. Are you ready?",
+    "Welcome back, User!",
     "I'm glad to have you back! ^^",
-    "Good to see you again, Laurence!",
-    "Let’s get started, Laurence!",
-    "Back again? Let’s make it count, Laurence.",
-    "Ready for another scan, Laurence?",
-    "Let’s keep you safe online, Laurence!"
+    "Good to see you again, User!",
+    "Let’s get started, User!",
+    "Back again? Let’s make it count, User.",
+    "Ready for another scan, User?",
+    "Let’s keep you safe online, User!"
 ];
 
 document.getElementById("dynamic_greeting").textContent =
     greetings[Math.floor(Math.random() * greetings.length)];
-</script>
 </script>
 
 </div>
