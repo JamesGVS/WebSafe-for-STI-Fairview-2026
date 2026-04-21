@@ -68,7 +68,7 @@
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
             How It Works
         </a>
-        <a href="#authorities-anchor" class="sidebar-link">
+        <a href="contact_local.html" class="sidebar-link">
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             Contact Authorities
         </a>
@@ -296,6 +296,36 @@ onlinecims.ocs@gmail.com</a>
     </div>
 </section>
 
+<div class="phishing-section">
+  <div class="phishing-content">
+
+    <!-- ICON -->
+    <div class="phishing-icon">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2L2 20h20L12 2z" fill="none" stroke="currentColor" stroke-width="2"/>
+        <line x1="12" y1="9" x2="12" y2="14" stroke="currentColor" stroke-width="2"/>
+        <circle cx="12" cy="17" r="1" fill="currentColor"/>
+      </svg>
+    </div>
+
+    <!-- TITLE -->
+    <h1>Stay Protected from Phishing Scams</h1>
+
+    <!-- DESCRIPTION -->
+    <p>
+      Learn what to do if you encounter a phishing scam in the Philippines.
+      Get important contacts, reporting procedures, and safety guidelines.
+    </p>
+
+    <!-- BUTTON -->
+    <a href="#" class="phishing-btn">
+      View Phishing Safety Guide
+    </a>
+
+  </div>
+</div>
+
+
 <!-- SCAN HISTORY (hidden from page; data lives in sidebar only) -->
 <div id="ws_history_section" style="display:none" aria-hidden="true">
     <div id="ws_history_inner">
@@ -306,15 +336,6 @@ onlinecims.ocs@gmail.com</a>
     </div>
 </div>
 
-<!-- SOCIAL FLOAT -->
-<div class="social-float">
-    <a href="https://www.facebook.com/profile.php?id=61588343251116" target="_blank" class="social-btn fb" aria-label="Facebook">
-        <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook">
-    </a>
-    <a href="https://mail.google.com/mail/u/0/?fbclid=IwY2xjawRSlTpleHRuA2FlbQIxMQBzcnRjBmFwcF9pZAEwAAEe6Q9IoJ_9p44X5t-G0XqQZdxSNIhv2CA0SGs58j5KXwiEglo7IbozbN9v8eI_aem_cysWPqQjpnzEhGzVQXcSDg#search/websafe.protects%40gmail.com" target="_blank" class="social-btn gmail" aria-label="Gmail">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg" alt="Gmail">
-    </a>
-</div>
 
 <!-- CHAT BUTTON -->
 <div class="chat-toggle" id="chatToggle" aria-label="Open chat assistant">
@@ -357,12 +378,12 @@ window.addEventListener("load", () => {
 
 /* ── Random greeting ── */
 const greetings = [
-    "Hello, User. Are you ready?",
-    "Welcome, User!",
-    "Good to see you again, User!",
-    "Let's get started, User!",
-    "Ready for another scan, User?",
-    "Let's keep you safe online, User!"
+    "Hello there! Are you ready?",
+    "Welcome to WebSafe!",
+    "Good to see you again!",
+    "Let's get started, Shall we?",
+    "Are you ready for another scan?",
+    "Let's keep you safe now."
 ];
 document.getElementById("dynamic_greeting").textContent =
     greetings[Math.floor(Math.random() * greetings.length)];
@@ -453,6 +474,67 @@ chatToggleBtn.onclick = () => chatWidgetEl.classList.toggle("show");
 </script>
 
 </div><!-- /#main_content -->
+
+
+<div class="footer-section">
+
+  <!-- LEFT: SOCIAL BUTTON CARD -->
+  <div class="footer-left">
+    <div class="card">
+      <div class="background"></div>
+      <div class="logo">SOCIALS</div>
+
+      <!-- GMAIL -->
+      <a href="#" class="box box1">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" class="svg">
+            <path d="M2 6l10 7L22 6v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6z"/>
+            <path d="M22 6l-10 7L2 6l10-4 10 4z"/>
+          </svg>
+        </span>
+      </a>
+
+      <!-- FACEBOOK -->
+      <a href="#" class="box box2">
+        <span class="icon">
+          <svg viewBox="0 0 320 512" class="svg">
+            <path d="M279.14 288l14.22-92.66h-88.91V127.69c0-25.35 
+            12.42-50.06 52.24-50.06H293V6.26S259.43 0 
+            225.36 0c-73.22 0-121.09 44.38-121.09 
+            124.72v70.62H22.89V288h81.38v224h100.17V288z"/>
+          </svg>
+        </span>
+      </a>
+
+      <!-- INSTAGRAM -->
+      <a href="#" class="box box3">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" class="svg">
+            <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 
+            2.2 5 5 5h10c2.8 0 5-2.2 
+            5-5V7c0-2.8-2.2-5-5-5H7zm5 
+            4a6 6 0 110 12 6 6 0 010-12zm6.5-1.5a1.5 
+            1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+          </svg>
+        </span>
+      </a>
+
+      <div class="box box4"></div>
+    </div>
+  </div>
+
+  <div class="footer-center">
+    <p>
+      WebSafe helps people stay in control of online browsing by allowing links to be checked before opening them. Simply enter a URL to preview important details and understand what to expect before visiting a page. The platform also scans links for potential risks, helping detect suspicious or unsafe content early. With WebSafe, browsing becomes safer, more confident, and less likely to lead to harmful websites.
+    </p>
+
+    <p class="footer-copy">
+       2026 WebSafe. STI College - Fairview.
+    </p>
+  </div>
+
+</div>
+
 
 </body>
 </html>
