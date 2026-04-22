@@ -1,0 +1,402 @@
+/* =====================
+   RESET & BASE
+   ===================== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg:         #0b0f1a;
+  --bg2:        #0f1525;
+  --surface:    #121929;
+  --surface2:   #172035;
+  --border:     rgba(59, 130, 246, 0.18);
+  --border-hi:  rgba(59, 130, 246, 0.55);
+  --blue:       #3b82f6;
+  --blue-hi:    #60a5fa;
+  --cyan:       #22d3ee;
+  --green:      #22c55e;
+  --green-hi:   #4ade80;
+  --text:       #e2e8f0;
+  --muted:      #64748b;
+  --mono:       "IBM Plex Mono", monospace;
+  --sans:       "Space Grotesk", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* NOISE OVERLAY */
+.noise {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px;
+}
+
+/* =====================
+   LAYOUT
+   ===================== */
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 48px 20px 100px;
+  position: relative;
+  z-index: 1;
+}
+
+/* =====================
+   HEADER
+   ===================== */
+.site-header {
+  margin-bottom: 56px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--blue-hi);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--border-hi);
+  padding: 4px 12px;
+  border-radius: 100px;
+  margin-bottom: 20px;
+}
+
+.site-header h1 {
+  font-size: clamp(36px, 6vw, 60px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.site-header h1 .accent {
+  color: var(--blue);
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--muted);
+  letter-spacing: 0.01em;
+}
+
+/* =====================
+   SECTION
+   ===================== */
+.section {
+  margin-bottom: 44px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-num {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--border-hi);
+  line-height: 1;
+}
+
+/* =====================
+   GRID
+   ===================== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+/* =====================
+   CARD
+   ===================== */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+
+  /* entry state */
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* top glow line */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 16px; right: 16px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--blue), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.card:hover {
+  border-color: var(--border-hi);
+  box-shadow: 0 0 0 1px var(--border-hi),
+              0 8px 32px rgba(59, 130, 246, 0.12);
+  transform: translateY(-3px);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+/* Active / selected state (mirrors reference image's highlighted card) */
+.card.active {
+  border-color: var(--blue);
+  background: var(--surface2);
+  box-shadow: 0 0 0 1px var(--blue),
+              0 12px 40px rgba(59, 130, 246, 0.2);
+}
+
+.card.active::before {
+  opacity: 1;
+}
+
+/* =====================
+   CARD HEADER
+   ===================== */
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.card-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 3px;
+}
+
+.desc {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+/* =====================
+   CONTACT ROWS
+   ===================== */
+.contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.05);
+  padding: 7px 10px;
+  border-radius: 7px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.row:hover {
+  background: rgba(59, 130, 246, 0.07);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--text);
+  letter-spacing: 0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 68%;
+}
+
+/* =====================
+   BUTTONS
+   ===================== */
+.btn {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: none;
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  transform: scale(1.06);
+  opacity: 0.92;
+}
+
+/* Green call button */
+.btn.green {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: var(--green-hi);
+}
+.btn.green:hover {
+  background: rgba(34, 197, 94, 0.25);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+}
+
+/* Blue email button */
+.btn.blue {
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: var(--blue-hi);
+}
+.btn.blue:hover {
+  background: rgba(59, 130, 246, 0.25);
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+}
+
+/* Save button */
+.btn.save {
+  width: 100%;
+  padding: 8px;
+  font-size: 11px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--border-hi);
+  color: var(--blue-hi);
+  border-radius: 8px;
+  letter-spacing: 0.04em;
+}
+.btn.save:hover {
+  background: rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.2);
+  transform: translateY(-1px);
+}
+
+/* =====================
+   FLOATING EMERGENCY BTN
+   ===================== */
+.emergency {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  z-index: 100;
+
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+
+  padding: 13px 20px;
+  border-radius: 100px;
+  cursor: pointer;
+
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  animation: pulse 2s infinite;
+}
+
+.emergency:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 28px rgba(220, 38, 38, 0.55);
+}
+
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(220, 38, 38, 0.55); }
+  60%  { box-shadow: 0 0 0 14px rgba(220, 38, 38, 0); }
+  100% { box-shadow: 0 0 0 0   rgba(220, 38, 38, 0); }
+}
+
+/* =====================
+   MOBILE
+   ===================== */
+@media (max-width: 520px) {
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .mono {
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-all;
+  }
+
+  .btn.green,
+  .btn.blue {
+    width: 100%;
+    text-align: center;
+    padding: 6px 10px;
+  }
+
+  .site-header h1 {
+    font-size: 36px;
+  }
+}

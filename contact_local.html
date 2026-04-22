@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phishing Contacts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="contact_local.css">
+</head>
+<body>
+
+<div class="noise"></div>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <span class="badge">🛡 CYBERSECURITY</span>
+    <h1>Phishing<br><span class="accent">Contacts</span></h1>
+    <p class="subtitle">Quick report access for Philippine cyber incidents</p>
+  </header>
+
+  <!-- LAW -->
+  <section class="section">
+    <h2 class="section-title"><span class="section-num">01</span>Law Enforcement</h2>
+    <div class="grid">
+
+      <div class="card" data-index="0">
+        <div class="card-header">
+          <div class="card-icon">⚖️</div>
+          <div>
+            <h3>PNP ACG</h3>
+            <p class="desc">Hacked accounts, impersonation, active scams.</p>
+          </div>
+        </div>
+        <div class="contacts">
+          <div class="row"><span class="mono">📞 8723-0401</span><a href="tel:0287230401" class="btn green">Call</a></div>
+          <div class="row"><span class="mono">📧 acg@pnp.gov.ph</span><a href="mailto:acg@pnp.gov.ph" class="btn blue">Email</a></div>
+          <div class="row"><span class="mono">📧 onlinecrime.pnp@gmail.com</span><a href="mailto:onlinecrime.pnp@gmail.com" class="btn blue">Email</a></div>
+        </div>
+        <button class="btn save" onclick="saveContact('PNP ACG','0287230401','acg@pnp.gov.ph')">⬇ Save Contact</button>
+      </div>
+
+      <div class="card" data-index="1">
+        <div class="card-header">
+          <div class="card-icon">🔍</div>
+          <div>
+            <h3>NBI Cybercrime</h3>
+            <p class="desc">Money loss, identity theft, serious fraud.</p>
+          </div>
+        </div>
+        <div class="contacts">
+          <div class="row"><span class="mono">📞 8523-8231</span><a href="tel:0285238231" class="btn green">Call</a></div>
+          <div class="row"><span class="mono">📞 8526-6201</span><a href="tel:0285266201" class="btn green">Call</a></div>
+          <div class="row"><span class="mono">📞 8525-4093</span><a href="tel:0285254093" class="btn green">Call</a></div>
+          <div class="row"><span class="mono">📱 0955-140-5330</span><a href="tel:09551405330" class="btn green">Call</a></div>
+          <div class="row"><span class="mono">📱 0920-412-9999</span><a href="tel:09204129999" class="btn green">Call</a></div>
+          <div class="row"><span class="mono">📧 ccd@nbi.gov.ph</span><a href="mailto:ccd@nbi.gov.ph" class="btn blue">Email</a></div>
+        </div>
+        <button class="btn save" onclick="saveContact('NBI Cybercrime','0285238231','ccd@nbi.gov.ph')">⬇ Save Contact</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FINANCIAL -->
+  <section class="section">
+    <h2 class="section-title"><span class="section-num">02</span>Financial</h2>
+    <div class="grid">
+
+      <div class="card" data-index="2">
+        <div class="card-header">
+          <div class="card-icon">🏦</div>
+          <div>
+            <h3>BSP</h3>
+            <p class="desc">Unauthorized bank/e-wallet transactions.</p>
+          </div>
+        </div>
+        <div class="contacts">
+          <div class="row"><span class="mono">📞 8708-7087</span><a href="tel:0287087087" class="btn green">Call</a></div>
+          <div class="row"><span class="mono">📧 consumeraffairs@bsp.gov.ph</span><a href="mailto:consumeraffairs@bsp.gov.ph" class="btn blue">Email</a></div>
+        </div>
+        <button class="btn save" onclick="saveContact('BSP','0287087087','consumeraffairs@bsp.gov.ph')">⬇ Save Contact</button>
+      </div>
+
+      <div class="card" data-index="3">
+        <div class="card-header">
+          <div class="card-icon">📈</div>
+          <div>
+            <h3>SEC</h3>
+            <p class="desc">Investment scams, crypto fraud, Ponzi schemes.</p>
+          </div>
+        </div>
+        <div class="contacts">
+          <div class="row"><span class="mono">📞 8818-5990</span><a href="tel:0288185990" class="btn green">Call</a></div>
+          <div class="row"><span class="mono">📞 8818-6047</span><a href="tel:0288186047" class="btn green">Call</a></div>
+          <div class="row"><span class="mono">📧 epd@sec.gov.ph</span><a href="mailto:epd@sec.gov.ph" class="btn blue">Email</a></div>
+        </div>
+        <button class="btn save" onclick="saveContact('SEC','0288185990','epd@sec.gov.ph')">⬇ Save Contact</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PRIVACY -->
+  <section class="section">
+    <h2 class="section-title"><span class="section-num">03</span>Privacy</h2>
+    <div class="grid">
+
+      <div class="card" data-index="4">
+        <div class="card-header">
+          <div class="card-icon">🔐</div>
+          <div>
+            <h3>Privacy Commission</h3>
+            <p class="desc">Data leaks, phishing forms, identity misuse.</p>
+          </div>
+        </div>
+        <div class="contacts">
+          <div class="row"><span class="mono">📞 5322-1322</span><a href="tel:0253221322" class="btn green">Call</a></div>
+          <div class="row"><span class="mono">📱 0970-818-0555</span><a href="tel:09708180555" class="btn green">Call</a></div>
+          <div class="row"><span class="mono">📱 0905-506-1478</span><a href="tel:09055061478" class="btn green">Call</a></div>
+          <div class="row"><span class="mono">📧 info@privacy.gov.ph</span><a href="mailto:info@privacy.gov.ph" class="btn blue">Email</a></div>
+        </div>
+        <button class="btn save" onclick="saveContact('NPC','0253221322','info@privacy.gov.ph')">⬇ Save Contact</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CYBER -->
+  <section class="section">
+    <h2 class="section-title"><span class="section-num">04</span>Cyber</h2>
+    <div class="grid">
+
+      <div class="card" data-index="5">
+        <div class="card-header">
+          <div class="card-icon">🌐</div>
+          <div>
+            <h3>DICT</h3>
+            <p class="desc">Report phishing links and fake websites.</p>
+          </div>
+        </div>
+        <div class="contacts">
+          <div class="row"><span class="mono">📧 onlinescam@dict.gov.ph</span><a href="mailto:onlinescam@dict.gov.ph" class="btn blue">Email</a></div>
+        </div>
+        <button class="btn save" onclick="saveContact('DICT','','onlinescam@dict.gov.ph')">⬇ Save Contact</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SMS / TELCO -->
+  <section class="section">
+    <h2 class="section-title"><span class="section-num">05</span>SMS / Telco</h2>
+    <div class="grid">
+
+      <div class="card" data-index="6">
+        <div class="card-header">
+          <div class="card-icon">📡</div>
+          <div>
+            <h3>Globe</h3>
+            <p class="desc">Spam texts, phishing SMS.</p>
+          </div>
+        </div>
+        <div class="contacts">
+          <div class="row"><span class="mono">📞 211</span><a href="tel:211" class="btn green">Call</a></div>
+          <div class="row"><span class="mono">📧 stopspam@globe.com.ph</span><a href="mailto:stopspam@globe.com.ph" class="btn blue">Email</a></div>
+        </div>
+        <button class="btn save" onclick="saveContact('Globe','211','stopspam@globe.com.ph')">⬇ Save Contact</button>
+      </div>
+
+      <div class="card" data-index="7">
+        <div class="card-header">
+          <div class="card-icon">📶</div>
+          <div>
+            <h3>Smart</h3>
+            <p class="desc">Scam texts and phishing messages.</p>
+          </div>
+        </div>
+        <div class="contacts">
+          <div class="row"><span class="mono">📞 *888</span><a href="tel:*888" class="btn green">Call</a></div>
+          <div class="row"><span class="mono">📧 reportphishing@smart.com.ph</span><a href="mailto:reportphishing@smart.com.ph" class="btn blue">Email</a></div>
+        </div>
+        <button class="btn save" onclick="saveContact('Smart','*888','reportphishing@smart.com.ph')">⬇ Save Contact</button>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<!-- FLOATING BUTTON -->
+<div class="emergency" onclick="scrollToTop()">🚨 Report</div>
+
+<script>
+function saveContact(name, phone, email) {
+  let vcf = "BEGIN:VCARD\nVERSION:3.0\n";
+  vcf += `FN:${name}\n`;
+  if (phone) vcf += `TEL:${phone}\n`;
+  if (email) vcf += `EMAIL:${email}\n`;
+  vcf += "END:VCARD";
+  const blob = new Blob([vcf], { type: "text/vcard" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = name + ".vcf";
+  link.click();
+}
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// Staggered card reveal on scroll
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach((e) => {
+    if (e.isIntersecting) {
+      const idx = parseInt(e.target.dataset.index) || 0;
+      setTimeout(() => {
+        e.target.classList.add("show");
+      }, (idx % 4) * 80);
+      obs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll(".card").forEach(el => obs.observe(el));
+
+// Active card highlight on click
+document.querySelectorAll(".card").forEach(card => {
+  card.addEventListener("click", function(e) {
+    if (e.target.tagName === "A" || e.target.tagName === "BUTTON") return;
+    document.querySelectorAll(".card").forEach(c => c.classList.remove("active"));
+    this.classList.add("active");
+  });
+});
+</script>
+
+</body>
+</html>
