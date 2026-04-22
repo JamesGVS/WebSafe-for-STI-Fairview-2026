@@ -152,7 +152,8 @@
         </button>
 
         <div id="loading_spinner"></div>
-        <span id="safety_status"></span>
+        <!-- Safety status badge: hidden by default, shown after scan with accurate class -->
+        <span id="safety_status" role="status" aria-live="polite"></span>
     </div>
 
     <div id="results_row">
@@ -326,13 +327,10 @@
                 <div class="threat-num">02</div>
                 <div class="threat-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="7" rx="1"/>
-                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
                         <rect x="3" y="14" width="7" height="7" rx="1"/>
-                        <rect x="14" y="14" width="3" height="3"/>
-                        <rect x="18" y="14" width="3" height="3"/>
-                        <rect x="14" y="18" width="3" height="3"/>
-                        <rect x="18" y="18" width="3" height="3"/>
+                        <rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/>
+                        <rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>
                     </svg>
                 </div>
                 <h3>QR Code Scams</h3>
@@ -521,8 +519,6 @@
         <p class="ws-qr-small reveal reveal-d4">Here's how it works:</p>
 
         <div class="ws-qr-steps">
-
-            <!-- STEP 01 -->
             <div class="ws-qr-step-card reveal reveal-d2">
                 <div class="ws-qr-scan-line"></div>
                 <div class="ws-qr-step-icon">
@@ -534,7 +530,6 @@
                 <p>Scan a QR code using your camera or upload an image. WebSafe extracts the hidden data instantly without opening the link.</p>
             </div>
 
-            <!-- STEP 02 -->
             <div class="ws-qr-step-card reveal reveal-d3">
                 <div class="ws-qr-scan-line"></div>
                 <div class="ws-qr-step-icon">
@@ -546,7 +541,6 @@
                 <p>The system inspects the extracted content, checking for suspicious domains, unsafe protocols, redirects, or known phishing patterns.</p>
             </div>
 
-            <!-- STEP 03 -->
             <div class="ws-qr-step-card reveal reveal-d4">
                 <div class="ws-qr-scan-line"></div>
                 <div class="ws-qr-step-icon">
@@ -557,7 +551,6 @@
                 <h3>Review</h3>
                 <p>Get a clear safety result with warnings and risk indicators so you can decide whether to proceed or avoid the QR code.</p>
             </div>
-
         </div>
     </div>
 </section>
@@ -635,31 +628,107 @@
 </div>
 
 
-<!-- CHAT BUTTON -->
-<div class="chat-toggle" id="chatToggle" aria-label="Open chat assistant">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-    </svg>
-</div>
-
-<!-- CHAT WINDOW -->
-<div class="chat-widget" id="chatWidget">
-    <div class="chat-header">
-        <span>WebSafe Assistant</span>
-        <button id="closeChat">&times;</button>
+<!-- ══════════════════════════════════════════
+     CHAT TOGGLE BUTTON
+══════════════════════════════════════════ -->
+<button class="chat-toggle" id="chatToggle" aria-label="Open chat assistant" aria-expanded="false">
+    <div class="chat-toggle-inner">
+        <svg class="chat-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <svg class="chat-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
     </div>
-    <div class="chat-body">
-        <div class="bot-message">Hi there! I'm your WebSafe Assistant. Ask me anything about how WebSafe works.</div>
-        <div class="quick-actions">
-            <div class="action">Report a phishing scam</div>
-            <div class="action">Contact authorities</div>
-            <div class="action">Learn about security</div>
-            <div class="action">Get help</div>
+    <span class="chat-toggle-pulse"></span>
+</button>
+
+<!-- ══════════════════════════════════════════
+     CHAT WIDGET
+══════════════════════════════════════════ -->
+<div class="chat-widget" id="chatWidget" aria-hidden="true">
+    <div class="chat-header">
+        <div class="chat-header-left">
+            <div class="chat-avatar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <div class="chat-header-info">
+                <span class="chat-header-name">WebSafe Assistant</span>
+                <span class="chat-header-status">
+                    <span class="chat-status-dot"></span>Online
+                </span>
+            </div>
+        </div>
+        <button id="closeChat" aria-label="Close chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="chat-body" id="chatBody">
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-msg bot-msg">
+                <div class="msg-avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <div class="msg-bubble">
+                    Hi there! I'm your <strong>WebSafe Assistant</strong>. I can help you understand cybersecurity threats, guide you on using WebSafe, and advise on what to do if you encounter a scam.
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-quick-actions" id="chatQuickActions">
+            <p class="quick-actions-label">Quick questions</p>
+            <div class="quick-actions-grid">
+                <button class="quick-action-btn" data-msg="How do I report a phishing scam in the Philippines?">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    Report a phishing scam
+                </button>
+                <button class="quick-action-btn" data-msg="What are the cybercrime authorities I can contact in the Philippines?">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.08 6.08l1.97-1.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    Contact authorities
+                </button>
+                <button class="quick-action-btn" data-msg="What types of online threats should I watch out for?">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Online threat types
+                </button>
+                <button class="quick-action-btn" data-msg="How does WebSafe check if a URL is safe?">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    How WebSafe works
+                </button>
+            </div>
         </div>
     </div>
+
+    <div class="chat-typing" id="chatTyping" aria-hidden="true">
+        <div class="msg-avatar small">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+        </div>
+        <div class="typing-bubble">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+
     <div class="chat-footer">
-        <input type="text" placeholder="Ask something…">
-        <button>Send</button>
+        <div class="chat-input-wrap">
+            <input type="text" id="chatInput" placeholder="Ask me anything…" autocomplete="off" maxlength="500">
+            <button id="chatSendBtn" aria-label="Send message">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+            </button>
+        </div>
+        <p class="chat-footer-note">Powered by Claude AI · WebSafe 2026</p>
     </div>
 </div>
 
@@ -707,7 +776,9 @@
 <script src="check_link.js"></script>
 
 <script>
-/* PARTICLE CANVAS */
+/* ══════════════════════════════════════════
+   PARTICLE CANVAS
+══════════════════════════════════════════ */
 (function () {
     const canvas = document.getElementById("bg-canvas");
     const ctx = canvas.getContext("2d");
@@ -734,7 +805,9 @@
     draw();
 })();
 
-/* SCROLL REVEAL */
+/* ══════════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════════ */
 (function () {
     const obs = new IntersectionObserver((entries) => {
         entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); } });
@@ -742,7 +815,9 @@
     document.querySelectorAll(".reveal, .reveal-left, .reveal-right").forEach(el => obs.observe(el));
 })();
 
-/* LOADER */
+/* ══════════════════════════════════════════
+   LOADER
+══════════════════════════════════════════ */
 window.addEventListener("load", () => {
     setTimeout(() => {
         document.getElementById("loader").classList.add("hide");
@@ -750,11 +825,15 @@ window.addEventListener("load", () => {
     }, 2000);
 });
 
-/* RANDOM GREETING */
+/* ══════════════════════════════════════════
+   RANDOM GREETING
+══════════════════════════════════════════ */
 const greetings = ["Hello there! Are you ready?","Welcome to WebSafe!","Good to see you again!","Let's get started, Shall we?","Are you ready for another scan?","Let's keep you safe now."];
 document.getElementById("dynamic_greeting").textContent = greetings[Math.floor(Math.random() * greetings.length)];
 
-/* THREAT CARD CYCLE */
+/* ══════════════════════════════════════════
+   THREAT CARD CYCLE
+══════════════════════════════════════════ */
 (function () {
     const cards = document.querySelectorAll(".threat-card");
     let current = 2;
@@ -765,7 +844,9 @@ document.getElementById("dynamic_greeting").textContent = greetings[Math.floor(M
     }, 3000);
 })();
 
-/* SIDEBAR */
+/* ══════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════ */
 const menuToggle   = document.getElementById("menu_toggle");
 const sidebarEl    = document.getElementById("sidebar_menu");
 const overlayEl    = document.getElementById("sidebar_overlay");
@@ -802,13 +883,9 @@ function syncSidebarHistory() {
 }
 setInterval(syncSidebarHistory, 2000);
 
-/* CHAT WIDGET */
-const chatToggleBtn = document.getElementById("chatToggle");
-const chatWidgetEl  = document.getElementById("chatWidget");
-document.getElementById("closeChat").onclick = () => chatWidgetEl.classList.remove("show");
-chatToggleBtn.onclick = () => chatWidgetEl.classList.toggle("show");
-
-/* ELEMENT REFERENCES */
+/* ══════════════════════════════════════════
+   ELEMENT REFERENCES
+══════════════════════════════════════════ */
 const input       = document.getElementById("link_input");
 const checkBtn    = document.getElementById("check_btn");
 const previewBtn  = document.getElementById("preview_btn");
@@ -850,7 +927,9 @@ checkBtn.onclick   = analyzeLink;
 previewBtn.onclick = showPreview;
 input.addEventListener("keydown", e => { if (e.key === "Enter") analyzeLink(); });
 
-/* CAMERA QR MODAL */
+/* ══════════════════════════════════════════
+   CAMERA QR MODAL
+══════════════════════════════════════════ */
 scanBtn.onclick = () => { qrModal.classList.remove("hidden"); setTimeout(() => qrModal.classList.add("show"), 10); document.body.style.overflow = "hidden"; };
 closeQR.onclick = () => { qrModal.classList.remove("show"); viewfinder.classList.remove("scanning"); setTimeout(() => qrModal.classList.add("hidden"), 300); document.body.style.overflow = ""; if (html5QrCode && isScanning) { html5QrCode.stop().catch(() => {}); isScanning = false; } };
 startScan.onclick = async () => {
@@ -866,7 +945,9 @@ startScan.onclick = async () => {
     } catch { viewfinder.classList.remove("scanning"); alert("Camera error — please allow camera access and try again."); }
 };
 
-/* UPLOAD QR MODAL */
+/* ══════════════════════════════════════════
+   UPLOAD QR MODAL
+══════════════════════════════════════════ */
 uploadQrBtn.onclick = () => { resetUploadModal(); qrUploadModal.classList.remove("hidden"); setTimeout(() => qrUploadModal.classList.add("show"), 10); document.body.style.overflow = "hidden"; };
 closeQrUpload.onclick = closeUploadModal;
 qrUploadModal.addEventListener("click", e => { if (e.target === qrUploadModal) closeUploadModal(); });
@@ -904,7 +985,9 @@ qrUploadScanBtn.addEventListener("click", () => {
 });
 function showUploadResult(type, icon, label, detail, url) { qrResultIcon.textContent = icon; qrResultLabel.innerHTML = `<strong>${label}</strong>${detail?` <br><small style="font-weight:400;opacity:0.8">${detail}</small>`:""}`; qrResultUrl.textContent = url || ""; qrUploadResult.className = `qr-upload-result visible ${type}`; }
 
-/* SAFETY CHECK LOGIC */
+/* ══════════════════════════════════════════
+   SAFETY CHECK LOGIC
+══════════════════════════════════════════ */
 function checkUrlSafety(urlText) {
     let score = 100;
     const results = { https:true, reachable:true, ssl:true, threat:true, conn:true, domain:true, gsb:true, content:true };
@@ -919,6 +1002,7 @@ function checkUrlSafety(urlText) {
     if (score < 40) level = "danger"; else if (score < 70) level = "hazard";
     return { score, results, level };
 }
+
 const CHECK_DEFS = [
     { key:"https",    label:"HTTPS",               key_pill:true,  pass_msg:"Connection is private and encrypted",                    fail_msg:"Site does not use encryption — avoid entering personal info" },
     { key:"reachable",label:"Reachable",            key_pill:false, pass_msg:"Website is online and responding",                      fail_msg:"Could not reach this website" },
@@ -930,47 +1014,330 @@ const CHECK_DEFS = [
     { key:"content",  label:"Page Content",         key_pill:false, pass_msg:"No suspicious content detected",                       fail_msg:"Suspicious content patterns detected" },
 ];
 
-function analyzeLink() {
-    const urlText = input.value.trim();
-    if (!urlText) { resultBox.innerHTML = buildWarningMsg("⚠ Please enter a URL to scan."); status.textContent = ""; status.className = ""; return; }
-    spinner.style.display = "block"; previewArea.style.display = "none"; resultBox.innerHTML = ""; previewChecks.innerHTML = "";
-    status.textContent = "Analyzing…"; status.className = "";
-    setTimeout(() => { const { score, results } = checkUrlSafety(urlText); render(score, results); spinner.style.display = "none"; }, 500);
+/* ══════════════════════════════════════════
+   SET SAFETY STATUS BADGE
+   — Accurately reflects actual scan result
+══════════════════════════════════════════ */
+function setSafetyStatus(level) {
+    // Remove all state classes and visible
+    status.className = "";
+
+    // Force re-trigger animation by cloning and replacing
+    const clone = status.cloneNode(true);
+    status.parentNode.replaceChild(clone, status);
+    // Re-grab reference after DOM replacement
+    const badge = document.getElementById("safety_status");
+
+    const map = {
+        safe:   { cls: "safe",   icon: "✔", label: "Safe" },
+        hazard: { cls: "hazard", icon: "⚠", label: "Suspicious" },
+        danger: { cls: "danger", icon: "✖", label: "Dangerous" },
+    };
+    const { cls, icon, label } = map[level] || map.safe;
+    badge.textContent = `${icon} ${label}`;
+    badge.className = `visible ${cls}`;
 }
 
-function render(score, results) {
+function hideSafetyStatus() {
+    status.className = "";
+    status.textContent = "";
+}
+
+/* ══════════════════════════════════════════
+   ANALYZE LINK
+══════════════════════════════════════════ */
+function analyzeLink() {
+    const urlText = input.value.trim();
+    if (!urlText) {
+        resultBox.innerHTML = buildWarningMsg("⚠ Please enter a URL to scan.");
+        hideSafetyStatus();
+        return;
+    }
+    spinner.style.display = "block";
+    previewArea.style.display = "none";
+    resultBox.innerHTML = "";
+    previewChecks.innerHTML = "";
+    hideSafetyStatus();
+
+    setTimeout(() => {
+        const { score, results, level } = checkUrlSafety(urlText);
+        render(score, results, level);
+        spinner.style.display = "none";
+    }, 500);
+}
+
+/* ══════════════════════════════════════════
+   RENDER RESULT CARD
+   — Matches screenshot design exactly
+══════════════════════════════════════════ */
+function render(score, results, level) {
     const passed  = Object.values(results).filter(v => v === true).length;
     const failed  = Object.values(results).filter(v => v === false).length;
     const unknown = Object.values(results).filter(v => v === null).length;
     const total   = CHECK_DEFS.length;
-    let level, titleText, subtitleText;
-    if (score >= 70)      { level="safe";   titleText="Link Looks Safe";  subtitleText=`${passed} of ${total} checks passed — this link looks safe`; }
-    else if (score >= 40) { level="hazard"; titleText="Suspicious Link";  subtitleText="Multiple warning signals — proceed with caution"; }
-    else                  { level="danger"; titleText="Dangerous Link";   subtitleText="Multiple high-risk signals detected — avoid this site"; }
-    if (score >= 70)      { status.textContent="✔ Safe";       status.className="safe"; }
-    else if (score >= 40) { status.textContent="⚠ Suspicious"; status.className="hazard"; }
-    else                  { status.textContent="✖ Dangerous";  status.className="danger"; }
-    const keyPillsHTML = CHECK_DEFS.filter(d=>d.key_pill).map(d => { const p=results[d.key]; return `<span class="key-pill ${p?"pass":"fail"}">${p?"✓":"✗"} ${d.label}</span>`; }).join("");
-    const checksHTML = CHECK_DEFS.map(d => { const p=results[d.key]; const cls=p===null?"unk":p?"pass":"fail"; const ico=p===null?"?":p?"✓":"✗"; const msg=p===null?"Could not determine":p?d.pass_msg:d.fail_msg; return `<div class="result-check-item"><span class="check-icon ${cls}">${ico}</span><span><span class="check-name">${d.label}</span> — ${msg}</span></div>`; }).join("");
-    const reportBtn = (level==="danger") ? `<button class="result-report-btn" onclick="alert('Report feature coming soon.')">⚠ Report</button>` : "";
-    resultBox.innerHTML = `<div class="result-card ${level}"><div class="result-header"><span class="result-dot"></span><div class="result-header-text"><p class="result-title">${titleText}</p><p class="result-subtitle">${subtitleText}</p></div><div class="result-score-badge"><span class="result-score-num">${score}</span><span class="result-score-label">SCORE</span></div></div><div class="result-tally"><div class="result-tally-item"><span class="tally-count tally-passed">${passed}</span><span>Passed</span></div><div class="result-tally-item"><span class="tally-count tally-failed">${failed}</span><span>Failed</span></div><div class="result-tally-item"><span class="tally-count tally-unknown">${unknown}</span><span>Unknown</span></div><div class="result-tally-item" style="color:rgba(255,255,255,0.35)"><span class="tally-count" style="color:#e2e8f0">${total}</span><span>Total</span></div></div><div class="result-key-checks"><span class="result-key-checks-label">Key Checks:</span>${keyPillsHTML}</div><div class="result-checks-list">${checksHTML}</div>${reportBtn}</div>`;
+
+    let titleText, subtitleText;
+    if (level === "safe") {
+        titleText    = "Link Looks Safe";
+        subtitleText = `${passed} of ${total} checks passed — this link looks safe`;
+    } else if (level === "hazard") {
+        titleText    = "Suspicious Link";
+        subtitleText = "Multiple warning signals — proceed with caution";
+    } else {
+        titleText    = "Dangerous Link";
+        subtitleText = "Multiple high-risk signals detected — avoid this site";
+    }
+
+    // Update the status badge with accurate level
+    setSafetyStatus(level);
+
+    // Key pills (only key_pill:true checks)
+    const keyPillsHTML = CHECK_DEFS.filter(d => d.key_pill).map(d => {
+        const p = results[d.key];
+        return `<span class="key-pill ${p ? "pass" : "fail"}">${p ? "✓" : "✗"} ${d.label}</span>`;
+    }).join("");
+
+    // All check rows
+    const checksHTML = CHECK_DEFS.map(d => {
+        const p   = results[d.key];
+        const cls = p === null ? "unk" : p ? "pass" : "fail";
+        const ico = p === null ? "?" : p ? "✓" : "✗";
+        const msg = p === null ? "Could not determine" : p ? d.pass_msg : d.fail_msg;
+        return `<div class="result-check-item">
+            <span class="check-icon ${cls}">${ico}</span>
+            <span><span class="check-name">${d.label}</span> — ${msg}</span>
+        </div>`;
+    }).join("");
+
+    // Report button only for danger
+    const reportBtn = (level === "danger")
+        ? `<button class="result-report-btn" onclick="alert('Report feature coming soon.')">⚠ Report</button>`
+        : "";
+
+    resultBox.innerHTML = `
+        <div class="result-card ${level}">
+            <div class="result-header">
+                <span class="result-dot"></span>
+                <div class="result-header-text">
+                    <p class="result-title">${titleText}</p>
+                    <p class="result-subtitle">${subtitleText}</p>
+                </div>
+                <div class="result-score-badge">
+                    <span class="result-score-num">${score}</span>
+                    <span class="result-score-label">SCORE</span>
+                </div>
+            </div>
+            <div class="result-tally">
+                <div class="result-tally-item">
+                    <span class="tally-count tally-passed">${passed}</span>
+                    <span>Passed</span>
+                </div>
+                <div class="result-tally-item">
+                    <span class="tally-count tally-failed">${failed}</span>
+                    <span>Failed</span>
+                </div>
+                <div class="result-tally-item">
+                    <span class="tally-count tally-unknown">${unknown}</span>
+                    <span>Unknown</span>
+                </div>
+                <div class="result-tally-item" style="color:rgba(255,255,255,0.35)">
+                    <span class="tally-count" style="color:#e2e8f0">${total}</span>
+                    <span>Total</span>
+                </div>
+            </div>
+            <div class="result-key-checks">
+                <span class="result-key-checks-label">Key Checks:</span>
+                ${keyPillsHTML}
+            </div>
+            <div class="result-checks-list">
+                ${checksHTML}
+            </div>
+            ${reportBtn}
+        </div>
+    `;
+
     previewChecks.innerHTML = checksHTML;
 }
 
+/* ══════════════════════════════════════════
+   PREVIEW
+══════════════════════════════════════════ */
 function showPreview() {
     const urlText = input.value.trim();
-    if (!urlText) { resultBox.innerHTML = buildWarningMsg("⚠ Please enter a URL to preview."); status.textContent = ""; status.className = ""; return; }
+    if (!urlText) {
+        resultBox.innerHTML = buildWarningMsg("⚠ Please enter a URL to preview.");
+        hideSafetyStatus();
+        return;
+    }
     try {
-        const url = new URL(urlText); previewArea.style.display = "block"; previewTitle.textContent = url.hostname; previewDomain.textContent = url.href; previewDesc.textContent = "Preview only (safe mode)";
-        previewFavicon.src = `https://www.google.com/s2/favicons?domain=${url.hostname}`; previewFavicon.style.display = "block";
+        const url = new URL(urlText);
+        previewArea.style.display = "block";
+        previewTitle.textContent = url.hostname;
+        previewDomain.textContent = url.href;
+        previewDesc.textContent = "Preview only (safe mode)";
+        previewFavicon.src = `https://www.google.com/s2/favicons?domain=${url.hostname}`;
+        previewFavicon.style.display = "block";
         previewActions.innerHTML = `<a href="${url.href}" target="_blank" rel="noopener noreferrer"><button style="padding:8px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-family:'Outfit',sans-serif;">Open Site</button></a>`;
-    } catch { previewTitle.textContent = "Invalid URL — please check the format."; }
+    } catch {
+        previewTitle.textContent = "Invalid URL — please check the format.";
+    }
 }
 
 function buildWarningMsg(msg) {
     return `<div style="margin:5px 0;padding:10px 16px;border-left:4px solid var(--accent);border-radius:8px;background:rgba(29,106,255,0.1);color:var(--accent-bright);font-weight:600;font-family:'Space Grotesk',sans-serif;">${msg}</div>`;
 }
+
+/* ══════════════════════════════════════════
+   CHAT WIDGET — AI-POWERED
+══════════════════════════════════════════ */
+(function () {
+    const toggle     = document.getElementById("chatToggle");
+    const widget     = document.getElementById("chatWidget");
+    const closeBtn   = document.getElementById("closeChat");
+    const inputEl    = document.getElementById("chatInput");
+    const sendBtn    = document.getElementById("chatSendBtn");
+    const messagesEl = document.getElementById("chatMessages");
+    const typingEl   = document.getElementById("chatTyping");
+    const quickEl    = document.getElementById("chatQuickActions");
+
+    let isOpen = false;
+    let conversationHistory = [];
+
+    const SYSTEM_PROMPT = `You are the WebSafe Assistant — a friendly, knowledgeable cybersecurity helper embedded in WebSafe, a Philippine-based URL safety checker tool.
+
+Your purpose:
+- Help users understand online threats: phishing, malware, QR code scams, fake websites
+- Explain how WebSafe works (URL scanning, QR code scanning, safety scores)
+- Guide users on what to do if they encounter a phishing scam, especially in the Philippines
+- Provide contact info for Philippine cybercrime authorities when relevant:
+  * PNP Cybercrime Division: (+632) 724-3660 / onlinecims.ocs@gmail.com
+  * Globe hotline: 211
+  * Smart hotline: 1511
+  * DICT: onlinecims.ocs@gmail.com
+- Answer general cybersecurity questions clearly and concisely
+
+Tone: Friendly, clear, and reassuring. Not overly technical. Use short paragraphs. Keep responses concise (2-4 sentences usually). You may use bullet points when listing steps or contacts.
+
+Do not help with anything unrelated to cybersecurity, web safety, or WebSafe's features.`;
+
+    function openChat() {
+        isOpen = true;
+        widget.classList.add("show");
+        widget.setAttribute("aria-hidden", "false");
+        toggle.setAttribute("aria-expanded", "true");
+        toggle.classList.add("is-open");
+        setTimeout(() => inputEl.focus(), 350);
+    }
+
+    function closeChat() {
+        isOpen = false;
+        widget.classList.remove("show");
+        widget.setAttribute("aria-hidden", "true");
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.classList.remove("is-open");
+    }
+
+    toggle.addEventListener("click", () => isOpen ? closeChat() : openChat());
+    closeBtn.addEventListener("click", closeChat);
+
+    document.querySelectorAll(".quick-action-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const msg = btn.getAttribute("data-msg");
+            if (msg) sendMessage(msg);
+        });
+    });
+
+    inputEl.addEventListener("keydown", e => {
+        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(inputEl.value.trim()); }
+    });
+    sendBtn.addEventListener("click", () => sendMessage(inputEl.value.trim()));
+
+    function sendMessage(text) {
+        if (!text) return;
+        inputEl.value = "";
+        if (quickEl) quickEl.style.display = "none";
+        appendMessage("user", text);
+        conversationHistory.push({ role: "user", content: text });
+        showTyping();
+        callClaude();
+    }
+
+    async function callClaude() {
+        try {
+            const response = await fetch("https://api.anthropic.com/v1/messages", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: "claude-sonnet-4-20250514",
+                    max_tokens: 1000,
+                    system: SYSTEM_PROMPT,
+                    messages: conversationHistory
+                })
+            });
+            const data = await response.json();
+            hideTyping();
+            if (data && data.content && data.content[0]) {
+                const replyText = data.content.filter(b => b.type === "text").map(b => b.text).join("\n");
+                conversationHistory.push({ role: "assistant", content: replyText });
+                appendMessage("bot", replyText);
+            } else {
+                appendMessage("bot", "Sorry, I couldn't get a response. Please try again.");
+            }
+        } catch (err) {
+            hideTyping();
+            appendMessage("bot", "Something went wrong connecting to the assistant. Please check your connection and try again.");
+        }
+    }
+
+    function appendMessage(role, text) {
+        const isBot = role === "bot";
+        const wrapper = document.createElement("div");
+        wrapper.className = `chat-msg ${isBot ? "bot-msg" : "user-msg"}`;
+        if (isBot) {
+            wrapper.innerHTML = `
+                <div class="msg-avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <div class="msg-bubble">${formatMessage(text)}</div>
+            `;
+        } else {
+            wrapper.innerHTML = `<div class="msg-bubble">${escapeHtml(text)}</div>`;
+        }
+        messagesEl.appendChild(wrapper);
+        scrollToBottom();
+    }
+
+    function formatMessage(text) {
+        return escapeHtml(text)
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code style="background:rgba(29,106,255,0.15);padding:1px 5px;border-radius:3px;font-family:\'JetBrains Mono\',monospace;font-size:11px;">$1</code>')
+            .replace(/\n\n/g, '</p><p style="margin-top:8px">')
+            .replace(/\n/g, '<br>');
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+
+    function showTyping() {
+        typingEl.style.display = "flex";
+        typingEl.setAttribute("aria-hidden", "false");
+        scrollToBottom();
+    }
+    function hideTyping() {
+        typingEl.style.display = "none";
+        typingEl.setAttribute("aria-hidden", "true");
+    }
+    function scrollToBottom() {
+        const body = document.getElementById("chatBody");
+        setTimeout(() => { body.scrollTop = body.scrollHeight; }, 50);
+    }
+})();
 </script>
 
 </body>
 </html>
+
