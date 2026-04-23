@@ -150,7 +150,6 @@
         </button>
 
         <div id="loading_spinner"></div>
-        <span id="safety_status" role="status" aria-live="polite"></span>
     </div>
 
     <div id="results_row">
@@ -829,7 +828,7 @@ function syncSidebarHistory() {
         const row = document.createElement("div"); row.className = "sidebar-scan-row";
         row.innerHTML = `<span class="sidebar-scan-dot" style="background:${colors[h.level]||"#9ca3af"}"></span><span class="sidebar-scan-host"></span><span class="sidebar-scan-badge" style="color:${colors[h.level]||"#9ca3af"}">${labels[h.level]||"?"}</span>`;
         row.querySelector(".sidebar-scan-host").textContent = h.hostname;
-        row.addEventListener("click", () => { const inp = document.getElementById("link_input"); if (inp) inp.value = h.url; closeSidebar(); document.getElementById("link_checker").scrollIntoView({ behavior:"smooth" }); analyzeLink(); });
+        row.addEventListener("click", () => { const inp = document.getElementById("link_input"); if (inp) inp.value = h.url; closeSidebar(); document.getElementById("link_checker").scrollIntoView({ behavior:"smooth" }); checkBtn.click(); });
         panel.appendChild(row);
     });
 }
@@ -873,9 +872,8 @@ const qrResultUrl      = document.getElementById("qr_result_url");
 const qrScanBtnLabel   = document.getElementById("qr_scan_btn_label");
 const qrUploadSpinner  = document.getElementById("qr_upload_spinner");
 let html5QrCode; let isScanning = false; let uploadedImageData = null;
-checkBtn.onclick   = analyzeLink;
-previewBtn.onclick = showPreview;
-input.addEventListener("keydown", e => { if (e.key === "Enter") analyzeLink(); });
+// check_btn and preview_btn listeners are registered by check_link.js
+input.addEventListener("keydown", e => { if (e.key === "Enter") checkBtn.click(); });
 
 /* CAMERA QR MODAL */
 scanBtn.onclick = () => { qrModal.classList.remove("hidden"); setTimeout(() => qrModal.classList.add("show"), 10); document.body.style.overflow = "hidden"; };
@@ -888,7 +886,7 @@ startScan.onclick = async () => {
     startScan.appendChild(ripple); setTimeout(() => ripple.remove(), 600);
     viewfinder.classList.add("scanning"); html5QrCode = new Html5Qrcode("qr-reader");
     try {
-        await html5QrCode.start({ facingMode:"environment" }, { fps:10, qrbox:220 }, (decodedText) => { html5QrCode.stop().catch(() => {}); isScanning = false; viewfinder.classList.remove("scanning"); input.value = decodedText; closeQR.onclick(); analyzeLink(); });
+        await html5QrCode.start({ facingMode:"environment" }, { fps:10, qrbox:220 }, (decodedText) => { html5QrCode.stop().catch(() => {}); isScanning = false; viewfinder.classList.remove("scanning"); input.value = decodedText; closeQR.onclick(); checkBtn.click(); });
         isScanning = true;
     } catch { viewfinder.classList.remove("scanning"); alert("Camera error — please allow camera access and try again."); }
 };
@@ -922,93 +920,13 @@ qrUploadScanBtn.addEventListener("click", () => {
         if (!code) { showUploadResult("error","⚠️","No QR code detected in this image.","Please try a clearer or higher-resolution image.",""); return; }
         const decoded = code.data.trim(); let isUrl = false; try { new URL(decoded); isUrl = true; } catch (_) {}
         if (!isUrl) { showUploadResult("info","ℹ️","QR code decoded (not a URL):",decoded,""); return; }
-        const safetyResult = checkUrlSafety(decoded); input.value = decoded;
-        if (safetyResult.level === "safe")        showUploadResult("safe","✅","Link appears safe!",`${safetyResult.score}/100 safety score`,decoded);
-        else if (safetyResult.level === "hazard") showUploadResult("hazard","⚠️","Suspicious link — proceed with caution.",`${safetyResult.score}/100 safety score`,decoded);
-        else                                       showUploadResult("danger","🚫","Dangerous link — do NOT visit this site.",`${safetyResult.score}/100 safety score`,decoded);
-        setTimeout(() => { closeUploadModal(); document.getElementById("link_checker").scrollIntoView({ behavior:"smooth" }); analyzeLink(); }, 1800);
+        // Show a provisional result badge; the full scan runs after the modal closes
+        showUploadResult("info","🔍","Link found — scanning…","",decoded);
+        input.value = decoded;
+        setTimeout(() => { closeUploadModal(); document.getElementById("link_checker").scrollIntoView({ behavior:"smooth" }); checkBtn.click(); }, 1800);
     }, 600);
 });
 function showUploadResult(type, icon, label, detail, url) { qrResultIcon.textContent = icon; qrResultLabel.innerHTML = `<strong>${label}</strong>${detail?` <br><small style="font-weight:400;opacity:0.8">${detail}</small>`:""}`; qrResultUrl.textContent = url || ""; qrUploadResult.className = `qr-upload-result visible ${type}`; }
-
-/* SAFETY CHECK LOGIC */
-function checkUrlSafety(urlText) {
-    let score = 100;
-    const results = { https:true, reachable:true, ssl:true, threat:true, conn:true, domain:true, gsb:true, content:true };
-    try {
-        const url = new URL(urlText);
-        if (url.protocol !== "https:") { results.https = false; score -= 30; }
-        if (url.hostname.length >= 30)  { results.ssl   = false; score -= 10; }
-        const badWords = ["login","verify","bank","free"];
-        if (badWords.some(w => urlText.toLowerCase().includes(w))) { results.threat = false; score -= 30; }
-    } catch { Object.keys(results).forEach(k => results[k] = false); score = 0; }
-    let level = "safe";
-    if (score < 40) level = "danger"; else if (score < 70) level = "hazard";
-    return { score, results, level };
-}
-
-const CHECK_DEFS = [
-    { key:"https",    label:"HTTPS",               key_pill:true,  pass_msg:"Connection is private and encrypted",                    fail_msg:"Site does not use encryption — avoid entering personal info" },
-    { key:"reachable",label:"Reachable",            key_pill:false, pass_msg:"Website is online and responding",                      fail_msg:"Could not reach this website" },
-    { key:"ssl",      label:"SSL Certificate",      key_pill:true,  pass_msg:"Security certificate valid",                            fail_msg:"Security certificate is missing or expired — red flag" },
-    { key:"threat",   label:"Threat Database",      key_pill:true,  pass_msg:"Not found on any known threat list",                    fail_msg:"Found on a known threat list — dangerous" },
-    { key:"conn",     label:"Connection Safety",    key_pill:false, pass_msg:"Connection stays protected throughout",                 fail_msg:"Connection may be intercepted" },
-    { key:"domain",   label:"Domain Age",           key_pill:false, pass_msg:"Domain has been around long enough — legitimate sign",  fail_msg:"Very new or suspicious domain age" },
-    { key:"gsb",      label:"Google Safe Browsing", key_pill:true,  pass_msg:"Google Safe Browsing: no threats detected",             fail_msg:"Flagged by Google Safe Browsing" },
-    { key:"content",  label:"Page Content",         key_pill:false, pass_msg:"No suspicious content detected",                       fail_msg:"Suspicious content patterns detected" },
-];
-
-function setSafetyStatus(level) {
-    status.className = "";
-    const clone = status.cloneNode(true);
-    status.parentNode.replaceChild(clone, status);
-    const badge = document.getElementById("safety_status");
-    const map = { safe:{ cls:"safe", icon:"✔", label:"Safe" }, hazard:{ cls:"hazard", icon:"⚠", label:"Suspicious" }, danger:{ cls:"danger", icon:"✖", label:"Dangerous" } };
-    const { cls, icon, label } = map[level] || map.safe;
-    badge.textContent = `${icon} ${label}`;
-    badge.className = `visible ${cls}`;
-}
-
-function hideSafetyStatus() { status.className = ""; status.textContent = ""; }
-
-function analyzeLink() {
-    const urlText = input.value.trim();
-    if (!urlText) { resultBox.innerHTML = buildWarningMsg("⚠ Please enter a URL to scan."); hideSafetyStatus(); return; }
-    spinner.style.display = "block"; previewArea.style.display = "none"; resultBox.innerHTML = ""; previewChecks.innerHTML = ""; hideSafetyStatus();
-    setTimeout(() => { const { score, results, level } = checkUrlSafety(urlText); render(score, results, level); spinner.style.display = "none"; }, 500);
-}
-
-function render(score, results, level) {
-    const passed  = Object.values(results).filter(v => v === true).length;
-    const failed  = Object.values(results).filter(v => v === false).length;
-    const unknown = Object.values(results).filter(v => v === null).length;
-    const total   = CHECK_DEFS.length;
-    let titleText, subtitleText;
-    if (level === "safe") { titleText = "Link Looks Safe"; subtitleText = `${passed} of ${total} checks passed — this link looks safe`; }
-    else if (level === "hazard") { titleText = "Suspicious Link"; subtitleText = "Multiple warning signals — proceed with caution"; }
-    else { titleText = "Dangerous Link"; subtitleText = "Multiple high-risk signals detected — avoid this site"; }
-    setSafetyStatus(level);
-    const keyPillsHTML = CHECK_DEFS.filter(d => d.key_pill).map(d => { const p = results[d.key]; return `<span class="key-pill ${p ? "pass" : "fail"}">${p ? "✓" : "✗"} ${d.label}</span>`; }).join("");
-    const checksHTML = CHECK_DEFS.map(d => { const p = results[d.key]; const cls = p === null ? "unk" : p ? "pass" : "fail"; const ico = p === null ? "?" : p ? "✓" : "✗"; const msg = p === null ? "Could not determine" : p ? d.pass_msg : d.fail_msg; return `<div class="result-check-item"><span class="check-icon ${cls}">${ico}</span><span><span class="check-name">${d.label}</span> — ${msg}</span></div>`; }).join("");
-    const reportBtn = (level === "danger") ? `<button class="result-report-btn" onclick="alert('Report feature coming soon.')">⚠ Report</button>` : "";
-    resultBox.innerHTML = `<div class="result-card ${level}"><div class="result-header"><span class="result-dot"></span><div class="result-header-text"><p class="result-title">${titleText}</p><p class="result-subtitle">${subtitleText}</p></div><div class="result-score-badge"><span class="result-score-num">${score}</span><span class="result-score-label">SCORE</span></div></div><div class="result-tally"><div class="result-tally-item"><span class="tally-count tally-passed">${passed}</span><span>Passed</span></div><div class="result-tally-item"><span class="tally-count tally-failed">${failed}</span><span>Failed</span></div><div class="result-tally-item"><span class="tally-count tally-unknown">${unknown}</span><span>Unknown</span></div><div class="result-tally-item" style="color:rgba(255,255,255,0.35)"><span class="tally-count" style="color:#e2e8f0">${total}</span><span>Total</span></div></div><div class="result-key-checks"><span class="result-key-checks-label">Key Checks:</span>${keyPillsHTML}</div><div class="result-checks-list">${checksHTML}</div>${reportBtn}</div>`;
-    previewChecks.innerHTML = checksHTML;
-}
-
-function showPreview() {
-    const urlText = input.value.trim();
-    if (!urlText) { resultBox.innerHTML = buildWarningMsg("⚠ Please enter a URL to preview."); hideSafetyStatus(); return; }
-    try {
-        const url = new URL(urlText);
-        previewArea.style.display = "block"; previewTitle.textContent = url.hostname; previewDomain.textContent = url.href; previewDesc.textContent = "Preview only (safe mode)";
-        previewFavicon.src = `https://www.google.com/s2/favicons?domain=${url.hostname}`; previewFavicon.style.display = "block";
-        previewActions.innerHTML = `<a href="${url.href}" target="_blank" rel="noopener noreferrer"><button style="padding:8px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-family:'Outfit',sans-serif;">Open Site</button></a>`;
-    } catch { previewTitle.textContent = "Invalid URL — please check the format."; }
-}
-
-function buildWarningMsg(msg) {
-    return `<div style="margin:5px 0;padding:10px 16px;border-left:4px solid var(--accent);border-radius:8px;background:rgba(29,106,255,0.1);color:var(--accent-bright);font-weight:600;font-family:'Space Grotesk',sans-serif;">${msg}</div>`;
-}
 
 /* CHAT WIDGET */
 (function () {
