@@ -33,13 +33,25 @@ const ALLOWED_ORIGINS = [
 ];
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (e.g. curl, same-origin server calls)
         if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
         return callback(new Error('Not allowed by CORS'));
     }
 }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+// Serve only specific public files — do NOT expose server.js or other source files
+const PUBLIC_FILES = {
+    '/main.html':          'main.html',
+    '/main.css':           'main.css',
+    '/check_link.js':      'check_link.js',
+    '/about_us.html':      'about_us.html',
+    '/about_us.css':       'about_us.css',
+    '/contact_local.html': 'contact_local.html',
+    '/contact_local.css':  'contact_local.css',
+};
+app.use('/images', express.static(path.join(__dirname, 'images')));
+Object.entries(PUBLIC_FILES).forEach(([route, file]) => {
+    app.get(route, (req, res) => res.sendFile(path.join(__dirname, file)));
+});
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'main.html')));
 
 // ── Simple in-memory rate limiter (10 req/min per IP) ────────────────────────
@@ -1183,6 +1195,7 @@ app.get('/api/check', async (req, res) => {
     }
 });
 
+
 // ════════════════════════════════════════════════════════════════════════════
 // SECTION 7b — CHAT PROXY (keeps Anthropic API key server-side)
 // ════════════════════════════════════════════════════════════════════════════
@@ -1203,8 +1216,8 @@ app.post('/api/chat', async (req, res) => {
             method: 'POST',
             signal: ctrl.signal,
             headers: {
-                'Content-Type':    'application/json',
-                'x-api-key':       ANTHROPIC_KEY,
+                'Content-Type':      'application/json',
+                'x-api-key':         ANTHROPIC_KEY,
                 'anthropic-version': '2023-06-01',
             },
             body: JSON.stringify({
