@@ -1,10 +1,4 @@
-// check_link.js — WebSafe v7 TIGHTPACK
-// Changes from v6:
-//   • Strict URL validation — gibberish/random strings show "Invalid URL" error
-//   • Free site builder detection (Wix, Weebly, WordPress.com, etc.)
-//   • Crypto wallet brand on free hosting = automatic danger
-//   • Google Safe Browsing + VirusTotal results displayed
-//   • Preview button also validates strictly before proceeding
+// check_link.js — WebSafe client-side scan module
 
 // ─── Strict URL validation ────────────────────────────────────────────────────
 /**
@@ -73,24 +67,24 @@ function normalizeURL(raw) {
 function showInvalidUrlError(statusEl) {
     if (!statusEl) return;
     statusEl.innerHTML = `
-        <div style="max-width:580px;margin:16px auto 0;border-radius:10px;background:#fff5f5;border:2px solid #dc2626;box-shadow:0 4px 14px rgba(220,38,38,.12);overflow:hidden;font-family:inherit;text-align:left;">
-            <div style="display:flex;align-items:center;gap:14px;padding:15px 20px;background:#dc2626;border-bottom:3px solid #991b1b;">
-                <span style="width:28px;height:28px;border-radius:50%;background:#ffffff44;display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:900;color:#fff;">✕</span>
+        <div style="max-width:580px;margin:16px auto 0;border-radius:14px;background:#121929;border:2px solid rgba(220,38,38,0.6);box-shadow:0 4px 24px rgba(220,38,38,.18);overflow:hidden;font-family:inherit;text-align:left;">
+            <div style="display:flex;align-items:center;gap:14px;padding:15px 20px;background:linear-gradient(135deg,#dc2626,#991b1b);border-bottom:3px solid rgba(220,38,38,0.8);">
+                <span style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:900;color:#fff;border:1px solid rgba(255,255,255,0.3);">✕</span>
                 <div style="flex:1">
                     <div style="font-size:18px;font-weight:700;color:#fff">Invalid URL</div>
                     <div style="font-size:12px;color:#fecaca;margin-top:4px">The input you entered is not a recognisable web address</div>
                 </div>
             </div>
-            <div style="padding:14px 20px;background:#fff5f5;">
+            <div style="padding:14px 20px;background:#121929;">
                 <div style="display:flex;flex-direction:column;gap:8px;">
-                    <div style="display:flex;align-items:flex-start;gap:10px;border-radius:7px;padding:8px 12px;background:#FEF2F2;border:1px solid #fecaca;">
-                        <span style="width:9px;height:9px;border-radius:50%;background:#dc2626;display:inline-block;margin-top:4px;flex-shrink:0"></span>
+                    <div style="display:flex;align-items:flex-start;gap:10px;border-radius:8px;padding:8px 12px;background:rgba(220,38,38,0.08);border:1px solid rgba(220,38,38,0.25);">
+                        <span style="width:9px;height:9px;border-radius:50%;background:#f87171;display:inline-block;margin-top:4px;flex-shrink:0"></span>
                         <div>
-                            <span style="font-weight:700;color:#dc2626;font-size:13px">Invalid URL</span>
-                            <span style="color:#64748b;font-size:12px;margin-left:6px">— Enter a valid web address, e.g. <code style="background:#fee2e2;padding:1px 6px;border-radius:4px;font-size:11px">https://example.com</code></span>
+                            <span style="font-weight:700;color:#f87171;font-size:13px">Invalid URL</span>
+                            <span style="color:#64748b;font-size:12px;margin-left:6px">— Enter a valid web address, e.g. <code style="background:rgba(220,38,38,0.15);color:#fca5a5;padding:1px 6px;border-radius:4px;font-size:11px;font-family:'IBM Plex Mono',monospace">https://example.com</code></span>
                         </div>
                     </div>
-                    <p style="font-size:12px;color:#94a3b8;padding:2px 4px;">A valid URL must have a real domain and extension (like .com, .net, .ph). Random text, made-up words, or incomplete addresses won't be accepted.</p>
+                    <p style="font-size:12px;color:#64748b;padding:2px 4px;">A valid URL must have a real domain and extension (like .com, .net, .ph). Random text, made-up words, or incomplete addresses won't be accepted.</p>
                 </div>
             </div>
         </div>`;
@@ -118,22 +112,23 @@ function renderHistory() {
     const el = document.getElementById('ws_history_list');
     if (!el) return;
     if (scanHistory.length === 0) {
-        el.innerHTML = '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:8px">No scans yet this session</p>';
+        el.innerHTML = '<p style="color:#64748b;font-size:13px;text-align:center;padding:8px">No scans yet this session</p>';
         return;
     }
-    const colors = { safe:'#16a34a', hazard:'#d97706', danger:'#dc2626' };
+    const colors = { safe:'#22c55e', hazard:'#fbbf24', danger:'#f87171' };
     const labels = { safe:'Safe', hazard:'Warning', danger:'Danger' };
     el.innerHTML = '';
     scanHistory.forEach((h, idx) => {
         const row = document.createElement('div');
-        row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 12px;background:#F8FAFC;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;transition:background 0.15s,border-color 0.15s;';
+        row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 12px;background:#0f1525;border:1px solid rgba(59,130,246,0.18);border-radius:8px;cursor:pointer;transition:background 0.15s,border-color 0.15s;';
+        row.onmouseenter = () => { row.style.background='rgba(59,130,246,0.07)'; row.style.borderColor='rgba(59,130,246,0.35)'; };
+        row.onmouseleave = () => { row.style.background='#0f1525'; row.style.borderColor='rgba(59,130,246,0.18)'; };
         row.innerHTML = `
-            <span style="width:10px;height:10px;border-radius:50%;background:${colors[h.level]||'#9ca3af'};flex-shrink:0;display:inline-block"></span>
-            <span style="flex:1;font-size:13px;color:#1E3A8A;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
-            <span style="font-size:11px;font-weight:700;color:${colors[h.level]||'#9ca3af'}">${labels[h.level]||'?'}</span>
-            <span style="font-size:11px;color:#94a3b8">${h.time}</span>
+            <span style="width:10px;height:10px;border-radius:50%;background:${colors[h.level]||'#64748b'};flex-shrink:0;display:inline-block;box-shadow:0 0 6px ${colors[h.level]||'#64748b'}88"></span>
+            <span style="flex:1;font-size:13px;color:#e2e8f0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+            <span style="font-size:11px;font-weight:700;color:${colors[h.level]||'#64748b'}">${labels[h.level]||'?'}</span>
+            <span style="font-size:11px;color:#64748b">${h.time}</span>
         `;
-        // Set hostname safely (no innerHTML injection)
         row.querySelectorAll('span')[1].textContent = h.hostname;
         row.addEventListener('click', () => {
             const inp = document.getElementById('link_input');
@@ -160,10 +155,10 @@ function startLoadingSteps() {
     const el = document.getElementById('link_status');
     if (!el) return;
     let i = 0;
-    el.innerHTML = `<p style="color:#1E3A8A;margin-top:8px;font-weight:600;font-size:14px">🔍 ${LOADING_STEPS[0]}</p>`;
+    el.innerHTML = `<p style="color:#60a5fa;margin-top:8px;font-weight:600;font-size:14px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.03em">🔍 ${LOADING_STEPS[0]}</p>`;
     _loadingInterval = setInterval(() => {
         i = (i + 1) % LOADING_STEPS.length;
-        if (el) el.innerHTML = `<p style="color:#1E3A8A;margin-top:8px;font-weight:600;font-size:14px">🔍 ${LOADING_STEPS[i]}</p>`;
+        if (el) el.innerHTML = `<p style="color:#60a5fa;margin-top:8px;font-weight:600;font-size:14px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.03em">🔍 ${LOADING_STEPS[i]}</p>`;
     }, 1800);
 }
 function stopLoadingSteps() {
@@ -358,51 +353,66 @@ function friendlyFlagDetail(f) {
         let { level, reason, checks, fourBadges, score } = data;
 
         const theme = {
-            safe:   { accent:'#16a34a', icon:'<span style="width:28px;height:28px;border-radius:50%;background:#16a34a;display:inline-block;box-shadow:0 0 10px #16a34a88;flex-shrink:0"></span>', label:'Link Looks Safe' },
-            hazard: { accent:'#d97706', icon:'<span style="width:28px;height:28px;border-radius:50%;background:#d97706;display:inline-block;box-shadow:0 0 10px #d9770688;flex-shrink:0"></span>', label:'Potential Warning' },
-            danger: { accent:'#dc2626', icon:'<span style="width:28px;height:28px;border-radius:50%;background:#dc2626;display:inline-block;box-shadow:0 0 10px #dc262688;flex-shrink:0"></span>', label:'Dangerous Link' },
+            safe:   {
+                accent:'#22c55e', glow:'rgba(34,197,94,0.3)',
+                icon:'<span style="width:32px;height:32px;border-radius:50%;background:#22c55e;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 14px rgba(34,197,94,0.6);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>',
+                label:'Link Looks Safe',
+                headerBg:'linear-gradient(135deg,#0d2318,#0a1f14)'
+            },
+            hazard: {
+                accent:'#fbbf24', glow:'rgba(251,191,36,0.3)',
+                icon:'<span style="width:32px;height:32px;border-radius:50%;background:#fbbf24;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 14px rgba(251,191,36,0.6);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>',
+                label:'Potential Warning',
+                headerBg:'linear-gradient(135deg,#1c1505,#1a1204)'
+            },
+            danger: {
+                accent:'#f87171', glow:'rgba(248,113,113,0.3)',
+                icon:'<span style="width:32px;height:32px;border-radius:50%;background:#f87171;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 14px rgba(248,113,113,0.6);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>',
+                label:'Dangerous Link',
+                headerBg:'linear-gradient(135deg,#1a0505,#180404)'
+            },
         };
         if (!level) level = checks.some(ch=>ch.ok===false)?'hazard':'safe';
         const t = theme[level]||theme.safe;
 
         const card = document.createElement('div');
-        card.style.cssText = 'max-width:580px;margin:16px auto 0;border-radius:10px;background:#ffffff;border:2px solid #1E3A8A;box-shadow:0 4px 14px rgba(30,58,138,.15);overflow:hidden;font-family:inherit;text-align:left;';
+        card.style.cssText = `max-width:580px;margin:16px auto 0;border-radius:14px;background:#121929;border:2px solid ${t.accent}55;box-shadow:0 4px 24px ${t.glow},0 0 0 1px ${t.accent}33;overflow:hidden;font-family:inherit;text-align:left;`;
 
         const header = document.createElement('div');
-        header.style.cssText = `display:flex;align-items:center;gap:14px;padding:15px 20px;background:#1E3A8A;border-bottom:3px solid ${t.accent};`;
+        header.style.cssText = `display:flex;align-items:center;gap:14px;padding:16px 20px;background:${t.headerBg};border-bottom:2px solid ${t.accent}55;`;
         const resolvedBanner = data.shortened && data.resolvedUrl
-            ? `<div style="margin-top:6px;padding:5px 10px;background:#0f2460;border-radius:6px;font-size:11px;color:#93c5fd;">🔗 Shortened → <span style="color:#fff;font-weight:700;word-break:break-all">${data.resolvedUrl}</span></div>`
+            ? `<div style="margin-top:6px;padding:5px 10px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:6px;font-size:11px;color:#93c5fd;font-family:'IBM Plex Mono',monospace;">🔗 Shortened → <span style="color:#e2e8f0;font-weight:700;word-break:break-all">${data.resolvedUrl}</span></div>`
             : '';
-        const scoreColor = level==='safe'?'#16a34a':level==='hazard'?'#d97706':'#dc2626';
-        const scoreCircle = `<div style="flex-shrink:0;width:52px;height:52px;border-radius:50%;border:3px solid ${scoreColor};display:flex;flex-direction:column;align-items:center;justify-content:center;background:#ffffff11;"><span style="font-size:16px;font-weight:900;color:${scoreColor};line-height:1">${score}</span><span style="font-size:8px;color:#93c5fd;letter-spacing:.5px">SCORE</span></div>`;
-        header.innerHTML = `${t.icon}<div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:700;color:#F8FAFC">${t.label}${data.shortened?' <span style="font-size:12px;background:#ffffff22;padding:2px 8px;border-radius:10px;vertical-align:middle">Shortened</span>':''}</div><div style="font-size:12px;color:#93c5fd;margin-top:4px">${reason||''}</div>${resolvedBanner}</div>${scoreCircle}`;
+        const scoreColor = level==='safe'?'#22c55e':level==='hazard'?'#fbbf24':'#f87171';
+        const scoreCircle = `<div style="flex-shrink:0;width:54px;height:54px;border-radius:50%;border:2px solid ${scoreColor};display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,0.04);box-shadow:0 0 12px ${scoreColor}44;"><span style="font-size:17px;font-weight:900;color:${scoreColor};line-height:1;font-family:'IBM Plex Mono',monospace">${score}</span><span style="font-size:8px;color:#64748b;letter-spacing:.8px;text-transform:uppercase">SCORE</span></div>`;
+        header.innerHTML = `${t.icon}<div style="flex:1;min-width:0"><div style="font-size:18px;font-weight:700;color:#f1f5f9">${t.label}${data.shortened?' <span style="font-size:11px;background:rgba(255,255,255,0.1);color:#94a3b8;padding:2px 8px;border-radius:10px;vertical-align:middle;border:1px solid rgba(255,255,255,0.15)">Shortened</span>':''}</div><div style="font-size:12px;color:#94a3b8;margin-top:4px">${reason||''}</div>${resolvedBanner}</div>${scoreCircle}`;
         card.appendChild(header);
 
         const passed  = checks.filter(c=>c.ok===true).length;
         const failed  = checks.filter(c=>c.ok===false).length;
         const unknown = checks.filter(c=>c.ok===null).length;
         const summary = document.createElement('div');
-        summary.style.cssText = 'display:flex;gap:16px;padding:10px 20px;background:#f0f4ff;border-bottom:1px solid #1E3A8A22;font-size:12px;font-weight:700;';
-        summary.innerHTML = `<span style="color:#16a34a">✓ ${passed} Passed</span><span style="color:#dc2626">✕ ${failed} Failed</span><span style="color:#9ca3af">? ${unknown} Unknown</span><span style="margin-left:auto;color:#1E3A8A">${checks.length} checks total</span>`;
+        summary.style.cssText = 'display:flex;gap:16px;padding:10px 20px;background:rgba(255,255,255,0.02);border-bottom:1px solid rgba(59,130,246,0.15);font-size:12px;font-weight:700;';
+        summary.innerHTML = `<span style="color:#22c55e">✓ ${passed} Passed</span><span style="color:#f87171">✕ ${failed} Failed</span><span style="color:#64748b">? ${unknown} Unknown</span><span style="margin-left:auto;color:#60a5fa">${checks.length} checks total</span>`;
         card.appendChild(summary);
 
         if (Array.isArray(fourBadges) && fourBadges.length) {
             const badgeRow = document.createElement('div');
-            badgeRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 20px;background:#F8FAFC;border-bottom:1px solid #1E3A8A44;';
+            badgeRow.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 20px;background:rgba(255,255,255,0.01);border-bottom:1px solid rgba(59,130,246,0.12);';
             const lbl = document.createElement('span');
-            lbl.style.cssText = 'font-size:10px;font-weight:800;color:#1E3A8A;text-transform:uppercase;letter-spacing:.8px;margin-right:4px;';
+            lbl.style.cssText = 'font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-right:4px;';
             lbl.textContent = 'Key Checks:';
             badgeRow.appendChild(lbl);
             fourBadges.forEach(b => {
                 const bOk=b.ok===true, bNull=b.ok===null;
-                const bgCol=bOk?'#1E3A8A':bNull?'#ffffff':'#dc2626';
-                const fgCol=bOk?'#ffffff':bNull?'#6b7280':'#ffffff';
-                const border=bOk?'#1E3A8A':bNull?'#9ca3af':'#dc2626';
-                const ico=bOk?'✓':bNull?'?':'✕';
-                const badge=document.createElement('div');
-                badge.style.cssText=`display:inline-flex;align-items:center;gap:5px;background:${bgCol};color:${fgCol};border:2px solid ${border};border-radius:6px;padding:4px 11px;font-size:12px;font-weight:700;cursor:default;`;
-                badge.innerHTML=`<span style="font-weight:900;font-size:11px">${ico}</span><span>${b.label}</span>`;
-                badge.title=b.detail||'';
+                const bgCol  = bOk ? 'rgba(34,197,94,0.12)'  : bNull ? 'rgba(255,255,255,0.04)' : 'rgba(248,113,113,0.12)';
+                const fgCol  = bOk ? '#4ade80' : bNull ? '#64748b' : '#fca5a5';
+                const border = bOk ? 'rgba(34,197,94,0.4)'   : bNull ? 'rgba(255,255,255,0.1)'  : 'rgba(248,113,113,0.4)';
+                const ico    = bOk ? '✓' : bNull ? '?' : '✕';
+                const badge  = document.createElement('div');
+                badge.style.cssText = `display:inline-flex;align-items:center;gap:5px;background:${bgCol};color:${fgCol};border:1px solid ${border};border-radius:6px;padding:4px 11px;font-size:12px;font-weight:700;cursor:default;`;
+                badge.innerHTML = `<span style="font-weight:900;font-size:11px">${ico}</span><span>${b.label}</span>`;
+                badge.title = b.detail||'';
                 badgeRow.appendChild(badge);
             });
             card.appendChild(badgeRow);
@@ -410,13 +420,15 @@ function friendlyFlagDetail(f) {
 
         if (Array.isArray(checks) && checks.length) {
             const list = document.createElement('div');
-            list.style.cssText = 'padding:12px 20px 16px;display:flex;flex-direction:column;gap:5px;background:#ffffff;';
+            list.style.cssText = 'padding:12px 20px 16px;display:flex;flex-direction:column;gap:5px;background:transparent;';
             checks.forEach(ch => {
-                const row=document.createElement('div');
-                row.style.cssText='display:flex;align-items:flex-start;gap:10px;border-radius:7px;padding:8px 12px;background:#F8FAFC;border:1px solid #e2e8f0;';
-                const dotCol=ch.ok===true?'#16a34a':ch.ok===false?'#dc2626':'#9ca3af';
-                const lblCol=ch.ok===true?'#1E3A8A':ch.ok===false?'#dc2626':'#6b7280';
-                row.innerHTML=`<span style="width:9px;height:9px;border-radius:50%;background:${dotCol};display:inline-block;margin-top:4px;flex-shrink:0"></span><div><span style="font-weight:700;color:${lblCol};font-size:13px">${ch.label}</span>${ch.detail?`<span style="color:#64748b;font-size:12px;margin-left:6px">— ${ch.detail}</span>`:''}</div>`;
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex;align-items:flex-start;gap:10px;border-radius:8px;padding:8px 12px;background:rgba(255,255,255,0.02);border:1px solid rgba(59,130,246,0.1);transition:background 0.2s;';
+                row.onmouseenter = () => row.style.background='rgba(59,130,246,0.06)';
+                row.onmouseleave = () => row.style.background='rgba(255,255,255,0.02)';
+                const dotCol = ch.ok===true ? '#22c55e' : ch.ok===false ? '#f87171' : '#64748b';
+                const lblCol = ch.ok===true ? '#4ade80' : ch.ok===false ? '#fca5a5' : '#94a3b8';
+                row.innerHTML = `<span style="width:8px;height:8px;border-radius:50%;background:${dotCol};display:inline-block;margin-top:5px;flex-shrink:0;box-shadow:0 0 5px ${dotCol}88"></span><div><span style="font-weight:600;color:${lblCol};font-size:13px">${ch.label}</span>${ch.detail?`<span style="color:#64748b;font-size:12px;margin-left:6px">— ${ch.detail}</span>`:''}</div>`;
                 list.appendChild(row);
             });
             card.appendChild(list);
@@ -431,18 +443,20 @@ function friendlyFlagDetail(f) {
             reportBtn.innerHTML = `
                 <a href="#authorities-anchor"
                    id="ws_report_danger_btn"
-                   style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px 20px;background:linear-gradient(135deg,#dc2626,#991b1b);color:#ffffff;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:0.3px;box-shadow:0 4px 16px rgba(220,38,38,0.35);transition:transform 0.15s ease,box-shadow 0.15s ease;box-sizing:border-box;">
+                   style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px 20px;background:linear-gradient(135deg,rgba(220,38,38,0.2),rgba(153,27,27,0.2));color:#fca5a5;border-radius:12px;text-decoration:none;font-size:14px;font-weight:700;letter-spacing:0.3px;box-shadow:0 4px 16px rgba(220,38,38,0.25);border:1px solid rgba(220,38,38,0.45);transition:transform 0.15s ease,box-shadow 0.15s ease,background 0.15s ease;box-sizing:border-box;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    Report
+                    Report to Authorities
                 </a>`;
             const anchor = reportBtn.querySelector('a');
             anchor.addEventListener('mouseenter', () => {
                 anchor.style.transform = 'translateY(-2px)';
-                anchor.style.boxShadow = '0 8px 24px rgba(220,38,38,0.45)';
+                anchor.style.boxShadow = '0 8px 24px rgba(220,38,38,0.35)';
+                anchor.style.background = 'linear-gradient(135deg,rgba(220,38,38,0.3),rgba(153,27,27,0.3))';
             });
             anchor.addEventListener('mouseleave', () => {
                 anchor.style.transform = '';
-                anchor.style.boxShadow = '0 4px 16px rgba(220,38,38,0.35)';
+                anchor.style.boxShadow = '0 4px 16px rgba(220,38,38,0.25)';
+                anchor.style.background = 'linear-gradient(135deg,rgba(220,38,38,0.2),rgba(153,27,27,0.2))';
             });
             anchor.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -645,7 +659,7 @@ function friendlyFlagDetail(f) {
             checks.push({label:'Domain Age', ok:null, detail:'Domain age check requires local server'});
             if (!reachable && !isWellKnown) { level='danger'; reason='Could not reach this website — may not exist'; }
             else if (!httpsOk)              { level='hazard'; reason='Site is not using a secure connection'; }
-            else                            { level='safe';   reason='Basic checks passed (run local server for full scan)'; }
+            else                            { level='safe';   reason='Basic checks passed — run local server for full scan'; }
         }
 
         const score = (serverData && typeof serverData.riskScore === 'number')
@@ -718,7 +732,7 @@ function friendlyFlagDetail(f) {
     if (!previewBtn) return;
 
     const style = document.createElement('style');
-    style.textContent = `@keyframes ws-shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}.ws-skel{background:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%);background-size:600px 100%;animation:ws-shimmer 1.4s infinite linear;border-radius:6px;}`;
+    style.textContent = `@keyframes ws-shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}.ws-skel{background:linear-gradient(90deg,#172035 25%,#1e2d47 50%,#172035 75%);background-size:600px 100%;animation:ws-shimmer 1.4s infinite linear;border-radius:6px;}`;
     document.head.appendChild(style);
 
     function setPreviewVisible(v) { if (previewArea) previewArea.style.display = v ? 'block' : 'none'; }
@@ -729,21 +743,21 @@ function friendlyFlagDetail(f) {
     }
     function makeBrowserBar(hostname) {
         const bar = document.createElement('div');
-        bar.style.cssText = 'background:#1E3A8A;padding:10px 14px;display:flex;align-items:center;gap:8px;';
-        bar.innerHTML = `<span style="width:10px;height:10px;border-radius:50%;background:#ffffff44;display:inline-block"></span><span style="width:10px;height:10px;border-radius:50%;background:#ffffff44;display:inline-block"></span><span style="width:10px;height:10px;border-radius:50%;background:#ffffff44;display:inline-block"></span><div style="flex:1;background:#ffffff22;border-radius:20px;padding:5px 14px;margin-left:6px;"><span style="color:#93c5fd;font-size:12px;font-weight:600">${hostname}</span></div>`;
+        bar.style.cssText = 'background:#0f1525;border-bottom:1px solid rgba(59,130,246,0.2);padding:10px 14px;display:flex;align-items:center;gap:8px;';
+        bar.innerHTML = `<span style="width:10px;height:10px;border-radius:50%;background:rgba(248,113,113,0.5);display:inline-block"></span><span style="width:10px;height:10px;border-radius:50%;background:rgba(251,191,36,0.5);display:inline-block"></span><span style="width:10px;height:10px;border-radius:50%;background:rgba(34,197,94,0.5);display:inline-block"></span><div style="flex:1;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:20px;padding:5px 14px;margin-left:6px;"><span style="color:#60a5fa;font-size:12px;font-weight:600;font-family:'IBM Plex Mono',monospace">${hostname}</span></div>`;
         return bar;
     }
     function makeWrapper() {
         const w = document.createElement('div');
-        w.style.cssText = 'width:100%;max-width:640px;margin:12px auto 0;border:2px solid #1E3A8A;border-radius:10px;overflow:hidden;background:#ffffff;';
+        w.style.cssText = 'width:100%;max-width:640px;margin:12px auto 0;border:1px solid rgba(59,130,246,0.3);border-radius:14px;overflow:hidden;background:#121929;box-shadow:0 4px 24px rgba(59,130,246,0.1);';
         return w;
     }
     function renderSkeleton(container, hostname) {
         container.innerHTML = ''; container.appendChild(makeBrowserBar(hostname));
-        const body = document.createElement('div'); body.style.cssText = 'padding:20px;display:flex;flex-direction:column;gap:12px;min-height:280px;';
+        const body = document.createElement('div'); body.style.cssText = 'padding:20px;display:flex;flex-direction:column;gap:12px;min-height:280px;background:#121929;';
         const hero = document.createElement('div'); hero.className = 'ws-skel'; hero.style.cssText = 'height:120px;width:100%;'; body.appendChild(hero);
         [[100],[80],[90],[60]].forEach(([w]) => { const line=document.createElement('div');line.className='ws-skel';line.style.cssText=`height:14px;width:${w}%;`;body.appendChild(line); });
-        const status = document.createElement('p'); status.style.cssText = 'text-align:center;color:#94a3b8;font-size:13px;margin-top:8px;'; status.textContent = '📸 Taking screenshot… this may take up to 15 seconds'; body.appendChild(status);
+        const status = document.createElement('p'); status.style.cssText = 'text-align:center;color:#64748b;font-size:13px;margin-top:8px;'; status.textContent = '📸 Taking screenshot… this may take up to 15 seconds'; body.appendChild(status);
         container.appendChild(body);
     }
     function tryLoadImage(url, ms) {
@@ -789,8 +803,8 @@ function friendlyFlagDetail(f) {
             if (shot) {
                 const img = document.createElement('img'); img.src = shot; img.alt = `Preview of ${hostname}`; img.style.cssText = 'width:100%;height:auto;display:block;'; wrapper.appendChild(img);
             } else {
-                const fb = document.createElement('div'); fb.style.cssText = 'padding:50px 20px;text-align:center;';
-                fb.innerHTML = `<span style="font-size:48px">🌐</span><p style="color:#1E3A8A;font-weight:700;font-size:16px;margin:12px 0 6px">${hostname}</p><p style="color:#94a3b8;font-size:13px;margin:0">Screenshot unavailable — this site may block preview services</p>`;
+                const fb = document.createElement('div'); fb.style.cssText = 'padding:50px 20px;text-align:center;background:#121929;';
+                fb.innerHTML = `<span style="font-size:48px">🌐</span><p style="color:#60a5fa;font-weight:700;font-size:16px;margin:12px 0 6px">${hostname}</p><p style="color:#64748b;font-size:13px;margin:0">Screenshot unavailable — this site may block preview services</p>`;
                 wrapper.appendChild(fb);
             }
             // Remove any existing "Open in new tab" link before adding a fresh one
@@ -798,20 +812,19 @@ function friendlyFlagDetail(f) {
             if (existingLink) existingLink.remove();
             const a = document.createElement('a'); a.href = normalized; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = '🔗 Open in new tab';
             a.setAttribute('data-ws-newtab', '1');
-            a.style.cssText = 'display:inline-block;margin:12px 0 4px;padding:9px 20px;background:#1E3A8A;color:#F8FAFC;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;border:2px solid #000;';
+            a.style.cssText = 'display:inline-block;margin:12px 0 4px;padding:9px 20px;background:rgba(59,130,246,0.1);color:#60a5fa;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;border:1px solid rgba(59,130,246,0.35);transition:background 0.15s;';
             pvActions.appendChild(a);
         }
     });
 })();
 
 
-// ─── Extra Client-Side Phishing Heuristics (PhishTank-style signals) ──────────
-// Runs before the server call and injects extra flags into the result card.
+// ─── Extra Client-Side Phishing Heuristics ────────────────────────────────────
+// These run before the server call to catch signals the server may not
+// have had time to compute (entropy, homograph, subdomain spoofing).
 (function () {
-    /**
-     * Shannon entropy of a string — high entropy = random-looking = suspicious
-     */
-    function entropy(str) {
+    // Shannon entropy — high value indicates a randomly-generated domain name
+    function domainEntropy(str) {
         const freq = {};
         for (const c of str) freq[c] = (freq[c] || 0) + 1;
         const len = str.length;
@@ -844,10 +857,14 @@ function friendlyFlagDetail(f) {
         return /[a-z][0-9][a-z]/i.test(hostname.replace(/\./g, ''));
     }
 
-    /**
-     * Detect known brand names buried deep in subdomains
-     */
-    const BRANDS = ['paypal','google','facebook','amazon','apple','microsoft','netflix','gcash','bdo','bpi','maya','binance','coinbase','metamask','exodus'];
+    // Brand names that should never appear in subdomains of unrelated domains.
+    // Kept in sync with BRAND_LEGITIMATE_DOMAINS in server.js.
+    const BRANDS = [
+        'paypal','google','gmail','youtube','facebook','instagram','twitter','tiktok',
+        'apple','icloud','microsoft','outlook','amazon','netflix','spotify',
+        'gcash','bdo','bpi','metrobank','landbank','unionbank','rcbc','paymaya','maya',
+        'exodus','metamask','coinbase','binance','ledger','trezor',
+    ];
     function brandInSubdomain(hostname) {
         const parts = hostname.split('.');
         if (parts.length <= 2) return null;
@@ -878,9 +895,9 @@ function friendlyFlagDetail(f) {
             flags.push({ label: 'Homograph Attack', ok: false, detail: 'Hostname contains non-ASCII characters — possible lookalike spoofing (e.g. Cyrillic letters)' });
         }
         const domainPart = hostname.replace(/^www\./, '');
-        const domainEntropy = entropy(domainPart.replace(/\./g, ''));
-        if (domainEntropy > 3.8 && domainPart.length > 12) {
-            flags.push({ label: 'High Domain Entropy', ok: false, detail: `Domain name looks randomly generated (entropy ${domainEntropy.toFixed(2)}) — common in phishing infrastructure` });
+        const entScore = domainEntropy(domainPart.replace(/\./g, ''));
+        if (entScore > 3.8 && domainPart.length > 12) {
+            flags.push({ label: 'High Domain Entropy', ok: false, detail: `Domain name looks randomly generated (entropy ${entScore.toFixed(2)}) — common in phishing infrastructure` });
         }
         if (hasNumericSubstitution(hostname)) {
             flags.push({ label: 'Numeric Substitution', ok: false, detail: 'Numbers replacing letters detected (e.g. g00gle, p4ypal) — classic URL spoofing technique' });
