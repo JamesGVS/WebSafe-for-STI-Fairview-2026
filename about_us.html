@@ -3,9 +3,652 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebSafe : About Us</title>
+    <meta name="description" content="The Technology Behind WebSafe — WHOIS API, Google Safe Browsing, VirusTotal, and Screenshot API.">
+    <title>The Technology Behind WebSafe</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="about_us.css">
 </head>
 <body>
-    
+
+<!-- PARTICLE CANVAS -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- HEADER -->
+<header>
+    <a href="#" class="header-logo">
+        <div class="header-logo-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <span class="header-logo-name">Web<span>Safe</span></span>
+    </a>
+    <span class="header-badge">Technology</span>
+    <nav class="header-nav">
+        <a href="#">Back to Home</a>
+        <a href="#">About Us</a>
+    </nav>
+</header>
+
+<main>
+
+    <!-- ══════════════════════════════════════════
+         HERO
+    ══════════════════════════════════════════ -->
+    <section class="hero">
+        <div class="hero-orb-1"></div>
+        <div class="hero-orb-2"></div>
+        <div class="hero-container">
+
+            <!-- Text -->
+            <div class="hero-text">
+                <div class="hero-eyebrow">Deep Dive</div>
+                <h1 class="hero-title">
+                    The Technology<br>Behind
+                    <span class="hero-title-accent" data-text="WebSafe">WebSafe</span>
+                </h1>
+                <div class="hero-divider"></div>
+
+                <p class="hero-body">
+                    <a href="#" class="link-highlight">Developed by students from STI College Fairview</a>, WebSafe is a website URL malware detector designed to identify and neutralize malicious links. Built on a robust Node.js backend, the system integrates four industry-grade APIs — <strong style="color:#e8edf8">WHOIS API</strong>, <strong style="color:#e8edf8">Google Safe Browsing</strong>, <strong style="color:#e8edf8">VirusTotal</strong>, and <strong style="color:#e8edf8">Screenshot API</strong> — to evaluate URLs in real time and ensure user safety.
+                </p>
+                <p class="hero-body">
+                    Rather than relying on simple blocklists, WebSafe cross-references domain registration data from the WHOIS API, threat intelligence from VirusTotal's 70+ antivirus engines, and Google's own malicious URL database — all evaluated concurrently through Node.js's asynchronous architecture for sub-second results.
+                </p>
+                <p class="hero-body">
+                    A standout component is the <strong style="color:#e8edf8">Screenshot API-powered preview feature</strong>, which renders a live thumbnail of any website inside the WebSafe environment — letting users visually inspect a page without their browser ever touching it, effectively eliminating exposure to auto-downloads and browser exploits.
+                </p>
+
+                <div class="hero-tags">
+                    <span class="hero-tag">WHOIS API</span>
+                    <span class="hero-tag">Google Safe Browsing</span>
+                    <span class="hero-tag">VirusTotal</span>
+                    <span class="hero-tag">Screenshot API</span>
+                    <span class="hero-tag">Real-Time Scanning</span>
+                    <span class="hero-tag">QR Detection</span>
+                </div>
+            </div>
+
+            <!-- Visual -->
+            <div class="hero-visual">
+                <div class="image-badge badge-scan">
+                    <div class="image-badge-dot"></div>
+                    Scanning Active
+                </div>
+                <div class="image-badge badge-safe">
+                    <div class="image-badge-dot"></div>
+                    Link Verified Safe
+                </div>
+
+                <div class="image-frame">
+                    <div class="image-frame-inner">
+                        <svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;background:#0d1221;">
+                            <defs>
+                                <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#1d6aff"/>
+                                    <stop offset="100%" style="stop-color:#00d4ff"/>
+                                </linearGradient>
+                                <linearGradient id="barGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" style="stop-color:#1d6aff;stop-opacity:0.7"/>
+                                    <stop offset="100%" style="stop-color:#00d4ff;stop-opacity:0.7"/>
+                                </linearGradient>
+                                <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                                    <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(29,106,255,0.06)" stroke-width="1"/>
+                                </pattern>
+                            </defs>
+                            <rect width="480" height="300" fill="url(#grid)"/>
+                            <rect x="0" y="0" width="480" height="36" fill="rgba(17,24,39,0.9)"/>
+                            <rect x="0" y="35" width="480" height="1" fill="rgba(29,106,255,0.2)"/>
+                            <circle cx="16" cy="18" r="5" fill="#f87171" opacity="0.8"/>
+                            <circle cx="30" cy="18" r="5" fill="#fbbf24" opacity="0.8"/>
+                            <circle cx="44" cy="18" r="5" fill="#34d399" opacity="0.8"/>
+                            <rect x="60" y="11" width="220" height="14" rx="7" fill="rgba(10,14,26,0.9)" stroke="rgba(29,106,255,0.3)" stroke-width="1"/>
+                            <circle cx="74" cy="18" r="4" fill="none" stroke="#34d399" stroke-width="1.2"/>
+                            <text x="84" y="22" font-family="monospace" font-size="8" fill="rgba(232,237,248,0.5)">https://example.com/check</text>
+                            <rect x="16" y="50" width="448" height="58" rx="10" fill="url(#scoreGrad)" opacity="0.18" stroke="rgba(29,106,255,0.35)" stroke-width="1"/>
+                            <rect x="16" y="50" width="448" height="3" rx="1.5" fill="url(#scoreGrad)"/>
+                            <circle cx="38" cy="79" r="6" fill="#34d399" opacity="0.9"/>
+                            <text x="52" y="74" font-family="'Outfit',sans-serif" font-size="11" font-weight="bold" fill="#e8edf8">Link Looks Safe</text>
+                            <text x="52" y="87" font-family="monospace" font-size="8.5" fill="rgba(232,237,248,0.5)">8 of 8 checks passed</text>
+                            <rect x="408" y="60" width="40" height="40" rx="20" fill="rgba(0,0,0,0.4)" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+                            <text x="428" y="83" font-family="'Outfit',sans-serif" font-size="13" font-weight="bold" fill="#fff" text-anchor="middle">100</text>
+                            <!-- Row 1 -->
+                            <rect x="16" y="116" width="212" height="30" rx="8" fill="rgba(17,24,39,0.8)" stroke="rgba(29,106,255,0.12)" stroke-width="1"/>
+                            <circle cx="32" cy="131" r="8" fill="rgba(52,211,153,0.18)"/>
+                            <text x="28" y="135" font-size="9" fill="#34d399" font-family="monospace">&#10003;</text>
+                            <text x="48" y="127" font-size="8.5" fill="rgba(232,237,248,0.8)" font-family="monospace" font-weight="bold">HTTPS</text>
+                            <text x="48" y="139" font-size="7.5" fill="rgba(232,237,248,0.4)" font-family="monospace">Encrypted connection</text>
+                            <rect x="236" y="116" width="212" height="30" rx="8" fill="rgba(17,24,39,0.8)" stroke="rgba(29,106,255,0.12)" stroke-width="1"/>
+                            <circle cx="252" cy="131" r="8" fill="rgba(52,211,153,0.18)"/>
+                            <text x="248" y="135" font-size="9" fill="#34d399" font-family="monospace">&#10003;</text>
+                            <text x="268" y="127" font-size="8.5" fill="rgba(232,237,248,0.8)" font-family="monospace" font-weight="bold">VirusTotal</text>
+                            <text x="268" y="139" font-size="7.5" fill="rgba(232,237,248,0.4)" font-family="monospace">0/72 engines flagged</text>
+                            <!-- Row 2 -->
+                            <rect x="16" y="152" width="212" height="30" rx="8" fill="rgba(17,24,39,0.8)" stroke="rgba(29,106,255,0.12)" stroke-width="1"/>
+                            <circle cx="32" cy="167" r="8" fill="rgba(52,211,153,0.18)"/>
+                            <text x="28" y="171" font-size="9" fill="#34d399" font-family="monospace">&#10003;</text>
+                            <text x="48" y="163" font-size="8.5" fill="rgba(232,237,248,0.8)" font-family="monospace" font-weight="bold">WHOIS API</text>
+                            <text x="48" y="175" font-size="7.5" fill="rgba(232,237,248,0.4)" font-family="monospace">Established domain</text>
+                            <rect x="236" y="152" width="212" height="30" rx="8" fill="rgba(17,24,39,0.8)" stroke="rgba(29,106,255,0.12)" stroke-width="1"/>
+                            <circle cx="252" cy="167" r="8" fill="rgba(52,211,153,0.18)"/>
+                            <text x="248" y="171" font-size="9" fill="#34d399" font-family="monospace">&#10003;</text>
+                            <text x="268" y="163" font-size="8.5" fill="rgba(232,237,248,0.8)" font-family="monospace" font-weight="bold">Google Safe Browsing</text>
+                            <text x="268" y="175" font-size="7.5" fill="rgba(232,237,248,0.4)" font-family="monospace">No threats detected</text>
+                            <!-- Bars -->
+                            <text x="16" y="204" font-size="8" fill="rgba(232,237,248,0.35)" font-family="monospace" letter-spacing="1">SAFETY SCORE</text>
+                            <rect x="16" y="210" width="448" height="6" rx="3" fill="rgba(29,106,255,0.1)"/>
+                            <rect x="16" y="210" width="448" height="6" rx="3" fill="url(#barGrad)"/>
+                            <text x="16" y="232" font-size="8" fill="rgba(232,237,248,0.35)" font-family="monospace" letter-spacing="1">VIRUSTOTAL CONSENSUS</text>
+                            <rect x="16" y="238" width="448" height="6" rx="3" fill="rgba(29,106,255,0.1)"/>
+                            <rect x="16" y="238" width="380" height="6" rx="3" fill="url(#barGrad)"/>
+                            <text x="16" y="260" font-size="8" fill="rgba(232,237,248,0.35)" font-family="monospace" letter-spacing="1">DOMAIN REPUTATION</text>
+                            <rect x="16" y="266" width="448" height="6" rx="3" fill="rgba(29,106,255,0.1)"/>
+                            <rect x="16" y="266" width="420" height="6" rx="3" fill="url(#barGrad)"/>
+                            <rect x="0" y="290" width="480" height="10" fill="rgba(10,14,26,0.8)"/>
+                            <rect x="16" y="282" width="120" height="4" rx="2" fill="rgba(52,211,153,0.5)"/>
+                            <text x="144" y="286" font-size="7.5" fill="rgba(52,211,153,0.7)" font-family="monospace">&#9679; WEBSAFE VERIFIED</text>
+                        </svg>
+                        <div class="image-scan-line"></div>
+                    </div>
+                    <div class="image-overlay-text">&#9654; Live Analysis</div>
+                    <div class="image-corner tl"></div>
+                    <div class="image-corner bl"></div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ══════════════════════════════════════════
+         SYSTEM ARCHITECTURE
+    ══════════════════════════════════════════ -->
+    <section class="tech-section">
+        <div class="tech-container">
+            <div class="tech-header sr sr-d1">
+                <div class="tech-header-badge">APIs Used</div>
+                <h2>How WebSafe Is <span>Built</span></h2>
+                <p>Four industry-grade APIs work together in a multi-layer analysis pipeline — from domain registration data to live threat intelligence and safe visual preview.</p>
+            </div>
+
+            <div class="arch-grid" style="grid-template-columns: repeat(2,1fr);">
+                <!-- Card 1: WHOIS -->
+                <div class="arch-card sr sr-d2">
+                    <div class="arch-card-scan"></div>
+                    <div class="arch-num">01</div>
+                    <div class="arch-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </div>
+                    <h3>WHOIS API</h3>
+                    <p>Retrieves domain registration data including creation date, registrar, and ownership status. Newly registered or anonymized domains are automatically weighted as higher risk, helping catch freshly spun-up phishing infrastructure.</p>
+                </div>
+                <!-- Card 2: Google Safe Browsing -->
+                <div class="arch-card sr sr-d3">
+                    <div class="arch-card-scan"></div>
+                    <div class="arch-num">02</div>
+                    <div class="arch-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h3>Google Safe Browsing</h3>
+                    <p>Cross-references every URL against Google's continuously updated threat lists — covering malware, phishing, unwanted software, and social engineering pages. Flags are returned in real time as part of the safety score calculation.</p>
+                </div>
+                <!-- Card 3: VirusTotal -->
+                <div class="arch-card sr sr-d2">
+                    <div class="arch-card-scan"></div>
+                    <div class="arch-num">03</div>
+                    <div class="arch-icon">
+                        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    </div>
+                    <h3>VirusTotal</h3>
+                    <p>Submits URLs to VirusTotal's aggregated engine, which checks against 70+ antivirus vendors and URL scanners simultaneously. The consensus result — how many engines flagged the URL — feeds directly into the final safety score.</p>
+                </div>
+                <!-- Card 4: Screenshot API -->
+                <div class="arch-card sr sr-d3">
+                    <div class="arch-card-scan"></div>
+                    <div class="arch-num">04</div>
+                    <div class="arch-icon">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    </div>
+                    <h3>Screenshot API</h3>
+                    <p>Renders a live screenshot of the target URL in a sandboxed environment and returns it as an image preview. Users can visually inspect the page's layout and content without their browser ever connecting to the destination server.</p>
+                </div>
+            </div>
+
+            <div class="stats-row sr sr-d2">
+                <div class="stat-item">
+                    <div class="stat-num">4</div>
+                    <div class="stat-label">APIs Integrated</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">70<span style="font-size:20px">+</span></div>
+                    <div class="stat-label">AV Engines (VT)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">&lt;1s</div>
+                    <div class="stat-label">Scan Speed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num">3</div>
+                    <div class="stat-label">Risk Levels</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+         ANALYSIS DEEP DIVE
+    ══════════════════════════════════════════ -->
+    <section class="analysis-section">
+        <div class="analysis-container">
+            <div class="analysis-grid">
+                <div class="analysis-text sr left">
+                    <div class="analysis-badge">Analysis Engine</div>
+                    <h2>What WebSafe Evaluates on Every URL</h2>
+                    <div class="analysis-underline"></div>
+                    <p>Each URL is passed through all four integrated APIs concurrently. Results are normalized and weighted — a VirusTotal hit or a Google Safe Browsing flag carries heavier penalties than a domain age warning — and combined into a single safety score from 0 to 100.</p>
+                    <p>The engine weighs each signal differently to ensure the final score accurately reflects the actual threat level rather than treating all checks as equal.</p>
+                    <div class="check-list">
+                        <div class="check-item">
+                            <div class="check-icon-wrap pass">
+                                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div>
+                                <div class="check-item-title">HTTPS &amp; SSL Validation</div>
+                                <div class="check-item-desc">Verifies end-to-end encryption and certificate validity. Sites without HTTPS lose 30 points immediately — a major red flag for data security.</div>
+                            </div>
+                        </div>
+                        <div class="check-item">
+                            <div class="check-icon-wrap pass">
+                                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div>
+                                <div class="check-item-title">Google Safe Browsing Lookup</div>
+                                <div class="check-item-desc">Checks the URL against Google's threat lists covering malware, phishing, and unwanted software — updated in near real-time by Google's crawlers.</div>
+                            </div>
+                        </div>
+                        <div class="check-item">
+                            <div class="check-icon-wrap pass">
+                                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div>
+                                <div class="check-item-title">VirusTotal Multi-Engine Scan</div>
+                                <div class="check-item-desc">Submits the URL to 70+ antivirus and URL scanner engines simultaneously. Even a single engine flag triggers a score penalty and an elevated warning.</div>
+                            </div>
+                        </div>
+                        <div class="check-item">
+                            <div class="check-icon-wrap warn">
+                                <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </div>
+                            <div>
+                                <div class="check-item-title">WHOIS Domain Age &amp; Registrar</div>
+                                <div class="check-item-desc">Queries registration records to flag newly created or anonymized domains — common tactics used by phishing campaigns to evade detection before blocklists catch up.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Score Panel -->
+                <div class="sr right">
+                    <div class="score-panel">
+                        <div class="score-panel-label">Sample Score Breakdown</div>
+                        <div class="score-circle-wrap">
+                            <div class="score-circle">
+                                <svg width="120" height="120" viewBox="0 0 120 120">
+                                    <defs>
+                                        <linearGradient id="scoreGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" style="stop-color:#1d6aff"/>
+                                            <stop offset="100%" style="stop-color:#00d4ff"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <circle class="score-ring-bg" cx="60" cy="60" r="54" fill="none" stroke-width="8"/>
+                                    <circle class="score-ring-fill" cx="60" cy="60" r="54" fill="none" stroke-width="8" stroke="url(#scoreGrad2)"/>
+                                </svg>
+                                <div class="score-num-overlay">
+                                    <div class="score-num-big">80</div>
+                                    <div class="score-num-label">Score</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="score-bars">
+                            <div class="score-bar-item">
+                                <div class="score-bar-head">
+                                    <span class="score-bar-name">HTTPS / SSL</span>
+                                    <span class="score-bar-val">100%</span>
+                                </div>
+                                <div class="score-bar-track"><div class="score-bar-fill" data-width="100"></div></div>
+                            </div>
+                            <div class="score-bar-item">
+                                <div class="score-bar-head">
+                                    <span class="score-bar-name">Google Safe Browsing</span>
+                                    <span class="score-bar-val">100%</span>
+                                </div>
+                                <div class="score-bar-track"><div class="score-bar-fill" data-width="100"></div></div>
+                            </div>
+                            <div class="score-bar-item">
+                                <div class="score-bar-head">
+                                    <span class="score-bar-name">VirusTotal Engines</span>
+                                    <span class="score-bar-val">70%</span>
+                                </div>
+                                <div class="score-bar-track"><div class="score-bar-fill" data-width="70"></div></div>
+                            </div>
+                            <div class="score-bar-item">
+                                <div class="score-bar-head">
+                                    <span class="score-bar-name">WHOIS Domain Age</span>
+                                    <span class="score-bar-val">85%</span>
+                                </div>
+                                <div class="score-bar-track"><div class="score-bar-fill" data-width="85"></div></div>
+                            </div>
+                        </div>
+                        <div class="score-verdict">
+                            <div class="score-verdict-dot"></div>
+                            <div>
+                                <div class="score-verdict-text">Link Looks Safe</div>
+                                <div class="score-verdict-sub">8/8 checks evaluated</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+         PREVIEW FEATURE
+    ══════════════════════════════════════════ -->
+    <section class="preview-section">
+        <div class="preview-container">
+            <div class="preview-grid">
+                <div class="preview-visual sr left">
+                    <div class="preview-mockup" style="position:relative;">
+                        <div class="mockup-scan-line"></div>
+                        <div class="mockup-bar">
+                            <div class="mockup-dots">
+                                <div class="mockup-dot"></div>
+                                <div class="mockup-dot"></div>
+                                <div class="mockup-dot"></div>
+                            </div>
+                            <div class="mockup-url-bar">
+                                <span>&#128274;</span>
+                                websafe — preview mode
+                            </div>
+                        </div>
+                        <div class="mockup-content">
+                            <div class="mockup-result-header">
+                                <div class="mockup-dot-safe"></div>
+                                <div>
+                                    <div class="mockup-result-title">Link Looks Safe</div>
+                                    <div class="mockup-result-sub">8 of 8 checks passed — safe to visit</div>
+                                </div>
+                            </div>
+                            <div class="mockup-checks">
+                                <div class="mockup-check"><div class="mc-pass">&#10003;</div> HTTPS — Connection is encrypted</div>
+                                <div class="mockup-check"><div class="mc-pass">&#10003;</div> SSL Certificate — Valid and trusted</div>
+                                <div class="mockup-check"><div class="mc-pass">&#10003;</div> Google Safe Browsing — No threats found</div>
+                                <div class="mockup-check"><div class="mc-pass">&#10003;</div> VirusTotal — 0 / 72 engines flagged</div>
+                                <div class="mockup-check"><div class="mc-pass">&#10003;</div> WHOIS — Established domain (5+ years)</div>
+                                <div class="mockup-check"><div class="mc-pass">&#10003;</div> Domain Registrar — Verified &amp; active</div>
+                                <div class="mockup-check"><div class="mc-pass">&#10003;</div> Screenshot Preview — Rendered safely</div>
+                                <div class="mockup-check"><div class="mc-pass">&#10003;</div> Server Reputation — Verified clean</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-text sr right">
+                    <div class="preview-badge">Standout Feature</div>
+                    <h2>Safe Preview Without Visiting</h2>
+                    <p>The most innovative part of WebSafe is its <strong style="color:#e8edf8">Screenshot API-powered preview</strong> — a sandboxed rendering engine captures a live screenshot of the target URL and returns it as a safe image, never exposing the user's browser to the destination.</p>
+                    <p>Combined with VirusTotal and Google Safe Browsing results displayed alongside the preview, users get both a visual impression and a threat intelligence summary before deciding to click.</p>
+                    <div class="preview-feature-list">
+                        <div class="pf-item">
+                            <div class="pf-icon">
+                                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </div>
+                            <div>
+                                <div class="pf-title">Screenshot API Preview</div>
+                                <div class="pf-desc">Live page thumbnail rendered in a remote sandbox — see the site without your browser touching it.</div>
+                            </div>
+                        </div>
+                        <div class="pf-item">
+                            <div class="pf-icon">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            </div>
+                            <div>
+                                <div class="pf-title">Exploit Isolation</div>
+                                <div class="pf-desc">Browser-based exploits, auto-downloads, and redirect chains can't reach you through a screenshot.</div>
+                            </div>
+                        </div>
+                        <div class="pf-item">
+                            <div class="pf-icon">
+                                <svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                            </div>
+                            <div>
+                                <div class="pf-title">QR Code Content Extraction</div>
+                                <div class="pf-desc">Decode QR-encoded URLs via camera or image upload — checked through all four APIs before opening.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+         TRAINING & SCORING
+    ══════════════════════════════════════════ -->
+    <section class="training-section">
+        <div class="training-container">
+            <div class="training-header sr">
+                <div class="training-header-badge">Data-Backed Confidence</div>
+                <h2>Scoring &amp; Reliability</h2>
+                <p>WebSafe aggregates signals from WHOIS API, Google Safe Browsing, and VirusTotal into a single confidence score — giving users a clear, actionable verdict for every URL.</p>
+            </div>
+            <div class="training-metrics">
+                <div class="metric-card sr sr-d2">
+                    <div class="metric-icon">
+                        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    </div>
+                    <div class="metric-num">100<span>/100</span></div>
+                    <div class="metric-title">Safety Score System</div>
+                    <div class="metric-desc">Every URL receives a 0–100 safety score derived from all four APIs. Scores below 40 trigger a Dangerous verdict; 40–70 triggers Suspicious; above 70 is Safe.</div>
+                </div>
+                <div class="metric-card sr sr-d3">
+                    <div class="metric-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <div class="metric-num">70<span>+ Engines</span></div>
+                    <div class="metric-title">VirusTotal Coverage</div>
+                    <div class="metric-desc">VirusTotal's aggregated scan covers 70+ antivirus and URL scanner engines simultaneously, giving WebSafe broad threat intelligence with a single API call.</div>
+                </div>
+                <div class="metric-card sr sr-d4">
+                    <div class="metric-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div class="metric-num">&lt;1<span>s</span></div>
+                    <div class="metric-title">Real-Time Results</div>
+                    <div class="metric-desc">All four API calls are fired concurrently via Node.js's asynchronous architecture — WHOIS, Google Safe Browsing, VirusTotal, and Screenshot API all resolve in parallel for sub-second results.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+         BUILT BY
+    ══════════════════════════════════════════ -->
+    <section class="team-section sr">
+        <div class="team-container">
+            <div class="team-badge">Built With Purpose</div>
+            <div class="team-logo-wrap">
+                <svg viewBox="0 0 24 24" width="36" height="36">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <h2>Developed at STI College Fairview</h2>
+            <p>
+                WebSafe was created by students from <a href="#">STI College Fairview</a> as a practical cybersecurity tool for Filipino internet users. Inspired by the rising number of phishing scams targeting local communities, the team integrated WHOIS API, Google Safe Browsing, VirusTotal, and Screenshot API into a free, accessible, no-login-required tool — making professional-grade URL verification simple for everyone.
+            </p>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    <p class="footer-copy">&copy; 2026 WebSafe &middot; STI College Fairview &middot; Technology Overview</p>
+</footer>
+
+<script src="technology.js"></script>
+
+<script>
+/* =============================================
+   PARTICLE CANVAS
+============================================= */
+(function () {
+    const canvas = document.getElementById("bg-canvas");
+    const ctx = canvas.getContext("2d");
+    let W, H, particles = [];
+
+    function resize() {
+        W = canvas.width = window.innerWidth;
+        H = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
+
+    const COLORS = [
+        "rgba(29,106,255,",
+        "rgba(77,143,255,",
+        "rgba(0,212,255,",
+        "rgba(10,79,212,",
+        "rgba(0,150,220,"
+    ];
+
+    function rand(a, b) { return a + Math.random() * (b - a); }
+
+    for (let i = 0; i < 50; i++) {
+        particles.push({
+            x:     rand(0, window.innerWidth),
+            y:     rand(0, window.innerHeight),
+            r:     rand(1, 2.6),
+            dx:    rand(-0.18, 0.18),
+            dy:    rand(-0.14, 0.14),
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            alpha: rand(0.15, 0.45)
+        });
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, W, H);
+        particles.forEach(p => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = p.color + p.alpha + ")";
+            ctx.fill();
+            p.x += p.dx;
+            p.y += p.dy;
+            if (p.x < -5) p.x = W + 5;
+            if (p.x > W + 5) p.x = -5;
+            if (p.y < -5) p.y = H + 5;
+            if (p.y > H + 5) p.y = -5;
+        });
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
+
+/* =============================================
+   SCROLL REVEAL
+============================================= */
+(function () {
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add("visible");
+                obs.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll(".sr").forEach(el => obs.observe(el));
+})();
+
+/* =============================================
+   ARCH CARD STAGGERED REVEAL
+============================================= */
+(function () {
+    const cards = document.querySelectorAll(".arch-card");
+
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                const index = Array.from(cards).indexOf(e.target);
+                setTimeout(() => {
+                    e.target.style.animationDelay = "0s";
+                    e.target.classList.add("visible");
+                }, index * 120);
+                obs.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    cards.forEach(c => obs.observe(c));
+})();
+
+/* =============================================
+   SCORE BAR ANIMATION
+============================================= */
+(function () {
+    const bars = document.querySelectorAll(".score-bar-fill");
+    if (!bars.length) return;
+
+    const panel = bars[0].closest(".score-panel");
+    if (!panel) return;
+
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                setTimeout(() => {
+                    bars.forEach((bar, i) => {
+                        const w = bar.getAttribute("data-width");
+                        setTimeout(() => {
+                            bar.style.width = w + "%";
+                        }, i * 150);
+                    });
+                }, 300);
+                obs.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.3 });
+
+    obs.observe(panel);
+})();
+
+/* =============================================
+   PAGE LOAD FLASH
+============================================= */
+(function () {
+    const flash = document.createElement("div");
+    flash.style.cssText = [
+        "position:fixed",
+        "inset:0",
+        "background:#0a0e1a",
+        "z-index:9999",
+        "pointer-events:none",
+        "transition:opacity 0.6s ease"
+    ].join(";");
+    document.body.appendChild(flash);
+
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            flash.style.opacity = "0";
+            setTimeout(() => flash.remove(), 700);
+        }, 80);
+    });
+})();
+</script>
+
 </body>
 </html>
+
