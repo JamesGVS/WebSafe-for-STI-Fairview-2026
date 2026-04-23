@@ -34,8 +34,12 @@ function normalizeURL(raw) {
     const parts = host.split('.');
     const tld = parts[parts.length - 1];
 
-    // TLD must be 2+ letters only
+    // TLD must be 2+ letters only (basic format check)
     if (!/^[a-zA-Z]{2,}$/.test(tld)) return null;
+
+    // TLD must exist in the official IANA list (tld_list.js).
+    // Falls back to accepting any 2–24 letter TLD if the list isn't loaded yet.
+    if (typeof VALID_TLDS !== 'undefined' && !VALID_TLDS.has(tld.toLowerCase())) return null;
 
     // Each hostname label must be valid
     for (const part of parts) {
@@ -830,9 +834,14 @@ function friendlyFlagDetail(f) {
 
     /**
      * Detect excessive numeric substitution (p4yp4l, g00gle, amaz0n)
+     * Targets numbers sandwiched between letters (letter-number-letter pattern),
+     * which is the hallmark of brand spoofing (g00gle, p4ypal, amaz0n).
+     * Does NOT flag domains that start with numbers like 1337x, 4chan, 9gag —
+     * those are legitimate sites where numbers are part of the brand name.
      */
     function hasNumericSubstitution(hostname) {
-        return /[a-z][0-9][a-z]|[0-9]{2,}/i.test(hostname.replace(/\./g, ''));
+        // Only flag letter-DIGIT-letter patterns (substitution), not leading numbers
+        return /[a-z][0-9][a-z]/i.test(hostname.replace(/\./g, ''));
     }
 
     /**
