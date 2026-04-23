@@ -652,14 +652,14 @@ function friendlyFlagDetail(f) {
             try { hostname = new URL(normalized).hostname.toLowerCase(); } catch(e) {}
             const isWellKnown = WELL_KNOWN.some(d => hostname === d || hostname.endsWith('.' + d));
             const httpsOk = normalized.startsWith('https://');
-            checks.push({label:'HTTPS', ok:httpsOk, detail:httpsOk?'Connection encrypted':'Site not encrypted — avoid entering personal info'});
-            checks.push({label:'Reachable', ok:reachable||isWellKnown, detail:reachable?'Website responding':isWellKnown?'Well-known trusted website':'Could not reach website'});
-            checks.push({label:'SSL Certificate', ok:null, detail:'Full certificate check requires local server'});
-            checks.push({label:'Threat Database', ok:null, detail:'Full threat check requires local server'});
-            checks.push({label:'Domain Age', ok:null, detail:'Domain age check requires local server'});
-            if (!reachable && !isWellKnown) { level='danger'; reason='Could not reach this website — may not exist'; }
-            else if (!httpsOk)              { level='hazard'; reason='Site is not using a secure connection'; }
-            else                            { level='safe';   reason='Basic checks passed — run local server for full scan'; }
+            checks.push({label:'HTTPS', ok:httpsOk, detail:httpsOk?'Connection is private and encrypted':'Site does not use encryption — avoid entering personal info'});
+            checks.push({label:'Reachable', ok:reachable||isWellKnown, detail:reachable?'Website is online and responding':isWellKnown?'Well-known trusted website — confirmed safe':'Could not reach this website'});
+            checks.push({label:'SSL Certificate', ok:null, detail:'Certificate details unavailable in this mode'});
+            checks.push({label:'Threat Database', ok:null, detail:'Threat database lookup unavailable in this mode'});
+            checks.push({label:'Domain Age', ok:null, detail:'Domain age could not be determined in this mode'});
+            if (!reachable && !isWellKnown) { level='danger'; reason='Could not reach this website — it may not exist or is currently offline'; }
+            else if (!httpsOk)              { level='hazard'; reason='Site is not using a secure HTTPS connection — data is not encrypted'; }
+            else                            { level='safe';   reason='HTTPS is active and site is reachable — deeper checks unavailable'; }
         }
 
         const score = (serverData && typeof serverData.riskScore === 'number')
@@ -853,7 +853,10 @@ function friendlyFlagDetail(f) {
      * those are legitimate sites where numbers are part of the brand name.
      */
     function hasNumericSubstitution(hostname) {
-        // Only flag letter-DIGIT-letter patterns (substitution), not leading numbers
+        // Only flag letter-DIGIT-letter patterns (brand substitution: g00gle, p4ypal)
+        // NOT when the domain label starts with a number — those are legitimate brand names (1337x, 4chan, 9gag)
+        const domainLabel = hostname.replace(/^www\./, '').split('.')[0];
+        if (/^[0-9]/.test(domainLabel)) return false;
         return /[a-z][0-9][a-z]/i.test(hostname.replace(/\./g, ''));
     }
 
@@ -895,8 +898,10 @@ function friendlyFlagDetail(f) {
             flags.push({ label: 'Homograph Attack', ok: false, detail: 'Hostname contains non-ASCII characters — possible lookalike spoofing (e.g. Cyrillic letters)' });
         }
         const domainPart = hostname.replace(/^www\./, '');
+        const domainLabel = domainPart.split('.')[0];
+        const isAlphaOnly = /^[a-zA-Z]+$/.test(domainLabel);
         const entScore = domainEntropy(domainPart.replace(/\./g, ''));
-        if (entScore > 3.8 && domainPart.length > 12) {
+        if (isAlphaOnly && entScore > 3.8 && domainPart.length > 12) {
             flags.push({ label: 'High Domain Entropy', ok: false, detail: `Domain name looks randomly generated (entropy ${entScore.toFixed(2)}) — common in phishing infrastructure` });
         }
         if (hasNumericSubstitution(hostname)) {

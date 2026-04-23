@@ -1,19 +1,11 @@
-// server.js — WebSafe v7 TIGHTPACK
-// New in v7:
-//   • Google Safe Browsing API (free) — real-time URL threat lookup
-//   • VirusTotal Public API (free) — multi-engine URL scan
-//   • Free site builder / disposable hosting detection
-//     (Wix, Wixsite, WixStudio, Weebly, WordPress.com, Blogger, etc.)
-//   • Crypto wallet brand on free hosting = automatic danger verdict
-//   • Stricter scoring — free builder + brand content now costs heavy penalty
-//   • URL gibberish pre-check before any network calls
-//
-// API KEYS — fill these in. Both are FREE:
-//   GOOGLE_SAFE_BROWSING_KEY : https://developers.google.com/safe-browsing/v4/get-started
-//   VIRUSTOTAL_KEY           : https://www.virustotal.com/gui/join-us  (free tier: 4 req/min)
+// server.js — WebSafe
+// API keys are read from environment variables:
+//   GSB_KEY : Google Safe Browsing v4 — https://developers.google.com/safe-browsing/v4/get-started
+//   VT_KEY  : VirusTotal Public API   — https://www.virustotal.com/gui/join-us (free: 4 req/min)
+// Both are optional; their checks are skipped when the vars are unset.
 
-const GOOGLE_SAFE_BROWSING_KEY = process.env.GSB_KEY   || 'YOUR_GOOGLE_SAFE_BROWSING_API_KEY';
-const VIRUSTOTAL_KEY           = process.env.VT_KEY    || 'YOUR_VIRUSTOTAL_API_KEY';
+const GOOGLE_SAFE_BROWSING_KEY = process.env.GSB_KEY || '';
+const VIRUSTOTAL_KEY           = process.env.VT_KEY  || '';
 
 const express  = require('express');
 const fetch    = require('node-fetch');
@@ -57,7 +49,7 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'main.html')));
 // ── Simple in-memory rate limiter (10 req/min per IP) ────────────────────────
 const _rateMap = new Map();
 app.use('/api/', (req, res, next) => {
-    const ip  = req.ip || req.connection.remoteAddress || 'unknown';
+    const ip  = req.ip || req.socket?.remoteAddress || 'unknown';
     const now = Date.now();
     const entry = _rateMap.get(ip) || { count: 0, reset: now + 60000 };
     if (now > entry.reset) { entry.count = 0; entry.reset = now + 60000; }
@@ -79,9 +71,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// ════════════════════════════════════════════════════════════════════════════
-// SECTION 0 — SERVER-SIDE URL VALIDATION (mirrors client)
-// ════════════════════════════════════════════════════════════════════════════
+// ── URL VALIDATION ───────────────────────────────────────────────────────────
 
 /**
  * Returns false for gibberish input like "snawkd nskan", "asdfjk.qwer", etc.
@@ -116,9 +106,7 @@ function isValidHostname(hostname) {
     return true;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-// SECTION 1 — BLACKLISTS & PATTERN DETECTION (unchanged from v6 + additions)
-// ════════════════════════════════════════════════════════════════════════════
+// ── BLACKLISTS & PATTERN DETECTION ───────────────────────────────────────────
 
 const HARD_BLACKLIST = new Set([
     'example-malicious.com','bad-domain.test',
@@ -205,15 +193,9 @@ const BRAND_LEGITIMATE_DOMAINS = {
     trezor:     ['trezor.io','trezor.com'],
 };
 
-// ════════════════════════════════════════════════════════════════════════════
-// SECTION 1b — FREE SITE BUILDER / DISPOSABLE HOSTING DETECTION (v7 NEW)
-// ════════════════════════════════════════════════════════════════════════════
-
-/**
- * Free site builders and disposable hosting platforms.
- * Legitimate businesses NEVER use these for banking, crypto wallets, or finance.
- * Presence alone = WARNING. Presence + financial/crypto brand = DANGER.
- */
+// ── FREE SITE BUILDER / DISPOSABLE HOSTING DETECTION ─────────────────────────
+// Legitimate businesses never use these platforms for banking, crypto, or finance.
+// Presence alone = WARNING. Presence + financial/crypto brand = DANGER.
 const FREE_SITE_BUILDERS = [
     // Wix family
     { domain: 'wix.com',       name: 'Wix' },
@@ -311,9 +293,7 @@ function analyzeHostname(hostname) {
     return { hardBlacklisted: false, patternMatch, brandSpoof, spoofedBrand };
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-// SECTION 2 — URL STRUCTURE ANALYSIS
-// ════════════════════════════════════════════════════════════════════════════
+// ── URL STRUCTURE ANALYSIS ────────────────────────────────────────────────────
 
 function analyzeUrlStructure(urlStr) {
     const flags = [];
@@ -362,7 +342,7 @@ function analyzeUrlStructure(urlStr) {
     }
 
     const SUSPICIOUS_TLDS = ['xyz','top','club','online','site','space','fun','live','store',
-        'shop','bid','win','gq','ml','cf','ga','tk','pw','cc','su','icu','vip','loan','work',
+        'shop','bid','win','gq','ml','cf','ga','tk','pw','su','icu','vip','loan','work',
         'click','link','zip','mov','date','download','review'];
     const tld = labels[labels.length - 1];
     if (SUSPICIOUS_TLDS.includes(tld)) {
@@ -391,7 +371,9 @@ function analyzeUrlStructure(urlStr) {
         return e;
     }
     const domainNoTld = labels.slice(0, -1).join('').replace(/-/g, '');
-    if (domainNoTld.length > 10) {
+    // Only check entropy on purely alphabetic domains — numeric-prefixed brands (1337x, 4chan, 9gag) are legitimate
+    const isAlphaOnly = /^[a-zA-Z]+$/.test(domainNoTld);
+    if (isAlphaOnly && domainNoTld.length > 10) {
         const ent = shannonEntropy(domainNoTld);
         if (ent > 3.8) {
             flags.push({ type: 'high-entropy-domain', severity: 'medium',
@@ -405,8 +387,12 @@ function analyzeUrlStructure(urlStr) {
             detail: 'Hostname contains non-ASCII characters — possible IDN homograph attack using lookalike letters (e.g. Cyrillic "а" instead of Latin "a")' });
     }
 
-    // ── Numeric letter substitution (g00gle, p4ypal) ─────────────────────────
-    if (/[a-z][0-9][a-z]/i.test(hostname.replace(/\./g, ''))) {
+    // Numeric letter substitution: only flag when numbers replace letters mid-brand (g00gle, p4ypal)
+    // NOT when the domain starts with numbers — those are legitimate brand names (1337x, 4chan, 9gag, 1337x)
+    const hostnameNoWww = hostname.replace(/^www\./, '');
+    const domainLabel   = hostnameNoWww.split('.')[0];
+    const startsWithNum = /^[0-9]/.test(domainLabel);
+    if (!startsWithNum && /[a-z][0-9][a-z]/i.test(hostnameNoWww.replace(/\./g, ''))) {
         flags.push({ type: 'numeric-substitution', severity: 'high',
             detail: 'Numbers replacing letters detected in domain — a classic brand-spoofing technique (e.g. g00gle, p4ypal)' });
     }
@@ -414,16 +400,14 @@ function analyzeUrlStructure(urlStr) {
     return flags;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-// SECTION 2b — EXTERNAL THREAT APIS (v7 NEW — both free)
-// ════════════════════════════════════════════════════════════════════════════
+// ── EXTERNAL THREAT APIS ─────────────────────────────────────────────────────
 
 /**
  * Google Safe Browsing v4 — free API, extremely accurate.
  * Returns { flagged: bool, threatType: string|null }
  */
 async function checkGoogleSafeBrowsing(url, timeout = 8000) {
-    if (!GOOGLE_SAFE_BROWSING_KEY || GOOGLE_SAFE_BROWSING_KEY.startsWith('YOUR_')) {
+    if (!GOOGLE_SAFE_BROWSING_KEY) {
         return { flagged: false, threatType: null, skipped: true };
     }
     try {
@@ -464,7 +448,7 @@ async function checkGoogleSafeBrowsing(url, timeout = 8000) {
  * Returns { positives: number, total: number, permalink: string }
  */
 async function checkVirusTotal(url, timeout = 12000) {
-    if (!VIRUSTOTAL_KEY || VIRUSTOTAL_KEY.startsWith('YOUR_')) {
+    if (!VIRUSTOTAL_KEY) {
         return { positives: null, total: null, skipped: true };
     }
     try {
@@ -507,9 +491,7 @@ async function checkVirusTotal(url, timeout = 12000) {
     }
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-// SECTION 3 — CONTENT ANALYSIS
-// ════════════════════════════════════════════════════════════════════════════
+// ── TRUSTED DOMAINS & CONTENT ANALYSIS ───────────────────────────────────────
 
 const TRUSTED_DOMAINS = new Set([
     'facebook.com','google.com','youtube.com','twitter.com','instagram.com',
@@ -539,6 +521,14 @@ const TRUSTED_DOMAINS = new Set([
     // Crypto (legitimate)
     'exodus.com','exodus.io','metamask.io','coinbase.com','binance.com',
     'ledger.com','trezor.io','trezor.com',
+    // Well-known sites with non-.com TLDs that would otherwise be flagged
+    '1337x.to','limetorrents.info','thepiratebay.org','nyaa.si',
+    'archive.org','archive.ph','web.archive.org',
+    'pastebin.com','hastebin.com','privatebin.net',
+    'protonmail.com','proton.me','tutanota.com','protonvpn.com',
+    'duckduckgo.com','startpage.com','brave.com',
+    'npm.js','npmjs.com','pypi.org','packagist.org','crates.io',
+    'cloudflare.com','fastly.com','akamai.com',
 ]);
 
 function isTrustedDomain(hostname) {
@@ -689,9 +679,7 @@ function deepContentAnalysis(html, hostname, finalUrl) {
     return flags;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-// SECTION 4 — NETWORK HELPERS
-// ════════════════════════════════════════════════════════════════════════════
+// ── NETWORK HELPERS ───────────────────────────────────────────────────────────
 
 const URL_SHORTENERS = [
     'bit.ly','tinyurl.com','goo.gl','t.co','ow.ly','is.gd',
@@ -797,13 +785,11 @@ async function checkDnsReputation(hostname) {
                     detail: `Hosted on IP block (${ip}) commonly associated with bulletproof hosting` });
             }
         }
-    } catch(e) {}
+    } catch(e) { console.debug(`checkDnsReputation failed for ${clean}:`, e.message); }
     return flags;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-// SECTION 5 — WHOIS
-// ════════════════════════════════════════════════════════════════════════════
+// ── WHOIS / DOMAIN AGE ────────────────────────────────────────────────────────
 
 async function whoisLookup(domain, timeout = 15000) {
     const clean = domain.replace(/^www\./, '');
@@ -816,7 +802,7 @@ async function whoisLookup(domain, timeout = 15000) {
             const j = await res.json();
             if (j && j.domain && j.domain.created_date) return { source: 'whoisjsonapi', createdDate: j.domain.created_date, expiresDate: j.domain.expiration_date, registrar: j.registrar && j.registrar.name };
         }
-    } catch(e) {}
+    } catch(e) { console.debug(`whois whoisjsonapi failed for ${clean}:`, e.message); }
 
     try {
         const ctrl = new AbortController(); const tid = setTimeout(() => ctrl.abort(), timeout);
@@ -829,7 +815,7 @@ async function whoisLookup(domain, timeout = 15000) {
                 if (reg && reg.eventDate) return { source: 'rdap', createdDate: reg.eventDate };
             }
         }
-    } catch(e) {}
+    } catch(e) { console.debug(`whois rdap failed for ${clean}:`, e.message); }
 
     try {
         const ctrl = new AbortController(); const tid = setTimeout(() => ctrl.abort(), timeout);
@@ -842,7 +828,7 @@ async function whoisLookup(domain, timeout = 15000) {
                 if (match && match.create_date) return { source: 'domainsdb', createdDate: match.create_date };
             }
         }
-    } catch(e) {}
+    } catch(e) { console.debug(`whois domainsdb failed for ${clean}:`, e.message); }
 
     try {
         const raw = await new Promise((resolve, reject) => {
@@ -856,7 +842,7 @@ async function whoisLookup(domain, timeout = 15000) {
                 if (m) { const d = new Date(m[1].trim()); if (!isNaN(d.getTime())) return { source: 'raw-whois', createdDate: m[1].trim() }; }
             }
         }
-    } catch(e) {}
+    } catch(e) { console.debug(`whois raw-whois failed for ${clean}:`, e.message); }
 
     return null;
 }
@@ -877,9 +863,7 @@ function parseMeta(html, baseUrl) {
     return { title, description: desc, favicon: icon };
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-// SECTION 6 — SCORING ENGINE (v7 — free builder now penalised hard)
-// ════════════════════════════════════════════════════════════════════════════
+// ── SCORING ENGINE ────────────────────────────────────────────────────────────
 
 function calculateRiskScore(signals) {
     let score = 100;
@@ -900,7 +884,7 @@ function calculateRiskScore(signals) {
         if (signals.cryptoFinancialContent) score -= 40; // brand on free hosting = very high penalty
     }
 
-    // URL structure
+    // URL structure flags
     if (signals.urlFlags) {
         for (const f of signals.urlFlags) {
             if (f.severity === 'high')   score -= 25;
@@ -916,13 +900,15 @@ function calculateRiskScore(signals) {
     if (signals.redirectsToHttp)     score -= 20;
     if (signals.certExpiresSoon)     score -= 10;
 
-    // Domain age
+    // Domain age — penalise new, reward established
     if (signals.domainAgeDays !== null) {
-        if (signals.domainAgeDays < 7)        score -= 40;
-        else if (signals.domainAgeDays < 30)  score -= 25;
-        else if (signals.domainAgeDays < 90)  score -= 10;
-        else if (signals.domainAgeDays < 180) score -= 5;
-    } else { score -= 8; }
+        if      (signals.domainAgeDays < 7)        score -= 40;
+        else if (signals.domainAgeDays < 30)       score -= 25;
+        else if (signals.domainAgeDays < 90)       score -= 10;
+        else if (signals.domainAgeDays < 180)      score -= 5;
+        else if (signals.domainAgeDays >= 365)     score += 5;  // bonus: 1+ year old
+        else if (signals.domainAgeDays >= 1825)    score += 10; // bonus: 5+ years
+    } else { score -= 8; } // unknown age = slight penalty
 
     // Content analysis
     if (signals.contentFlags) {
@@ -949,7 +935,12 @@ function calculateRiskScore(signals) {
         }
     }
 
-    if (signals.reachable === false) score -= 15;
+    // Reachability — not a hard signal, just a soft one
+    if (signals.reachable === false) score -= 10;
+
+    // Positive signals that reduce false-positive rate
+    if (signals.httpsOk && signals.certValid && !signals.selfSignedCert)  score += 5;
+    if (signals.domainAgeDays >= 730 && signals.httpsOk && signals.certValid) score += 5; // 2+ years + valid cert = trust boost
 
     return Math.max(0, Math.min(100, Math.round(score)));
 }
@@ -979,9 +970,7 @@ function determineVerdict(score, signals) {
     return 'danger';
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-// SECTION 7 — API ROUTES
-// ════════════════════════════════════════════════════════════════════════════
+// ── API ROUTES ────────────────────────────────────────────────────────────────
 
 const SERVER_WELL_KNOWN = [
     'github.com','github.io','facebook.com','fb.com','instagram.com',
@@ -1145,7 +1134,6 @@ app.get('/api/check', async (req, res) => {
             contentFlags,
             dnsFlags,
             reachable,
-            // v7 new signals
             googleSafeBrowsing:     gsbResult.flagged,
             virusTotalPositives:    vtResult.positives,
             freeSiteBuilder,
@@ -1196,9 +1184,7 @@ app.get('/api/check', async (req, res) => {
 });
 
 
-// ════════════════════════════════════════════════════════════════════════════
-// SECTION 7b — CHAT PROXY (keeps Anthropic API key server-side)
-// ════════════════════════════════════════════════════════════════════════════
+// ── CHAT PROXY (keeps Anthropic API key server-side) ─────────────────────────
 
 app.post('/api/chat', async (req, res) => {
     const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
@@ -1240,7 +1226,9 @@ app.post('/api/chat', async (req, res) => {
 // SECTION 8 — START
 // ════════════════════════════════════════════════════════════════════════════
 
-// Security headers
+// ── STARTUP ───────────────────────────────────────────────────────────────────
+
+// Security response headers — must be registered before app.listen
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'SAMEORIGIN');
@@ -1250,16 +1238,13 @@ app.use((req, res, next) => {
 
 app.listen(PORT, () => {
     const url = `http://localhost:${PORT}/main.html`;
-    console.log(`\n╔══════════════════════════════════════════════════════╗`);
-    console.log(`║   WebSafe v7 TIGHTPACK  —  http://localhost:${PORT}    ║`);
-    console.log(`╠══════════════════════════════════════════════════════╣`);
-    console.log(`║   GSB key set:  ${GOOGLE_SAFE_BROWSING_KEY.startsWith('YOUR') ? '✗ NOT SET (add GSB_KEY env var)' : '✓ CONFIGURED       '}  ║`);
-    console.log(`║   VT key set:   ${VIRUSTOTAL_KEY.startsWith('YOUR') ? '✗ NOT SET (add VT_KEY env var) ' : '✓ CONFIGURED       '}  ║`);
-    console.log(`╚══════════════════════════════════════════════════════╝\n`);
+    console.log(`\nWebSafe — http://localhost:${PORT}`);
+    console.log(`  GSB key: ${GOOGLE_SAFE_BROWSING_KEY ? '✓ configured' : '✗ not set (export GSB_KEY)'}`);
+    console.log(`  VT key:  ${VIRUSTOTAL_KEY           ? '✓ configured' : '✗ not set (export VT_KEY)'}\n`);
     const { exec } = require('child_process');
     const cmd =
         process.platform === 'win32'  ? `start "" "${url}"` :
         process.platform === 'darwin' ? `open "${url}"` :
                                         `xdg-open "${url}"`;
-    exec(cmd, err => { if (err) console.log('(Could not auto-open browser — visit the URL above)'); });
+    exec(cmd, err => { if (err) console.log(`Visit: ${url}`); });
 });
