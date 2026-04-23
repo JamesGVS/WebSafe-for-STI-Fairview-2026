@@ -27,7 +27,17 @@ const dns      = require('dns').promises;
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+const ALLOWED_ORIGINS = [
+    'https://websafe-v9gz.onrender.com',
+    'http://localhost:3000',
+];
+app.use(cors({
+    origin: (origin, callback) => {
+        // Allow requests with no origin (e.g. curl, same-origin server calls)
+        if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+        return callback(new Error('Not allowed by CORS'));
+    }
+}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'main.html')));
@@ -1170,6 +1180,46 @@ app.get('/api/check', async (req, res) => {
     } catch (err) {
         console.warn(`/api/check ERROR ${url}:`, err && err.message ? err.message : err);
         res.status(500).json({ ok: false, error: String(err.message || err) });
+    }
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// SECTION 7b — CHAT PROXY (keeps Anthropic API key server-side)
+// ════════════════════════════════════════════════════════════════════════════
+
+app.post('/api/chat', async (req, res) => {
+    const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
+    if (!ANTHROPIC_KEY) {
+        return res.status(503).json({ ok: false, error: 'Chat assistant is not configured on this server.' });
+    }
+    const { messages, system } = req.body || {};
+    if (!Array.isArray(messages) || messages.length === 0) {
+        return res.status(400).json({ ok: false, error: 'messages array is required.' });
+    }
+    try {
+        const ctrl = new AbortController();
+        const tid  = setTimeout(() => ctrl.abort(), 20000);
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            signal: ctrl.signal,
+            headers: {
+                'Content-Type':    'application/json',
+                'x-api-key':       ANTHROPIC_KEY,
+                'anthropic-version': '2023-06-01',
+            },
+            body: JSON.stringify({
+                model:      'claude-sonnet-4-20250514',
+                max_tokens: 1000,
+                system:     system || '',
+                messages,
+            }),
+        });
+        clearTimeout(tid);
+        const data = await response.json();
+        res.json(data);
+    } catch (err) {
+        console.warn('/api/chat error:', err.message);
+        res.status(500).json({ ok: false, error: 'Chat request failed.' });
     }
 });
 
