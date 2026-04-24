@@ -731,43 +731,420 @@ function friendlyFlagDetail(f) {
 
     if (!previewBtn) return;
 
+    // ── Inject styles ─────────────────────────────────────────────────────────
     const style = document.createElement('style');
-    style.textContent = `@keyframes ws-shimmer{0%{background-position:-600px 0}100%{background-position:600px 0}}.ws-skel{background:linear-gradient(90deg,#172035 25%,#1e2d47 50%,#172035 75%);background-size:600px 100%;animation:ws-shimmer 1.4s infinite linear;border-radius:6px;}`;
+    style.textContent = `
+        @keyframes ws-shimmer {
+            0%   { background-position: -700px 0 }
+            100% { background-position:  700px 0 }
+        }
+        @keyframes ws-fadeUp {
+            from { opacity: 0; transform: translateY(18px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0)    scale(1);    }
+        }
+        @keyframes ws-spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes ws-dot-bounce {
+            0%, 80%, 100% { transform: translateY(0);   opacity: .4; }
+            40%            { transform: translateY(-6px); opacity: 1;  }
+        }
+
+        .ws-skel {
+            background: linear-gradient(90deg,
+                #172035 25%, #1e2d47 50%, #172035 75%);
+            background-size: 700px 100%;
+            animation: ws-shimmer 1.5s infinite linear;
+            border-radius: 6px;
+        }
+
+        /* ── wrapper card ── */
+        .ws-preview-wrap {
+            width: 100%;
+            max-width: 680px;
+            margin: 16px auto 0;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #0d1422;
+            border: 1px solid rgba(59,130,246,0.22);
+            box-shadow:
+                0 0 0 1px rgba(59,130,246,0.06),
+                0 8px 40px rgba(0,0,0,0.55),
+                0 2px 8px  rgba(59,130,246,0.12);
+            animation: ws-fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
+        }
+
+        /* ── browser chrome ── */
+        .ws-browser-chrome {
+            background: #111827;
+            border-bottom: 1px solid rgba(59,130,246,0.18);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            user-select: none;
+        }
+        .ws-traffic-lights {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .ws-tl {
+            width: 11px; height: 11px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .ws-tl-red   { background: #ff5f57; box-shadow: 0 0 5px #ff5f5766; }
+        .ws-tl-amber { background: #febc2e; box-shadow: 0 0 5px #febc2e66; }
+        .ws-tl-green { background: #28c840; box-shadow: 0 0 5px #28c84066; }
+
+        .ws-url-bar {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(59,130,246,0.18);
+            border-radius: 8px;
+            padding: 5px 12px 5px 10px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            min-width: 0;
+            transition: border-color 0.2s;
+        }
+        .ws-url-bar:hover {
+            border-color: rgba(59,130,246,0.38);
+        }
+        .ws-lock-icon {
+            flex-shrink: 0;
+            color: #22c55e;
+            display: flex;
+            align-items: center;
+        }
+        .ws-lock-icon svg { stroke: #22c55e; }
+        .ws-url-text {
+            font-family: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+            font-size: 11.5px;
+            color: #94a3b8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ws-url-text em { font-style: normal; color: #e2e8f0; font-weight: 600; }
+
+        .ws-chrome-actions {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .ws-chrome-btn {
+            width: 28px; height: 28px;
+            border-radius: 7px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.07);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+            text-decoration: none;
+            color: #64748b;
+        }
+        .ws-chrome-btn:hover {
+            background: rgba(59,130,246,0.15);
+            border-color: rgba(59,130,246,0.35);
+            color: #60a5fa;
+        }
+        .ws-chrome-btn svg { stroke: currentColor; }
+
+        /* ── screenshot viewport ── */
+        .ws-viewport {
+            position: relative;
+            background: #121929;
+            min-height: 300px;
+            overflow: hidden;
+        }
+        .ws-viewport img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* ── loading overlay inside viewport ── */
+        .ws-loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: #0d1422;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            z-index: 5;
+        }
+        .ws-spinner {
+            width: 36px; height: 36px;
+            border: 3px solid rgba(59,130,246,0.15);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: ws-spin 0.75s linear infinite;
+        }
+        .ws-loading-dots {
+            display: flex;
+            gap: 5px;
+        }
+        .ws-loading-dots span {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #3b82f6;
+            animation: ws-dot-bounce 1.2s infinite ease-in-out;
+        }
+        .ws-loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .ws-loading-dots span:nth-child(3) { animation-delay: 0.30s; }
+        .ws-loading-label {
+            font-size: 12.5px;
+            color: #64748b;
+            letter-spacing: 0.02em;
+        }
+
+        /* skeleton body */
+        .ws-skel-body {
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+            background: #0d1422;
+        }
+
+        /* ── fallback (no screenshot) ── */
+        .ws-fallback {
+            padding: 48px 24px 52px;
+            text-align: center;
+            background: #0d1422;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .ws-fallback-globe {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.25);
+            display: grid;
+            place-items: center;
+            margin-bottom: 4px;
+        }
+        .ws-fallback-globe svg { stroke: #60a5fa; }
+        .ws-fallback h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin: 0;
+        }
+        .ws-fallback p {
+            font-size: 12.5px;
+            color: #64748b;
+            margin: 0;
+            max-width: 320px;
+            line-height: 1.55;
+        }
+
+        /* ── footer bar ── */
+        .ws-preview-footer {
+            padding: 11px 16px;
+            background: #0b1120;
+            border-top: 1px solid rgba(59,130,246,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .ws-footer-domain {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            color: #64748b;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .ws-footer-domain svg { stroke: #64748b; flex-shrink: 0; }
+        .ws-open-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 16px;
+            background: rgba(59,130,246,0.12);
+            border: 1px solid rgba(59,130,246,0.32);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #60a5fa;
+            letter-spacing: 0.02em;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .ws-open-btn:hover {
+            background: rgba(59,130,246,0.22);
+            box-shadow: 0 0 14px rgba(59,130,246,0.25);
+            transform: translateY(-1px);
+        }
+        .ws-open-btn svg { stroke: #60a5fa; }
+
+        /* ── screenshot overlay badge ── */
+        .ws-screenshot-badge {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 10.5px;
+            color: #94a3b8;
+            letter-spacing: 0.04em;
+            pointer-events: none;
+        }
+    `;
     document.head.appendChild(style);
 
-    function setPreviewVisible(v) { if (previewArea) previewArea.style.display = v ? 'block' : 'none'; }
-    function resetPreviewContent() {
-        if (pvDomain) pvDomain.textContent = '';
-        if (pvChecks) pvChecks.innerHTML = '';
-        if (pvActions) pvActions.innerHTML = '';
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function setPreviewVisible(v) {
+        if (previewArea) previewArea.style.display = v ? 'block' : 'none';
     }
-    function makeBrowserBar(hostname) {
+    function resetPreviewContent() {
+        if (pvDomain)  pvDomain.textContent = '';
+        if (pvChecks)  pvChecks.innerHTML   = '';
+        if (pvActions) pvActions.innerHTML  = '';
+    }
+
+    function formatDisplayUrl(normalized) {
+        // Bold the hostname, dim the rest
+        try {
+            const u = new URL(normalized);
+            const host = u.hostname;
+            const rest = u.pathname + u.search + u.hash;
+            const proto = u.protocol + '//';
+            return `${proto}<em>${host}</em>${rest.length > 1 ? rest.substring(0, 30) + (rest.length > 30 ? '…' : '') : ''}`;
+        } catch(e) {
+            return normalized;
+        }
+    }
+
+    function makeBrowserChrome(hostname, normalized) {
+        const isHttps = normalized.startsWith('https://');
         const bar = document.createElement('div');
-        bar.style.cssText = 'background:#0f1525;border-bottom:1px solid rgba(59,130,246,0.2);padding:10px 14px;display:flex;align-items:center;gap:8px;';
-        bar.innerHTML = `<span style="width:10px;height:10px;border-radius:50%;background:rgba(248,113,113,0.5);display:inline-block"></span><span style="width:10px;height:10px;border-radius:50%;background:rgba(251,191,36,0.5);display:inline-block"></span><span style="width:10px;height:10px;border-radius:50%;background:rgba(34,197,94,0.5);display:inline-block"></span><div style="flex:1;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:20px;padding:5px 14px;margin-left:6px;"><span style="color:#60a5fa;font-size:12px;font-weight:600;font-family:'IBM Plex Mono',monospace">${hostname}</span></div>`;
+        bar.className = 'ws-browser-chrome';
+        bar.innerHTML = `
+            <div class="ws-traffic-lights">
+                <span class="ws-tl ws-tl-red"></span>
+                <span class="ws-tl ws-tl-amber"></span>
+                <span class="ws-tl ws-tl-green"></span>
+            </div>
+            <div class="ws-url-bar">
+                ${isHttps ? `
+                <span class="ws-lock-icon">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </span>` : ''}
+                <span class="ws-url-text">${formatDisplayUrl(normalized)}</span>
+            </div>
+            <div class="ws-chrome-actions">
+                <a href="${normalized}" target="_blank" rel="noopener noreferrer" class="ws-chrome-btn" title="Open in new tab">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                </a>
+            </div>
+        `;
         return bar;
     }
-    function makeWrapper() {
-        const w = document.createElement('div');
-        w.style.cssText = 'width:100%;max-width:640px;margin:12px auto 0;border:1px solid rgba(59,130,246,0.3);border-radius:14px;overflow:hidden;background:#121929;box-shadow:0 4px 24px rgba(59,130,246,0.1);';
-        return w;
+
+    function makeLoadingOverlay() {
+        const div = document.createElement('div');
+        div.className = 'ws-loading-overlay';
+        div.innerHTML = `
+            <div class="ws-spinner"></div>
+            <div>
+                <div class="ws-loading-dots">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+            <p class="ws-loading-label">Capturing screenshot…</p>
+        `;
+        return div;
     }
-    function renderSkeleton(container, hostname) {
-        container.innerHTML = ''; container.appendChild(makeBrowserBar(hostname));
-        const body = document.createElement('div'); body.style.cssText = 'padding:20px;display:flex;flex-direction:column;gap:12px;min-height:280px;background:#121929;';
-        const hero = document.createElement('div'); hero.className = 'ws-skel'; hero.style.cssText = 'height:120px;width:100%;'; body.appendChild(hero);
-        [[100],[80],[90],[60]].forEach(([w]) => { const line=document.createElement('div');line.className='ws-skel';line.style.cssText=`height:14px;width:${w}%;`;body.appendChild(line); });
-        const status = document.createElement('p'); status.style.cssText = 'text-align:center;color:#64748b;font-size:13px;margin-top:8px;'; status.textContent = '📸 Taking screenshot… this may take up to 15 seconds'; body.appendChild(status);
-        container.appendChild(body);
+
+    function makeSkeletonBody() {
+        const body = document.createElement('div');
+        body.className = 'ws-skel-body';
+        const sizes = [100, 85, 92, 70, 55];
+        body.innerHTML = `<div class="ws-skel" style="height:160px;width:100%;border-radius:8px;margin-bottom:4px;"></div>`;
+        sizes.forEach(w => {
+            const line = document.createElement('div');
+            line.className = 'ws-skel';
+            line.style.cssText = `height:12px;width:${w}%;`;
+            body.appendChild(line);
+        });
+        return body;
     }
+
+    function makeFallback(hostname) {
+        const div = document.createElement('div');
+        div.className = 'ws-fallback';
+        div.innerHTML = `
+            <div class="ws-fallback-globe">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+            </div>
+            <h4>${hostname}</h4>
+            <p>Live screenshot unavailable — the site may block preview services or require a login to load.</p>
+        `;
+        return div;
+    }
+
+    function makePreviewFooter(hostname, normalized) {
+        const footer = document.createElement('div');
+        footer.className = 'ws-preview-footer';
+        footer.innerHTML = `
+            <span class="ws-footer-domain">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                ${hostname}
+            </span>
+            <a href="${normalized}" target="_blank" rel="noopener noreferrer" class="ws-open-btn" data-ws-newtab="1">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+                Open in new tab
+            </a>
+        `;
+        return footer;
+    }
+
+    // ── Image sources ─────────────────────────────────────────────────────────
     function tryLoadImage(url, ms) {
         return new Promise(resolve => {
-            const img = new Image(); const tid = setTimeout(() => { img.src=''; resolve(null); }, ms);
-            img.onload = () => { clearTimeout(tid); resolve(img.src); };
+            const img = new Image();
+            const tid = setTimeout(() => { img.src = ''; resolve(null); }, ms);
+            img.onload  = () => { clearTimeout(tid); resolve(img.src); };
             img.onerror = () => { clearTimeout(tid); resolve(null); };
             img.src = url;
         });
     }
+
     async function getScreenshot(url) {
         const enc = encodeURIComponent(url);
         const sources = [
@@ -775,45 +1152,77 @@ function friendlyFlagDetail(f) {
             `https://shot.screenshotapi.net/screenshot?url=${enc}&width=1280&height=768&output=image&file_type=png&wait_for_event=load`,
             `https://mini.s-shot.ru/1024x768/PNG/1024/Z100/?${url}`,
         ];
-        for (const src of sources) { const r = await tryLoadImage(src, 10000); if (r) return r; }
+        for (const src of sources) {
+            const r = await tryLoadImage(src, 10000);
+            if (r) return r;
+        }
         return null;
     }
 
+    // ── Main click handler ────────────────────────────────────────────────────
     previewBtn.addEventListener('click', async () => {
-        const inputEl = document.getElementById('link_input'); if (!inputEl) return;
+        const inputEl = document.getElementById('link_input');
+        if (!inputEl) return;
         const raw = inputEl.value || '';
 
-        // ── STRICT validation on preview ───────────────────────────────────
         if (!raw.trim()) { alert('Please enter a URL first.'); return; }
         const normalized = normalizeURL(raw);
         if (!normalized) {
-            const statusEl = document.getElementById('link_status');
-            showInvalidUrlError(statusEl);
+            showInvalidUrlError(document.getElementById('link_status'));
             return;
         }
 
-        setPreviewVisible(true); resetPreviewContent(); showSpinner();
-        let hostname = ''; try { hostname = new URL(normalized).hostname; } catch(e) {}
+        let hostname = '';
+        try { hostname = new URL(normalized).hostname; } catch(e) {}
+
+        // Update legacy elements if present
+        setPreviewVisible(true);
+        resetPreviewContent();
         if (pvDomain) pvDomain.textContent = hostname;
+        showSpinner();
+
         if (pvActions) {
-            pvActions.innerHTML = ''; const wrapper = makeWrapper(); pvActions.appendChild(wrapper);
-            renderSkeleton(wrapper, hostname);
-            const shot = await getScreenshot(normalized); hideSpinner();
-            wrapper.innerHTML = ''; wrapper.appendChild(makeBrowserBar(hostname));
+            // Build wrapper
+            const wrapper = document.createElement('div');
+            wrapper.className = 'ws-preview-wrap';
+
+            // Browser chrome
+            wrapper.appendChild(makeBrowserChrome(hostname, normalized));
+
+            // Viewport with skeleton + loading overlay
+            const viewport = document.createElement('div');
+            viewport.className = 'ws-viewport';
+            viewport.appendChild(makeSkeletonBody());
+            viewport.appendChild(makeLoadingOverlay());
+            wrapper.appendChild(viewport);
+
+            // Footer
+            wrapper.appendChild(makePreviewFooter(hostname, normalized));
+
+            pvActions.appendChild(wrapper);
+
+            // Fetch screenshot
+            const shot = await getScreenshot(normalized);
+            hideSpinner();
+
+            // Clear viewport
+            viewport.innerHTML = '';
+
             if (shot) {
-                const img = document.createElement('img'); img.src = shot; img.alt = `Preview of ${hostname}`; img.style.cssText = 'width:100%;height:auto;display:block;'; wrapper.appendChild(img);
+                const img = document.createElement('img');
+                img.src = shot;
+                img.alt = `Live preview of ${hostname}`;
+                img.style.cssText = 'width:100%;height:auto;display:block;';
+                viewport.appendChild(img);
+
+                // Small "LIVE PREVIEW" badge on top-right
+                const badge = document.createElement('div');
+                badge.className = 'ws-screenshot-badge';
+                badge.textContent = 'LIVE PREVIEW';
+                viewport.appendChild(badge);
             } else {
-                const fb = document.createElement('div'); fb.style.cssText = 'padding:50px 20px;text-align:center;background:#121929;';
-                fb.innerHTML = `<span style="font-size:48px">🌐</span><p style="color:#60a5fa;font-weight:700;font-size:16px;margin:12px 0 6px">${hostname}</p><p style="color:#64748b;font-size:13px;margin:0">Screenshot unavailable — this site may block preview services</p>`;
-                wrapper.appendChild(fb);
+                viewport.appendChild(makeFallback(hostname));
             }
-            // Remove any existing "Open in new tab" link before adding a fresh one
-            const existingLink = pvActions.querySelector('a[data-ws-newtab]');
-            if (existingLink) existingLink.remove();
-            const a = document.createElement('a'); a.href = normalized; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = '🔗 Open in new tab';
-            a.setAttribute('data-ws-newtab', '1');
-            a.style.cssText = 'display:inline-block;margin:12px 0 4px;padding:9px 20px;background:rgba(59,130,246,0.1);color:#60a5fa;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600;border:1px solid rgba(59,130,246,0.35);transition:background 0.15s;';
-            pvActions.appendChild(a);
         }
     });
 })();
