@@ -1145,19 +1145,22 @@ function friendlyFlagDetail(f) {
         });
     }
 
-    async function getScreenshot(url) {
-        const enc = encodeURIComponent(url);
-        const sources = [
-            `https://image.thum.io/get/width/900/crop/600/noanimate/${url}`,
-            `https://shot.screenshotapi.net/screenshot?url=${enc}&width=1280&height=768&output=image&file_type=png&wait_for_event=load`,
-            `https://mini.s-shot.ru/1024x768/PNG/1024/Z100/?${url}`,
-        ];
-        for (const src of sources) {
-            const r = await tryLoadImage(src, 10000);
-            if (r) return r;
-        }
-        return null;
+ async function getScreenshot(url) {
+    const enc = encodeURIComponent(url);
+    const sources = [
+        // 1. thum.io — fast, no key, 1000/month free
+        `https://image.thum.io/get/width/900/crop/600/noanimate/${url}`,
+        // 2. PageShot — Chromium-based, truly free, no key
+        `https://pageshot.site/v1/screenshot?url=${enc}&width=900&height=600&format=png&block_ads=true&hide_banners=true`,
+        // 3. s-shot fallback
+        `https://mini.s-shot.ru/1024x768/PNG/1024/Z100/?${url}`,
+    ];
+    for (const src of sources) {
+        const r = await tryLoadImage(src, 12000);
+        if (r) return r;
     }
+    return null;
+}
 
     // ── Main click handler ────────────────────────────────────────────────────
     previewBtn.addEventListener('click', async () => {
