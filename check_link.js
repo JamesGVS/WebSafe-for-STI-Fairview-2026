@@ -311,6 +311,14 @@ function friendlyFlagDetail(f) {
     function clearResults() {
         if (statusEl) statusEl.innerHTML = '';
         if (safetyEl) { safetyEl.textContent = ''; safetyEl.className = ''; }
+        const pa = document.getElementById('preview_area');
+        if (pa) pa.style.display = 'none';
+        ['preview_actions','preview_checks'].forEach(id => {
+            const el = document.getElementById(id); if (el) el.innerHTML = '';
+        });
+        ['preview_title','preview_domain'].forEach(id => {
+            const el = document.getElementById(id); if (el) el.textContent = '';
+        });
     }
     let _debounceTimer = null;
     if (input) {
@@ -775,6 +783,753 @@ function friendlyFlagDetail(f) {
 
 
 
+
+// ─── Preview module ───────────────────────────────────────────────────────────
+(function () {
+    const previewBtn  = document.getElementById('preview_btn');
+    const previewArea = document.getElementById('preview_area');
+    const pvDomain    = document.getElementById('preview_domain');
+    const pvChecks    = document.getElementById('preview_checks');
+    const pvActions   = document.getElementById('preview_actions');
+
+    if (!previewBtn) return;
+
+    // ── Inject all styles once ────────────────────────────────────────────────
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes ws-shimmer {
+            0%   { background-position: -800px 0 }
+            100% { background-position:  800px 0 }
+        }
+        @keyframes ws-fadeUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.985); }
+            to   { opacity: 1; transform: translateY(0)    scale(1);    }
+        }
+        @keyframes ws-spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes ws-dot-bounce {
+            0%, 80%, 100% { transform: translateY(0);    opacity: .35; }
+            40%           { transform: translateY(-7px); opacity: 1;   }
+        }
+        @keyframes ws-danger-pulse {
+            0%   { box-shadow: 0 0 0 0   rgba(239,68,68,0.5); }
+            70%  { box-shadow: 0 0 0 10px rgba(239,68,68,0);  }
+            100% { box-shadow: 0 0 0 0   rgba(239,68,68,0);   }
+        }
+
+        /* ── Skeleton shimmer ── */
+        .ws-skel {
+            background: linear-gradient(90deg, #172035 25%, #1f2f4a 50%, #172035 75%);
+            background-size: 800px 100%;
+            animation: ws-shimmer 1.5s infinite linear;
+            border-radius: 6px;
+        }
+
+        /* ── Main wrapper card ── */
+        .ws-preview-wrap {
+            width: 100%;
+            max-width: 720px;
+            margin: 18px auto 0;
+            border-radius: 18px;
+            overflow: hidden;
+            background: #0b1120;
+            border: 1px solid rgba(59,130,246,0.2);
+            box-shadow:
+                0 0 0 1px rgba(59,130,246,0.06),
+                0 12px 50px rgba(0,0,0,0.6),
+                0 2px 10px rgba(59,130,246,0.1);
+            animation: ws-fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
+        }
+
+        /* Danger state wrapper */
+        .ws-preview-wrap.ws-danger-mode {
+            border-color: rgba(239,68,68,0.45);
+            box-shadow:
+                0 0 0 1px rgba(239,68,68,0.15),
+                0 12px 50px rgba(0,0,0,0.6),
+                0 0 24px rgba(239,68,68,0.12);
+        }
+
+        /* ── Danger banner ── */
+        .ws-danger-banner {
+            background: linear-gradient(135deg, rgba(220,38,38,0.18), rgba(153,27,27,0.18));
+            border-bottom: 1px solid rgba(239,68,68,0.4);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #fca5a5;
+            letter-spacing: 0.01em;
+        }
+        .ws-danger-banner svg { stroke: #f87171; flex-shrink: 0; }
+        .ws-danger-banner strong { color: #ff6b6b; }
+
+        /* ── Browser chrome bar ── */
+        .ws-browser-chrome {
+            background: #0f1929;
+            border-bottom: 1px solid rgba(59,130,246,0.15);
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            user-select: none;
+        }
+        .ws-traffic-lights { display: flex; gap: 6px; flex-shrink: 0; }
+        .ws-tl {
+            width: 11px; height: 11px;
+            border-radius: 50%;
+            display: inline-block;
+            transition: filter 0.2s;
+        }
+        .ws-tl:hover { filter: brightness(1.3); }
+        .ws-tl-red   { background: #ff5f57; box-shadow: 0 0 6px #ff5f5766; }
+        .ws-tl-amber { background: #febc2e; box-shadow: 0 0 6px #febc2e66; }
+        .ws-tl-green { background: #28c840; box-shadow: 0 0 6px #28c84066; }
+
+        .ws-url-bar {
+            flex: 1;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(59,130,246,0.15);
+            border-radius: 8px;
+            padding: 5px 12px 5px 10px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            min-width: 0;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .ws-url-bar:hover {
+            border-color: rgba(59,130,246,0.35);
+            background: rgba(59,130,246,0.06);
+        }
+        .ws-lock-icon { flex-shrink: 0; display: flex; align-items: center; }
+        .ws-lock-icon svg { stroke: #22c55e; }
+        .ws-lock-icon.ws-no-lock svg { stroke: #f87171; }
+        .ws-url-text {
+            font-family: 'JetBrains Mono', 'IBM Plex Mono', monospace;
+            font-size: 11.5px;
+            color: #94a3b8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ws-url-text em { font-style: normal; color: #e2e8f0; font-weight: 600; }
+
+        /* ── Chrome action buttons ── */
+        .ws-chrome-actions { display: flex; gap: 4px; flex-shrink: 0; }
+        .ws-chrome-btn {
+            width: 28px; height: 28px;
+            border-radius: 7px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+            text-decoration: none;
+            color: #64748b;
+            position: relative;
+        }
+        .ws-chrome-btn:hover {
+            background: rgba(59,130,246,0.15);
+            border-color: rgba(59,130,246,0.35);
+            color: #60a5fa;
+        }
+        .ws-chrome-btn svg { stroke: currentColor; }
+        /* Active/on state for live frame toggle */
+        .ws-chrome-btn.ws-active {
+            background: rgba(34,197,94,0.15);
+            border-color: rgba(34,197,94,0.4);
+            color: #4ade80;
+        }
+        /* Tooltip */
+        .ws-chrome-btn::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e2d47;
+            color: #e2e8f0;
+            font-size: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            white-space: nowrap;
+            padding: 3px 8px;
+            border-radius: 5px;
+            border: 1px solid rgba(59,130,246,0.2);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 10;
+        }
+        .ws-chrome-btn:hover::after { opacity: 1; }
+
+
+
+        /* ── Viewport area ── */
+        .ws-viewport {
+            position: relative;
+            background: #0e1928;
+            min-height: 320px;
+            overflow: hidden;
+        }
+
+        /* Screenshot mode — scrollable */
+        .ws-viewport.ws-scroll-mode {
+            overflow-y: auto;
+            max-height: 520px;
+            scroll-behavior: smooth;
+        }
+        .ws-viewport.ws-scroll-mode::-webkit-scrollbar {
+            width: 6px;
+        }
+        .ws-viewport.ws-scroll-mode::-webkit-scrollbar-track {
+            background: #0b1120;
+        }
+        .ws-viewport.ws-scroll-mode::-webkit-scrollbar-thumb {
+            background: rgba(59,130,246,0.3);
+            border-radius: 3px;
+        }
+        .ws-viewport.ws-scroll-mode::-webkit-scrollbar-thumb:hover {
+            background: rgba(59,130,246,0.55);
+        }
+
+        .ws-screenshot-img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Zoom controls overlay on screenshot */
+        .ws-zoom-controls {
+            position: sticky;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: flex-end;
+            padding: 0 10px;
+            pointer-events: none;
+            z-index: 5;
+            margin-top: -40px;
+        }
+        .ws-zoom-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            background: rgba(11,17,32,0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(59,130,246,0.25);
+            border-radius: 20px;
+            padding: 4px 6px;
+            pointer-events: all;
+        }
+        .ws-zoom-btn {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            transition: background 0.15s, color 0.15s;
+        }
+        .ws-zoom-btn:hover {
+            background: rgba(59,130,246,0.2);
+            color: #60a5fa;
+        }
+        .ws-zoom-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            color: #64748b;
+            min-width: 32px;
+            text-align: center;
+        }
+
+
+
+        /* ── Loading overlay ── */
+        .ws-loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: #0b1120;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            z-index: 8;
+        }
+        .ws-spinner {
+            width: 38px; height: 38px;
+            border: 3px solid rgba(59,130,246,0.12);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: ws-spin 0.75s linear infinite;
+        }
+        .ws-loading-dots { display: flex; gap: 5px; }
+        .ws-loading-dots span {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #3b82f6;
+            animation: ws-dot-bounce 1.2s infinite ease-in-out;
+        }
+        .ws-loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .ws-loading-dots span:nth-child(3) { animation-delay: 0.30s; }
+        .ws-loading-label { font-size: 12.5px; color: #64748b; letter-spacing: 0.02em; }
+
+        /* Skeleton body */
+        .ws-skel-body {
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #0b1120;
+        }
+
+        /* ── Fallback (no screenshot) ── */
+        .ws-fallback {
+            padding: 52px 24px 56px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            background: #0b1120;
+        }
+        .ws-fallback-globe {
+            width: 68px; height: 68px;
+            border-radius: 50%;
+            background: rgba(59,130,246,0.08);
+            border: 1px solid rgba(59,130,246,0.22);
+            display: grid;
+            place-items: center;
+            margin-bottom: 6px;
+        }
+        .ws-fallback-globe svg { stroke: #60a5fa; }
+        .ws-fallback h4 { font-size: 16px; font-weight: 700; color: #e2e8f0; margin: 0; }
+        .ws-fallback p  { font-size: 12.5px; color: #64748b; margin: 0; max-width: 320px; line-height: 1.6; }
+
+        /* ── Screenshot badge ── */
+        .ws-screenshot-badge {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 10.5px;
+            color: #94a3b8;
+            letter-spacing: 0.05em;
+            pointer-events: none;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        /* ── Footer bar ── */
+        .ws-preview-footer {
+            padding: 11px 16px;
+            background: #090f1e;
+            border-top: 1px solid rgba(59,130,246,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .ws-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex: 1;
+        }
+        .ws-footer-favicon {
+            width: 16px; height: 16px;
+            border-radius: 3px;
+            flex-shrink: 0;
+            background: rgba(59,130,246,0.1);
+        }
+        .ws-footer-domain {
+            font-size: 12px;
+            color: #64748b;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .ws-footer-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .ws-open-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 16px;
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            color: #60a5fa;
+            letter-spacing: 0.02em;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+            white-space: nowrap;
+        }
+        .ws-open-btn:hover {
+            background: rgba(59,130,246,0.2);
+            box-shadow: 0 0 16px rgba(59,130,246,0.22);
+            transform: translateY(-1px);
+        }
+        .ws-open-btn svg { stroke: #60a5fa; }
+
+        /* Mobile */
+        @media (max-width: 520px) {
+            .ws-preview-wrap { border-radius: 14px; }
+            .ws-viewport.ws-scroll-mode { max-height: 380px; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // ── State ─────────────────────────────────────────────────────────────────
+    let _currentUrl   = '';
+    let _currentLevel = 'safe';
+    let _currentZoom  = 100;
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function setPreviewVisible(v) {
+        if (previewArea) previewArea.style.display = v ? 'block' : 'none';
+    }
+    function resetPreviewContent() {
+        if (pvDomain)  pvDomain.textContent = '';
+        if (pvChecks)  pvChecks.innerHTML   = '';
+        if (pvActions) pvActions.innerHTML  = '';
+        _currentZoom   = 100;
+    }
+
+    function formatDisplayUrl(url) {
+        try {
+            const u    = new URL(url);
+            const rest = u.pathname + u.search + u.hash;
+            const path = rest.length > 1
+                ? rest.substring(0, 28) + (rest.length > 28 ? '…' : '')
+                : '';
+            return `${u.protocol}//<em>${u.hostname}</em>${path}`;
+        } catch(e) { return url; }
+    }
+
+    // ── Screenshot sources ────────────────────────────────────────────────────
+    function tryLoadImage(src, ms) {
+        return new Promise(resolve => {
+            const img = new Image();
+            const tid = setTimeout(() => { img.src = ''; resolve(null); }, ms);
+            img.onload  = () => { clearTimeout(tid); resolve(img.src); };
+            img.onerror = () => { clearTimeout(tid); resolve(null); };
+            img.src = src;
+        });
+    }
+
+    async function getScreenshot(url) {
+        const enc = encodeURIComponent(url);
+        const sources = [
+            `https://image.thum.io/get/width/960/crop/700/noanimate/${url}`,
+            `https://pageshot.site/v1/screenshot?url=${enc}&width=960&height=700&format=png&block_ads=true&hide_banners=true`,
+            `https://mini.s-shot.ru/1024x768/PNG/1024/Z100/?${url}`,
+        ];
+        for (const src of sources) {
+            const r = await tryLoadImage(src, 13000);
+            if (r) return r;
+        }
+        return null;
+    }
+
+    // ── Build browser chrome ──────────────────────────────────────────────────
+    function makeBrowserChrome(url) {
+        const isHttps = url.startsWith('https://');
+        const div = document.createElement('div');
+        div.className = 'ws-browser-chrome';
+        div.innerHTML = `
+            <div class="ws-traffic-lights">
+                <span class="ws-tl ws-tl-red"></span>
+                <span class="ws-tl ws-tl-amber"></span>
+                <span class="ws-tl ws-tl-green"></span>
+            </div>
+            <div class="ws-url-bar">
+                <span class="ws-lock-icon${isHttps ? '' : ' ws-no-lock'}">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        ${isHttps
+                            ? `<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>`
+                            : `<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1M17 11V9"/>`
+                        }
+                    </svg>
+                </span>
+                <span class="ws-url-text">${formatDisplayUrl(url)}</span>
+            </div>
+            <div class="ws-chrome-actions" id="ws_chrome_actions"></div>
+        `;
+        return div;
+    }
+
+    // ── Loading overlay ───────────────────────────────────────────────────────
+    function makeLoadingOverlay(msg) {
+        const div = document.createElement('div');
+        div.className = 'ws-loading-overlay';
+        div.innerHTML = `
+            <div class="ws-spinner"></div>
+            <div class="ws-loading-dots"><span></span><span></span><span></span></div>
+            <p class="ws-loading-label">${msg || 'Capturing screenshot…'}</p>
+        `;
+        return div;
+    }
+
+    // ── Skeleton ──────────────────────────────────────────────────────────────
+    function makeSkeletonBody() {
+        const body = document.createElement('div');
+        body.className = 'ws-skel-body';
+        body.innerHTML = `<div class="ws-skel" style="height:180px;width:100%;border-radius:8px;margin-bottom:4px;"></div>`;
+        [100, 82, 90, 68, 50].forEach(w => {
+            const l = document.createElement('div');
+            l.className = 'ws-skel';
+            l.style.cssText = `height:12px;width:${w}%;`;
+            body.appendChild(l);
+        });
+        return body;
+    }
+
+    // ── Fallback UI ───────────────────────────────────────────────────────────
+    function makeFallback(hostname) {
+        const div = document.createElement('div');
+        div.className = 'ws-fallback';
+        div.innerHTML = `
+            <div class="ws-fallback-globe">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+            </div>
+            <h4>${hostname}</h4>
+            <p>Screenshot unavailable — this site may block preview services, or the page requires a login to display content.</p>
+        `;
+        return div;
+    }
+
+    // ── Danger banner ─────────────────────────────────────────────────────────
+    function makeDangerBanner(level) {
+        if (level === 'safe') return null;
+        const div = document.createElement('div');
+        div.className = 'ws-danger-banner';
+        if (level === 'danger') {
+            div.innerHTML = `
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <span><strong>⚠ Dangerous Link Detected</strong> — This preview is shown in a sandboxed frame. Do not enter any personal information or click any links on this page.</span>
+            `;
+        } else {
+            div.innerHTML = `
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="stroke:#fbbf24">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span style="color:#fde68a"><strong>⚠ Proceed With Caution</strong> — This site has suspicious characteristics. Avoid entering personal details.</span>
+            `;
+        }
+        return div;
+    }
+
+    // ── Footer bar ────────────────────────────────────────────────────────────
+    function makeFooter(url) {
+        let hostname = '';
+        try { hostname = new URL(url).hostname; } catch(e) { hostname = url; }
+
+        const footer = document.createElement('div');
+        footer.className = 'ws-preview-footer';
+        footer.innerHTML = `
+            <div class="ws-footer-left">
+                <img class="ws-footer-favicon"
+                     src="https://www.google.com/s2/favicons?sz=16&domain=${encodeURIComponent(hostname)}"
+                     onerror="this.style.display='none'"
+                     alt="">
+                <span class="ws-footer-domain">${hostname}</span>
+            </div>
+            <div class="ws-footer-right">
+                <a href="${url}" target="_blank" rel="noopener noreferrer" class="ws-open-btn" data-ws-newtab="1">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                    Open in new tab
+                </a>
+            </div>
+        `;
+        return footer;
+    }
+
+    // ── Zoom controls for screenshot ──────────────────────────────────────────
+    function makeZoomControls(imgEl) {
+        const wrap = document.createElement('div');
+        wrap.className = 'ws-zoom-controls';
+        wrap.innerHTML = `
+            <div class="ws-zoom-pill">
+                <button class="ws-zoom-btn" id="ws_zoom_out" title="Zoom out">−</button>
+                <span class="ws-zoom-label" id="ws_zoom_label">100%</span>
+                <button class="ws-zoom-btn" id="ws_zoom_in" title="Zoom in">+</button>
+            </div>
+        `;
+        wrap.querySelector('#ws_zoom_out').addEventListener('click', () => updateZoom(-25, imgEl, wrap));
+        wrap.querySelector('#ws_zoom_in').addEventListener('click',  () => updateZoom(+25, imgEl, wrap));
+        return wrap;
+    }
+
+    function updateZoom(delta, imgEl, controlsWrap) {
+        _currentZoom = Math.max(50, Math.min(200, _currentZoom + delta));
+        imgEl.style.width = _currentZoom + '%';
+        imgEl.style.height = 'auto';
+        const lbl = controlsWrap.querySelector('#ws_zoom_label');
+        if (lbl) lbl.textContent = _currentZoom + '%';
+    }
+
+    // ── Main render ───────────────────────────────────────────────────────────
+    async function renderPreview(url, level) {
+        _currentUrl   = url;
+        _currentLevel = level || 'safe';
+        let hostname = '';
+        try { hostname = new URL(url).hostname; } catch(e) {}
+
+        // Hide old content
+        setPreviewVisible(true);
+        resetPreviewContent();
+        if (pvDomain) pvDomain.textContent = hostname;
+        showSpinner();
+
+        if (!pvActions) { hideSpinner(); return; }
+
+        // ── Build wrapper ─────────────────────────────────────────────────────
+        const wrapper = document.createElement('div');
+        wrapper.className = 'ws-preview-wrap' + (_currentLevel === 'danger' ? ' ws-danger-mode' : '');
+
+        // Danger/hazard banner
+        const banner = makeDangerBanner(_currentLevel);
+        if (banner) wrapper.appendChild(banner);
+
+        // Browser chrome
+        wrapper.appendChild(makeBrowserChrome(url));
+
+        // Viewport
+        const viewport = document.createElement('div');
+        viewport.className = 'ws-viewport ws-scroll-mode';
+
+        // Skeleton + loading overlay in viewport
+        viewport.appendChild(makeSkeletonBody());
+        viewport.appendChild(makeLoadingOverlay('Capturing screenshot…'));
+
+        wrapper.appendChild(viewport);
+        wrapper.appendChild(makeFooter(url));
+
+        pvActions.appendChild(wrapper);
+
+        // ── Fetch screenshot ──────────────────────────────────────────────────
+        const shot = await getScreenshot(url);
+        hideSpinner();
+        viewport.innerHTML = '';
+
+        if (shot) {
+            viewport.style.overflowY = 'auto';
+            const img = document.createElement('img');
+            img.className = 'ws-screenshot-img';
+            img.src  = shot;
+            img.alt  = `Preview of ${hostname}`;
+            viewport.appendChild(img);
+
+            // Badge
+            const badge = document.createElement('div');
+            badge.className = 'ws-screenshot-badge';
+            badge.textContent = 'SCREENSHOT';
+            viewport.appendChild(badge);
+
+            // Zoom controls
+            viewport.appendChild(makeZoomControls(img));
+
+            // Chrome action buttons (refresh screenshot)
+            const actions = wrapper.querySelector('#ws_chrome_actions');
+            if (actions) {
+                const refreshBtn = document.createElement('button');
+                refreshBtn.className = 'ws-chrome-btn';
+                refreshBtn.setAttribute('data-tip', 'Refresh screenshot');
+                refreshBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>`;
+                refreshBtn.addEventListener('click', async () => {
+                    viewport.innerHTML = '';
+                    viewport.appendChild(makeSkeletonBody());
+                    viewport.appendChild(makeLoadingOverlay('Refreshing…'));
+                    const newShot = await getScreenshot(url + '?_ws=' + Date.now());
+                    viewport.innerHTML = '';
+                    if (newShot) {
+                        const img2 = document.createElement('img');
+                        img2.className = 'ws-screenshot-img';
+                        img2.src = newShot;
+                        viewport.appendChild(img2);
+                        const b2 = document.createElement('div');
+                        b2.className = 'ws-screenshot-badge';
+                        b2.textContent = 'SCREENSHOT';
+                        viewport.appendChild(b2);
+                        viewport.appendChild(makeZoomControls(img2));
+                    } else {
+                        viewport.appendChild(makeFallback(hostname));
+                    }
+                });
+                actions.appendChild(refreshBtn);
+
+                // Open in new tab
+                const openBtn = document.createElement('a');
+                openBtn.className = 'ws-chrome-btn';
+                openBtn.href      = url;
+                openBtn.target    = '_blank';
+                openBtn.rel       = 'noopener noreferrer';
+                openBtn.setAttribute('data-tip', 'Open in new tab');
+                openBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+                actions.appendChild(openBtn);
+            }
+        } else {
+            viewport.appendChild(makeFallback(hostname));
+            // Still add open button in chrome
+            const actions = wrapper.querySelector('#ws_chrome_actions');
+            if (actions) {
+                const openBtn = document.createElement('a');
+                openBtn.className = 'ws-chrome-btn';
+                openBtn.href      = url;
+                openBtn.target    = '_blank';
+                openBtn.rel       = 'noopener noreferrer';
+                openBtn.setAttribute('data-tip', 'Open in new tab');
+                openBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+                actions.appendChild(openBtn);
+            }
+        }
+    }
+
+    // ── Preview button click ──────────────────────────────────────────────────
+    previewBtn.addEventListener('click', async () => {
+        const inputEl = document.getElementById('link_input');
+        if (!inputEl) return;
+        const raw = (inputEl.value || '').trim();
+        if (!raw) { alert('Please enter a URL first.'); return; }
+
+        const normalized = normalizeURL(raw);
+        if (!normalized) {
+            showInvalidUrlError(document.getElementById('link_status'));
+            return;
+        }
+
+        // Use last known scan level if URL matches
+        const level = (window._wsLastUrl === normalized) ? (window._wsLastLevel || 'safe') : 'safe';
+        await renderPreview(normalized, level);
+    });
+
+})();
 
 
 // ─── Extra Client-Side Phishing Heuristics ────────────────────────────────────
