@@ -721,6 +721,8 @@ function friendlyFlagDetail(f) {
 })();
 
 
+
+
 // ─── Preview module ───────────────────────────────────────────────────────────
 (function () {
     const previewBtn  = document.getElementById('preview_btn');
@@ -731,95 +733,120 @@ function friendlyFlagDetail(f) {
 
     if (!previewBtn) return;
 
-    // ── Inject styles ─────────────────────────────────────────────────────────
+    // ── Inject all styles once ────────────────────────────────────────────────
     const style = document.createElement('style');
     style.textContent = `
         @keyframes ws-shimmer {
-            0%   { background-position: -700px 0 }
-            100% { background-position:  700px 0 }
+            0%   { background-position: -800px 0 }
+            100% { background-position:  800px 0 }
         }
         @keyframes ws-fadeUp {
-            from { opacity: 0; transform: translateY(18px) scale(0.98); }
+            from { opacity: 0; transform: translateY(20px) scale(0.985); }
             to   { opacity: 1; transform: translateY(0)    scale(1);    }
         }
         @keyframes ws-spin {
             to { transform: rotate(360deg); }
         }
         @keyframes ws-dot-bounce {
-            0%, 80%, 100% { transform: translateY(0);   opacity: .4; }
-            40%            { transform: translateY(-6px); opacity: 1;  }
+            0%, 80%, 100% { transform: translateY(0);    opacity: .35; }
+            40%           { transform: translateY(-7px); opacity: 1;   }
+        }
+        @keyframes ws-danger-pulse {
+            0%   { box-shadow: 0 0 0 0   rgba(239,68,68,0.5); }
+            70%  { box-shadow: 0 0 0 10px rgba(239,68,68,0);  }
+            100% { box-shadow: 0 0 0 0   rgba(239,68,68,0);   }
         }
 
+        /* ── Skeleton shimmer ── */
         .ws-skel {
-            background: linear-gradient(90deg,
-                #172035 25%, #1e2d47 50%, #172035 75%);
-            background-size: 700px 100%;
+            background: linear-gradient(90deg, #172035 25%, #1f2f4a 50%, #172035 75%);
+            background-size: 800px 100%;
             animation: ws-shimmer 1.5s infinite linear;
             border-radius: 6px;
         }
 
-        /* ── wrapper card ── */
+        /* ── Main wrapper card ── */
         .ws-preview-wrap {
             width: 100%;
-            max-width: 680px;
-            margin: 16px auto 0;
-            border-radius: 16px;
+            max-width: 720px;
+            margin: 18px auto 0;
+            border-radius: 18px;
             overflow: hidden;
-            background: #0d1422;
-            border: 1px solid rgba(59,130,246,0.22);
+            background: #0b1120;
+            border: 1px solid rgba(59,130,246,0.2);
             box-shadow:
                 0 0 0 1px rgba(59,130,246,0.06),
-                0 8px 40px rgba(0,0,0,0.55),
-                0 2px 8px  rgba(59,130,246,0.12);
+                0 12px 50px rgba(0,0,0,0.6),
+                0 2px 10px rgba(59,130,246,0.1);
             animation: ws-fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
         }
 
-        /* ── browser chrome ── */
+        /* Danger state wrapper */
+        .ws-preview-wrap.ws-danger-mode {
+            border-color: rgba(239,68,68,0.45);
+            box-shadow:
+                0 0 0 1px rgba(239,68,68,0.15),
+                0 12px 50px rgba(0,0,0,0.6),
+                0 0 24px rgba(239,68,68,0.12);
+        }
+
+        /* ── Danger banner ── */
+        .ws-danger-banner {
+            background: linear-gradient(135deg, rgba(220,38,38,0.18), rgba(153,27,27,0.18));
+            border-bottom: 1px solid rgba(239,68,68,0.4);
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #fca5a5;
+            letter-spacing: 0.01em;
+        }
+        .ws-danger-banner svg { stroke: #f87171; flex-shrink: 0; }
+        .ws-danger-banner strong { color: #ff6b6b; }
+
+        /* ── Browser chrome bar ── */
         .ws-browser-chrome {
-            background: #111827;
-            border-bottom: 1px solid rgba(59,130,246,0.18);
+            background: #0f1929;
+            border-bottom: 1px solid rgba(59,130,246,0.15);
             padding: 10px 14px;
             display: flex;
             align-items: center;
             gap: 10px;
             user-select: none;
         }
-        .ws-traffic-lights {
-            display: flex;
-            gap: 6px;
-            flex-shrink: 0;
-        }
+        .ws-traffic-lights { display: flex; gap: 6px; flex-shrink: 0; }
         .ws-tl {
             width: 11px; height: 11px;
             border-radius: 50%;
             display: inline-block;
+            transition: filter 0.2s;
         }
-        .ws-tl-red   { background: #ff5f57; box-shadow: 0 0 5px #ff5f5766; }
-        .ws-tl-amber { background: #febc2e; box-shadow: 0 0 5px #febc2e66; }
-        .ws-tl-green { background: #28c840; box-shadow: 0 0 5px #28c84066; }
+        .ws-tl:hover { filter: brightness(1.3); }
+        .ws-tl-red   { background: #ff5f57; box-shadow: 0 0 6px #ff5f5766; }
+        .ws-tl-amber { background: #febc2e; box-shadow: 0 0 6px #febc2e66; }
+        .ws-tl-green { background: #28c840; box-shadow: 0 0 6px #28c84066; }
 
         .ws-url-bar {
             flex: 1;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(59,130,246,0.18);
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(59,130,246,0.15);
             border-radius: 8px;
             padding: 5px 12px 5px 10px;
             display: flex;
             align-items: center;
             gap: 7px;
             min-width: 0;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, background 0.2s;
         }
         .ws-url-bar:hover {
-            border-color: rgba(59,130,246,0.38);
+            border-color: rgba(59,130,246,0.35);
+            background: rgba(59,130,246,0.06);
         }
-        .ws-lock-icon {
-            flex-shrink: 0;
-            color: #22c55e;
-            display: flex;
-            align-items: center;
-        }
+        .ws-lock-icon { flex-shrink: 0; display: flex; align-items: center; }
         .ws-lock-icon svg { stroke: #22c55e; }
+        .ws-lock-icon.ws-no-lock svg { stroke: #f87171; }
         .ws-url-text {
             font-family: 'JetBrains Mono', 'IBM Plex Mono', monospace;
             font-size: 11.5px;
@@ -830,22 +857,20 @@ function friendlyFlagDetail(f) {
         }
         .ws-url-text em { font-style: normal; color: #e2e8f0; font-weight: 600; }
 
-        .ws-chrome-actions {
-            display: flex;
-            gap: 4px;
-            flex-shrink: 0;
-        }
+        /* ── Chrome action buttons ── */
+        .ws-chrome-actions { display: flex; gap: 4px; flex-shrink: 0; }
         .ws-chrome-btn {
             width: 28px; height: 28px;
             border-radius: 7px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.07);
             display: grid;
             place-items: center;
             cursor: pointer;
-            transition: background 0.15s, border-color 0.15s;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
             text-decoration: none;
             color: #64748b;
+            position: relative;
         }
         .ws-chrome-btn:hover {
             background: rgba(59,130,246,0.15);
@@ -853,43 +878,281 @@ function friendlyFlagDetail(f) {
             color: #60a5fa;
         }
         .ws-chrome-btn svg { stroke: currentColor; }
+        /* Active/on state for live frame toggle */
+        .ws-chrome-btn.ws-active {
+            background: rgba(34,197,94,0.15);
+            border-color: rgba(34,197,94,0.4);
+            color: #4ade80;
+        }
+        /* Tooltip */
+        .ws-chrome-btn::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e2d47;
+            color: #e2e8f0;
+            font-size: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            white-space: nowrap;
+            padding: 3px 8px;
+            border-radius: 5px;
+            border: 1px solid rgba(59,130,246,0.2);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 10;
+        }
+        .ws-chrome-btn:hover::after { opacity: 1; }
 
-        /* ── screenshot viewport ── */
+        /* ── Mode toggle tab bar ── */
+        .ws-mode-bar {
+            background: #0d1729;
+            border-bottom: 1px solid rgba(59,130,246,0.12);
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+        .ws-mode-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+            user-select: none;
+            letter-spacing: 0.02em;
+        }
+        .ws-mode-tab svg { stroke: currentColor; }
+        .ws-mode-tab:hover { color: #94a3b8; }
+        .ws-mode-tab.ws-tab-active {
+            color: #60a5fa;
+            border-bottom-color: #3b82f6;
+        }
+        .ws-mode-tab.ws-tab-live.ws-tab-active { color: #4ade80; border-bottom-color: #22c55e; }
+        .ws-live-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 5px #22c55e;
+            animation: ws-dot-bounce 1.4s infinite ease-in-out;
+            flex-shrink: 0;
+        }
+
+        /* ── Viewport area ── */
         .ws-viewport {
             position: relative;
-            background: #121929;
-            min-height: 300px;
+            background: #0e1928;
+            min-height: 320px;
             overflow: hidden;
         }
-        .ws-viewport img {
+
+        /* Screenshot mode — scrollable */
+        .ws-viewport.ws-scroll-mode {
+            overflow-y: auto;
+            max-height: 520px;
+            scroll-behavior: smooth;
+        }
+        .ws-viewport.ws-scroll-mode::-webkit-scrollbar {
+            width: 6px;
+        }
+        .ws-viewport.ws-scroll-mode::-webkit-scrollbar-track {
+            background: #0b1120;
+        }
+        .ws-viewport.ws-scroll-mode::-webkit-scrollbar-thumb {
+            background: rgba(59,130,246,0.3);
+            border-radius: 3px;
+        }
+        .ws-viewport.ws-scroll-mode::-webkit-scrollbar-thumb:hover {
+            background: rgba(59,130,246,0.55);
+        }
+
+        .ws-screenshot-img {
             width: 100%;
             height: auto;
             display: block;
+            transition: opacity 0.3s ease;
         }
 
-        /* ── loading overlay inside viewport ── */
-        .ws-loading-overlay {
+        /* Zoom controls overlay on screenshot */
+        .ws-zoom-controls {
+            position: sticky;
+            bottom: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: flex-end;
+            padding: 0 10px;
+            pointer-events: none;
+            z-index: 5;
+            margin-top: -40px;
+        }
+        .ws-zoom-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            background: rgba(11,17,32,0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(59,130,246,0.25);
+            border-radius: 20px;
+            padding: 4px 6px;
+            pointer-events: all;
+        }
+        .ws-zoom-btn {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            transition: background 0.15s, color 0.15s;
+        }
+        .ws-zoom-btn:hover {
+            background: rgba(59,130,246,0.2);
+            color: #60a5fa;
+        }
+        .ws-zoom-label {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            color: #64748b;
+            min-width: 32px;
+            text-align: center;
+        }
+
+        /* ── Live frame ── */
+        .ws-live-frame-wrap {
+            position: relative;
+            width: 100%;
+            height: 480px;
+            background: #0e1928;
+        }
+        .ws-live-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+        /* Safety shield overlay for live frame */
+        .ws-frame-shield {
             position: absolute;
             inset: 0;
-            background: #0d1422;
+            background: rgba(11,17,32,0.92);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 20px;
-            z-index: 5;
+            gap: 16px;
+            z-index: 10;
+            padding: 28px 24px;
+            text-align: center;
+        }
+        .ws-frame-shield.ws-shield-hidden { display: none; }
+        .ws-shield-icon {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            border: 1px solid;
+            margin-bottom: 4px;
+        }
+        .ws-shield-icon.green {
+            background: rgba(34,197,94,0.12);
+            border-color: rgba(34,197,94,0.35);
+        }
+        .ws-shield-icon.red {
+            background: rgba(239,68,68,0.12);
+            border-color: rgba(239,68,68,0.4);
+            animation: ws-danger-pulse 2s infinite;
+        }
+        .ws-shield-icon.amber {
+            background: rgba(251,191,36,0.12);
+            border-color: rgba(251,191,36,0.35);
+        }
+        .ws-shield-icon svg { stroke: currentColor; }
+        .ws-shield-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin: 0;
+        }
+        .ws-shield-body {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0;
+            max-width: 340px;
+            line-height: 1.6;
+        }
+        .ws-shield-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .ws-shield-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 20px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+            text-decoration: none;
+            letter-spacing: 0.02em;
+        }
+        .ws-shield-btn:hover { transform: translateY(-1px); }
+        .ws-shield-btn.proceed {
+            background: rgba(34,197,94,0.12);
+            border-color: rgba(34,197,94,0.4);
+            color: #4ade80;
+        }
+        .ws-shield-btn.proceed:hover {
+            background: rgba(34,197,94,0.22);
+            box-shadow: 0 0 14px rgba(34,197,94,0.2);
+        }
+        .ws-shield-btn.danger {
+            background: rgba(239,68,68,0.12);
+            border-color: rgba(239,68,68,0.4);
+            color: #fca5a5;
+        }
+        .ws-shield-btn.danger:hover {
+            background: rgba(239,68,68,0.22);
+            box-shadow: 0 0 14px rgba(239,68,68,0.2);
+        }
+        .ws-shield-btn.cancel {
+            background: rgba(100,116,139,0.12);
+            border-color: rgba(100,116,139,0.3);
+            color: #94a3b8;
+        }
+        .ws-shield-btn.cancel:hover { background: rgba(100,116,139,0.2); }
+        .ws-shield-btn svg { stroke: currentColor; flex-shrink: 0; }
+
+        /* ── Loading overlay ── */
+        .ws-loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: #0b1120;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            z-index: 8;
         }
         .ws-spinner {
-            width: 36px; height: 36px;
-            border: 3px solid rgba(59,130,246,0.15);
+            width: 38px; height: 38px;
+            border: 3px solid rgba(59,130,246,0.12);
             border-top-color: #3b82f6;
             border-radius: 50%;
             animation: ws-spin 0.75s linear infinite;
         }
-        .ws-loading-dots {
-            display: flex;
-            gap: 5px;
-        }
+        .ws-loading-dots { display: flex; gap: 5px; }
         .ws-loading-dots span {
             width: 6px; height: 6px;
             border-radius: 50%;
@@ -898,117 +1161,127 @@ function friendlyFlagDetail(f) {
         }
         .ws-loading-dots span:nth-child(2) { animation-delay: 0.15s; }
         .ws-loading-dots span:nth-child(3) { animation-delay: 0.30s; }
-        .ws-loading-label {
-            font-size: 12.5px;
-            color: #64748b;
-            letter-spacing: 0.02em;
-        }
+        .ws-loading-label { font-size: 12.5px; color: #64748b; letter-spacing: 0.02em; }
 
-        /* skeleton body */
+        /* Skeleton body */
         .ws-skel-body {
             padding: 18px 20px;
             display: flex;
             flex-direction: column;
-            gap: 11px;
-            background: #0d1422;
+            gap: 12px;
+            background: #0b1120;
         }
 
-        /* ── fallback (no screenshot) ── */
+        /* ── Fallback (no screenshot) ── */
         .ws-fallback {
-            padding: 48px 24px 52px;
+            padding: 52px 24px 56px;
             text-align: center;
-            background: #0d1422;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 10px;
+            background: #0b1120;
         }
         .ws-fallback-globe {
-            width: 64px; height: 64px;
+            width: 68px; height: 68px;
             border-radius: 50%;
-            background: rgba(59,130,246,0.1);
-            border: 1px solid rgba(59,130,246,0.25);
+            background: rgba(59,130,246,0.08);
+            border: 1px solid rgba(59,130,246,0.22);
             display: grid;
             place-items: center;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
         .ws-fallback-globe svg { stroke: #60a5fa; }
-        .ws-fallback h4 {
-            font-size: 16px;
-            font-weight: 700;
-            color: #e2e8f0;
-            margin: 0;
-        }
-        .ws-fallback p {
-            font-size: 12.5px;
-            color: #64748b;
-            margin: 0;
-            max-width: 320px;
-            line-height: 1.55;
-        }
+        .ws-fallback h4 { font-size: 16px; font-weight: 700; color: #e2e8f0; margin: 0; }
+        .ws-fallback p  { font-size: 12.5px; color: #64748b; margin: 0; max-width: 320px; line-height: 1.6; }
 
-        /* ── footer bar ── */
-        .ws-preview-footer {
-            padding: 11px 16px;
-            background: #0b1120;
-            border-top: 1px solid rgba(59,130,246,0.12);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .ws-footer-domain {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            font-size: 12px;
-            color: #64748b;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-        .ws-footer-domain svg { stroke: #64748b; flex-shrink: 0; }
-        .ws-open-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px 16px;
-            background: rgba(59,130,246,0.12);
-            border: 1px solid rgba(59,130,246,0.32);
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 12.5px;
-            font-weight: 600;
-            color: #60a5fa;
-            letter-spacing: 0.02em;
-            transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        .ws-open-btn:hover {
-            background: rgba(59,130,246,0.22);
-            box-shadow: 0 0 14px rgba(59,130,246,0.25);
-            transform: translateY(-1px);
-        }
-        .ws-open-btn svg { stroke: #60a5fa; }
-
-        /* ── screenshot overlay badge ── */
+        /* ── Screenshot badge ── */
         .ws-screenshot-badge {
             position: absolute;
             top: 10px; right: 10px;
-            background: rgba(0,0,0,0.65);
+            background: rgba(0,0,0,0.7);
             backdrop-filter: blur(6px);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 20px;
             padding: 3px 10px;
             font-size: 10.5px;
             color: #94a3b8;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.05em;
             pointer-events: none;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        /* ── Footer bar ── */
+        .ws-preview-footer {
+            padding: 11px 16px;
+            background: #090f1e;
+            border-top: 1px solid rgba(59,130,246,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .ws-footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex: 1;
+        }
+        .ws-footer-favicon {
+            width: 16px; height: 16px;
+            border-radius: 3px;
+            flex-shrink: 0;
+            background: rgba(59,130,246,0.1);
+        }
+        .ws-footer-domain {
+            font-size: 12px;
+            color: #64748b;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .ws-footer-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .ws-open-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 16px;
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.3);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            color: #60a5fa;
+            letter-spacing: 0.02em;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+            white-space: nowrap;
+        }
+        .ws-open-btn:hover {
+            background: rgba(59,130,246,0.2);
+            box-shadow: 0 0 16px rgba(59,130,246,0.22);
+            transform: translateY(-1px);
+        }
+        .ws-open-btn svg { stroke: #60a5fa; }
+
+        /* Mobile */
+        @media (max-width: 520px) {
+            .ws-preview-wrap { border-radius: 14px; }
+            .ws-mode-tab { padding: 7px 10px; font-size: 10.5px; }
+            .ws-live-frame-wrap { height: 360px; }
+            .ws-viewport.ws-scroll-mode { max-height: 380px; }
         }
     `;
     document.head.appendChild(style);
+
+    // ── State ─────────────────────────────────────────────────────────────────
+    let _currentUrl   = '';
+    let _currentLevel = 'safe';
+    let _currentZoom  = 100;
+    let _mode         = 'screenshot'; // 'screenshot' | 'live'
+    let _frameUnlocked = false;
 
     // ── Helpers ───────────────────────────────────────────────────────────────
     function setPreviewVisible(v) {
@@ -1018,82 +1291,127 @@ function friendlyFlagDetail(f) {
         if (pvDomain)  pvDomain.textContent = '';
         if (pvChecks)  pvChecks.innerHTML   = '';
         if (pvActions) pvActions.innerHTML  = '';
+        _currentZoom   = 100;
+        _mode          = 'screenshot';
+        _frameUnlocked = false;
     }
 
-    function formatDisplayUrl(normalized) {
-        // Bold the hostname, dim the rest
+    function formatDisplayUrl(url) {
         try {
-            const u = new URL(normalized);
-            const host = u.hostname;
+            const u    = new URL(url);
             const rest = u.pathname + u.search + u.hash;
-            const proto = u.protocol + '//';
-            return `${proto}<em>${host}</em>${rest.length > 1 ? rest.substring(0, 30) + (rest.length > 30 ? '…' : '') : ''}`;
-        } catch(e) {
-            return normalized;
-        }
+            const path = rest.length > 1
+                ? rest.substring(0, 28) + (rest.length > 28 ? '…' : '')
+                : '';
+            return `${u.protocol}//<em>${u.hostname}</em>${path}`;
+        } catch(e) { return url; }
     }
 
-    function makeBrowserChrome(hostname, normalized) {
-        const isHttps = normalized.startsWith('https://');
-        const bar = document.createElement('div');
-        bar.className = 'ws-browser-chrome';
-        bar.innerHTML = `
+    // ── Screenshot sources ────────────────────────────────────────────────────
+    function tryLoadImage(src, ms) {
+        return new Promise(resolve => {
+            const img = new Image();
+            const tid = setTimeout(() => { img.src = ''; resolve(null); }, ms);
+            img.onload  = () => { clearTimeout(tid); resolve(img.src); };
+            img.onerror = () => { clearTimeout(tid); resolve(null); };
+            img.src = src;
+        });
+    }
+
+    async function getScreenshot(url) {
+        const enc = encodeURIComponent(url);
+        const sources = [
+            `https://image.thum.io/get/width/960/crop/700/noanimate/${url}`,
+            `https://pageshot.site/v1/screenshot?url=${enc}&width=960&height=700&format=png&block_ads=true&hide_banners=true`,
+            `https://mini.s-shot.ru/1024x768/PNG/1024/Z100/?${url}`,
+        ];
+        for (const src of sources) {
+            const r = await tryLoadImage(src, 13000);
+            if (r) return r;
+        }
+        return null;
+    }
+
+    // ── Build browser chrome ──────────────────────────────────────────────────
+    function makeBrowserChrome(url) {
+        const isHttps = url.startsWith('https://');
+        const div = document.createElement('div');
+        div.className = 'ws-browser-chrome';
+        div.innerHTML = `
             <div class="ws-traffic-lights">
                 <span class="ws-tl ws-tl-red"></span>
                 <span class="ws-tl ws-tl-amber"></span>
                 <span class="ws-tl ws-tl-green"></span>
             </div>
             <div class="ws-url-bar">
-                ${isHttps ? `
-                <span class="ws-lock-icon">
+                <span class="ws-lock-icon${isHttps ? '' : ' ws-no-lock'}">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        ${isHttps
+                            ? `<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>`
+                            : `<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1M17 11V9"/>`
+                        }
                     </svg>
-                </span>` : ''}
-                <span class="ws-url-text">${formatDisplayUrl(normalized)}</span>
+                </span>
+                <span class="ws-url-text">${formatDisplayUrl(url)}</span>
             </div>
-            <div class="ws-chrome-actions">
-                <a href="${normalized}" target="_blank" rel="noopener noreferrer" class="ws-chrome-btn" title="Open in new tab">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                        <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                    </svg>
-                </a>
-            </div>
-        `;
-        return bar;
-    }
-
-    function makeLoadingOverlay() {
-        const div = document.createElement('div');
-        div.className = 'ws-loading-overlay';
-        div.innerHTML = `
-            <div class="ws-spinner"></div>
-            <div>
-                <div class="ws-loading-dots">
-                    <span></span><span></span><span></span>
-                </div>
-            </div>
-            <p class="ws-loading-label">Capturing screenshot…</p>
+            <div class="ws-chrome-actions" id="ws_chrome_actions"></div>
         `;
         return div;
     }
 
+    // ── Mode tab bar ──────────────────────────────────────────────────────────
+    function makeModeBar(onSwitch) {
+        const bar = document.createElement('div');
+        bar.className = 'ws-mode-bar';
+        bar.innerHTML = `
+            <div class="ws-mode-tab ws-tab-active" data-tab="screenshot">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+                </svg>
+                Screenshot
+            </div>
+            <div class="ws-mode-tab ws-tab-live" data-tab="live">
+                <span class="ws-live-dot"></span>
+                Live Frame
+            </div>
+        `;
+        bar.querySelectorAll('.ws-mode-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                bar.querySelectorAll('.ws-mode-tab').forEach(t => t.classList.remove('ws-tab-active'));
+                tab.classList.add('ws-tab-active');
+                onSwitch(tab.dataset.tab);
+            });
+        });
+        return bar;
+    }
+
+    // ── Loading overlay ───────────────────────────────────────────────────────
+    function makeLoadingOverlay(msg) {
+        const div = document.createElement('div');
+        div.className = 'ws-loading-overlay';
+        div.innerHTML = `
+            <div class="ws-spinner"></div>
+            <div class="ws-loading-dots"><span></span><span></span><span></span></div>
+            <p class="ws-loading-label">${msg || 'Capturing screenshot…'}</p>
+        `;
+        return div;
+    }
+
+    // ── Skeleton ──────────────────────────────────────────────────────────────
     function makeSkeletonBody() {
         const body = document.createElement('div');
         body.className = 'ws-skel-body';
-        const sizes = [100, 85, 92, 70, 55];
-        body.innerHTML = `<div class="ws-skel" style="height:160px;width:100%;border-radius:8px;margin-bottom:4px;"></div>`;
-        sizes.forEach(w => {
-            const line = document.createElement('div');
-            line.className = 'ws-skel';
-            line.style.cssText = `height:12px;width:${w}%;`;
-            body.appendChild(line);
+        body.innerHTML = `<div class="ws-skel" style="height:180px;width:100%;border-radius:8px;margin-bottom:4px;"></div>`;
+        [100, 82, 90, 68, 50].forEach(w => {
+            const l = document.createElement('div');
+            l.className = 'ws-skel';
+            l.style.cssText = `height:12px;width:${w}%;`;
+            body.appendChild(l);
         });
         return body;
     }
 
+    // ── Fallback UI ───────────────────────────────────────────────────────────
     function makeFallback(hostname) {
         const div = document.createElement('div');
         div.className = 'ws-fallback';
@@ -1106,128 +1424,356 @@ function friendlyFlagDetail(f) {
                 </svg>
             </div>
             <h4>${hostname}</h4>
-            <p>Live screenshot unavailable — the site may block preview services or require a login to load.</p>
+            <p>Screenshot unavailable — this site may block preview services, or the page requires a login to display content.</p>
         `;
         return div;
     }
 
-    function makePreviewFooter(hostname, normalized) {
+    // ── Danger banner ─────────────────────────────────────────────────────────
+    function makeDangerBanner(level) {
+        if (level === 'safe') return null;
+        const div = document.createElement('div');
+        div.className = 'ws-danger-banner';
+        if (level === 'danger') {
+            div.innerHTML = `
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <span><strong>⚠ Dangerous Link Detected</strong> — This preview is shown in a sandboxed frame. Do not enter any personal information or click any links on this page.</span>
+            `;
+        } else {
+            div.innerHTML = `
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="stroke:#fbbf24">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span style="color:#fde68a"><strong>⚠ Proceed With Caution</strong> — This site has suspicious characteristics. Avoid entering personal details.</span>
+            `;
+        }
+        return div;
+    }
+
+    // ── Safety shield (shown before live frame loads) ─────────────────────────
+    function makeFrameShield(url, level, onProceed, onCancel) {
+        const div = document.createElement('div');
+        div.className = 'ws-frame-shield';
+
+        let iconColor, iconSvg, titleText, bodyText, proceedLabel, showProceed;
+
+        if (level === 'danger') {
+            iconColor  = 'red';
+            iconSvg    = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+            titleText  = 'Dangerous Site Detected';
+            bodyText   = 'Our scan flagged this URL as potentially dangerous. Loading it — even in a sandboxed frame — may expose you to drive-by scripts. We strongly recommend <strong>not</strong> proceeding.';
+            proceedLabel = 'I understand the risk — Load anyway';
+            showProceed  = true;
+        } else if (level === 'hazard') {
+            iconColor  = 'amber';
+            iconSvg    = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+            titleText  = 'Suspicious Site — Proceed Carefully';
+            bodyText   = 'This site has warning signs. It will be loaded in an isolated sandbox with scripting restricted. <strong>Do not enter any personal information.</strong>';
+            proceedLabel = 'Load in sandboxed frame';
+            showProceed  = true;
+        } else {
+            iconColor  = 'green';
+            iconSvg    = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`;
+            titleText  = 'Sandboxed Live Frame';
+            bodyText   = 'This site will load inside an isolated frame. Scripting is restricted for your safety. You can scroll and browse, but links may not open as expected.';
+            proceedLabel = 'Load sandboxed frame';
+            showProceed  = true;
+        }
+
+        div.innerHTML = `
+            <div class="ws-shield-icon ${iconColor}">${iconSvg}</div>
+            <p class="ws-shield-title">${titleText}</p>
+            <p class="ws-shield-body">${bodyText}</p>
+            <div class="ws-shield-actions"></div>
+        `;
+
+        const actions = div.querySelector('.ws-shield-actions');
+
+        if (showProceed) {
+            const proceedBtn = document.createElement('button');
+            proceedBtn.className = `ws-shield-btn ${level === 'danger' ? 'danger' : 'proceed'}`;
+            proceedBtn.innerHTML = `
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                ${proceedLabel}
+            `;
+            proceedBtn.addEventListener('click', onProceed);
+            actions.appendChild(proceedBtn);
+        }
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'ws-shield-btn cancel';
+        cancelBtn.innerHTML = `
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+            Cancel
+        `;
+        cancelBtn.addEventListener('click', onCancel);
+        actions.appendChild(cancelBtn);
+
+        return div;
+    }
+
+    // ── Footer bar ────────────────────────────────────────────────────────────
+    function makeFooter(url) {
+        let hostname = '';
+        try { hostname = new URL(url).hostname; } catch(e) { hostname = url; }
+
         const footer = document.createElement('div');
         footer.className = 'ws-preview-footer';
         footer.innerHTML = `
-            <span class="ws-footer-domain">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="2" y1="12" x2="22" y2="12"/>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                </svg>
-                ${hostname}
-            </span>
-            <a href="${normalized}" target="_blank" rel="noopener noreferrer" class="ws-open-btn" data-ws-newtab="1">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                    <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                </svg>
-                Open in new tab
-            </a>
+            <div class="ws-footer-left">
+                <img class="ws-footer-favicon"
+                     src="https://www.google.com/s2/favicons?sz=16&domain=${encodeURIComponent(hostname)}"
+                     onerror="this.style.display='none'"
+                     alt="">
+                <span class="ws-footer-domain">${hostname}</span>
+            </div>
+            <div class="ws-footer-right">
+                <a href="${url}" target="_blank" rel="noopener noreferrer" class="ws-open-btn" data-ws-newtab="1">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                    Open in new tab
+                </a>
+            </div>
         `;
         return footer;
     }
 
-    // ── Image sources ─────────────────────────────────────────────────────────
-    function tryLoadImage(url, ms) {
-        return new Promise(resolve => {
-            const img = new Image();
-            const tid = setTimeout(() => { img.src = ''; resolve(null); }, ms);
-            img.onload  = () => { clearTimeout(tid); resolve(img.src); };
-            img.onerror = () => { clearTimeout(tid); resolve(null); };
-            img.src = url;
+    // ── Zoom controls for screenshot ──────────────────────────────────────────
+    function makeZoomControls(imgEl) {
+        const wrap = document.createElement('div');
+        wrap.className = 'ws-zoom-controls';
+        wrap.innerHTML = `
+            <div class="ws-zoom-pill">
+                <button class="ws-zoom-btn" id="ws_zoom_out" title="Zoom out">−</button>
+                <span class="ws-zoom-label" id="ws_zoom_label">100%</span>
+                <button class="ws-zoom-btn" id="ws_zoom_in" title="Zoom in">+</button>
+            </div>
+        `;
+        wrap.querySelector('#ws_zoom_out').addEventListener('click', () => updateZoom(-25, imgEl, wrap));
+        wrap.querySelector('#ws_zoom_in').addEventListener('click',  () => updateZoom(+25, imgEl, wrap));
+        return wrap;
+    }
+
+    function updateZoom(delta, imgEl, controlsWrap) {
+        _currentZoom = Math.max(50, Math.min(200, _currentZoom + delta));
+        imgEl.style.width = _currentZoom + '%';
+        imgEl.style.height = 'auto';
+        const lbl = controlsWrap.querySelector('#ws_zoom_label');
+        if (lbl) lbl.textContent = _currentZoom + '%';
+    }
+
+    // ── Main render ───────────────────────────────────────────────────────────
+    async function renderPreview(url, level) {
+        _currentUrl   = url;
+        _currentLevel = level || 'safe';
+        let hostname = '';
+        try { hostname = new URL(url).hostname; } catch(e) {}
+
+        // Hide old content
+        setPreviewVisible(true);
+        resetPreviewContent();
+        if (pvDomain) pvDomain.textContent = hostname;
+        showSpinner();
+
+        if (!pvActions) { hideSpinner(); return; }
+
+        // ── Build wrapper ─────────────────────────────────────────────────────
+        const wrapper = document.createElement('div');
+        wrapper.className = 'ws-preview-wrap' + (_currentLevel === 'danger' ? ' ws-danger-mode' : '');
+
+        // Danger/hazard banner
+        const banner = makeDangerBanner(_currentLevel);
+        if (banner) wrapper.appendChild(banner);
+
+        // Browser chrome
+        wrapper.appendChild(makeBrowserChrome(url));
+
+        // Mode tab bar
+        const viewport = document.createElement('div');
+        viewport.className = 'ws-viewport ws-scroll-mode';
+
+        // Live frame container (hidden initially)
+        const liveWrap = document.createElement('div');
+        liveWrap.className = 'ws-live-frame-wrap';
+        liveWrap.style.display = 'none';
+
+        // Skeleton + loading overlay in viewport
+        viewport.appendChild(makeSkeletonBody());
+        viewport.appendChild(makeLoadingOverlay('Capturing screenshot…'));
+
+        // Mode bar
+        const modeBar = makeModeBar((tab) => {
+            _mode = tab;
+            if (tab === 'screenshot') {
+                viewport.style.display = 'block';
+                liveWrap.style.display = 'none';
+            } else {
+                viewport.style.display = 'none';
+                liveWrap.style.display = 'block';
+                if (!_frameUnlocked) {
+                    // Show shield
+                } // shield is already inside liveWrap
+            }
         });
+
+        wrapper.appendChild(modeBar);
+        wrapper.appendChild(viewport);
+        wrapper.appendChild(liveWrap);
+        wrapper.appendChild(makeFooter(url));
+
+        pvActions.appendChild(wrapper);
+
+        // ── Build live frame section (shield first) ───────────────────────────
+        const shield = makeFrameShield(
+            url,
+            _currentLevel,
+            () => {
+                // Proceed — load iframe
+                _frameUnlocked = true;
+                shield.classList.add('ws-shield-hidden');
+                const iframe = document.createElement('iframe');
+                iframe.className = 'ws-live-iframe';
+                // Sandbox: allow-same-origin so page loads, restrict scripts on danger
+                const sandboxVal = _currentLevel === 'danger'
+                    ? 'allow-same-origin'
+                    : 'allow-same-origin allow-forms allow-popups';
+                iframe.setAttribute('sandbox', sandboxVal);
+                iframe.setAttribute('loading', 'lazy');
+                iframe.setAttribute('referrerpolicy', 'no-referrer');
+                iframe.src = url;
+
+                const iframeOverlay = document.createElement('div');
+                iframeOverlay.className = 'ws-loading-overlay';
+                iframeOverlay.innerHTML = `
+                    <div class="ws-spinner"></div>
+                    <p class="ws-loading-label">Loading sandboxed frame…</p>
+                `;
+                liveWrap.appendChild(iframeOverlay);
+                liveWrap.appendChild(iframe);
+
+                iframe.addEventListener('load', () => iframeOverlay.remove());
+                iframe.addEventListener('error', () => {
+                    iframeOverlay.innerHTML = `<p style="color:#64748b;font-size:13px;text-align:center;padding:20px">Could not load site in frame — it may block embedding.</p>`;
+                });
+            },
+            () => {
+                // Cancel — switch back to screenshot tab
+                const screenshotTab = modeBar.querySelector('[data-tab="screenshot"]');
+                if (screenshotTab) screenshotTab.click();
+            }
+        );
+        liveWrap.appendChild(shield);
+
+        // ── Fetch screenshot ──────────────────────────────────────────────────
+        const shot = await getScreenshot(url);
+        hideSpinner();
+        viewport.innerHTML = '';
+
+        if (shot) {
+            viewport.style.overflowY = 'auto';
+            const img = document.createElement('img');
+            img.className = 'ws-screenshot-img';
+            img.src  = shot;
+            img.alt  = `Preview of ${hostname}`;
+            viewport.appendChild(img);
+
+            // Badge
+            const badge = document.createElement('div');
+            badge.className = 'ws-screenshot-badge';
+            badge.textContent = 'SCREENSHOT';
+            viewport.appendChild(badge);
+
+            // Zoom controls
+            viewport.appendChild(makeZoomControls(img));
+
+            // Chrome action buttons (refresh screenshot)
+            const actions = wrapper.querySelector('#ws_chrome_actions');
+            if (actions) {
+                const refreshBtn = document.createElement('button');
+                refreshBtn.className = 'ws-chrome-btn';
+                refreshBtn.setAttribute('data-tip', 'Refresh screenshot');
+                refreshBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>`;
+                refreshBtn.addEventListener('click', async () => {
+                    viewport.innerHTML = '';
+                    viewport.appendChild(makeSkeletonBody());
+                    viewport.appendChild(makeLoadingOverlay('Refreshing…'));
+                    const newShot = await getScreenshot(url + '?_ws=' + Date.now());
+                    viewport.innerHTML = '';
+                    if (newShot) {
+                        const img2 = document.createElement('img');
+                        img2.className = 'ws-screenshot-img';
+                        img2.src = newShot;
+                        viewport.appendChild(img2);
+                        const b2 = document.createElement('div');
+                        b2.className = 'ws-screenshot-badge';
+                        b2.textContent = 'SCREENSHOT';
+                        viewport.appendChild(b2);
+                        viewport.appendChild(makeZoomControls(img2));
+                    } else {
+                        viewport.appendChild(makeFallback(hostname));
+                    }
+                });
+                actions.appendChild(refreshBtn);
+
+                // Open in new tab
+                const openBtn = document.createElement('a');
+                openBtn.className = 'ws-chrome-btn';
+                openBtn.href      = url;
+                openBtn.target    = '_blank';
+                openBtn.rel       = 'noopener noreferrer';
+                openBtn.setAttribute('data-tip', 'Open in new tab');
+                openBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+                actions.appendChild(openBtn);
+            }
+        } else {
+            viewport.appendChild(makeFallback(hostname));
+            // Still add open button in chrome
+            const actions = wrapper.querySelector('#ws_chrome_actions');
+            if (actions) {
+                const openBtn = document.createElement('a');
+                openBtn.className = 'ws-chrome-btn';
+                openBtn.href      = url;
+                openBtn.target    = '_blank';
+                openBtn.rel       = 'noopener noreferrer';
+                openBtn.setAttribute('data-tip', 'Open in new tab');
+                openBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+                actions.appendChild(openBtn);
+            }
+        }
     }
 
- async function getScreenshot(url) {
-    const enc = encodeURIComponent(url);
-    const sources = [
-        // 1. thum.io — fast, no key, 1000/month free
-        `https://image.thum.io/get/width/900/crop/600/noanimate/${url}`,
-        // 2. PageShot — Chromium-based, truly free, no key
-        `https://pageshot.site/v1/screenshot?url=${enc}&width=900&height=600&format=png&block_ads=true&hide_banners=true`,
-        // 3. s-shot fallback
-        `https://mini.s-shot.ru/1024x768/PNG/1024/Z100/?${url}`,
-    ];
-    for (const src of sources) {
-        const r = await tryLoadImage(src, 12000);
-        if (r) return r;
-    }
-    return null;
-}
-
-    // ── Main click handler ────────────────────────────────────────────────────
+    // ── Preview button click ──────────────────────────────────────────────────
     previewBtn.addEventListener('click', async () => {
         const inputEl = document.getElementById('link_input');
         if (!inputEl) return;
-        const raw = inputEl.value || '';
+        const raw = (inputEl.value || '').trim();
+        if (!raw) { alert('Please enter a URL first.'); return; }
 
-        if (!raw.trim()) { alert('Please enter a URL first.'); return; }
         const normalized = normalizeURL(raw);
         if (!normalized) {
             showInvalidUrlError(document.getElementById('link_status'));
             return;
         }
 
-        let hostname = '';
-        try { hostname = new URL(normalized).hostname; } catch(e) {}
-
-        // Update legacy elements if present
-        setPreviewVisible(true);
-        resetPreviewContent();
-        if (pvDomain) pvDomain.textContent = hostname;
-        showSpinner();
-
-        if (pvActions) {
-            // Build wrapper
-            const wrapper = document.createElement('div');
-            wrapper.className = 'ws-preview-wrap';
-
-            // Browser chrome
-            wrapper.appendChild(makeBrowserChrome(hostname, normalized));
-
-            // Viewport with skeleton + loading overlay
-            const viewport = document.createElement('div');
-            viewport.className = 'ws-viewport';
-            viewport.appendChild(makeSkeletonBody());
-            viewport.appendChild(makeLoadingOverlay());
-            wrapper.appendChild(viewport);
-
-            // Footer
-            wrapper.appendChild(makePreviewFooter(hostname, normalized));
-
-            pvActions.appendChild(wrapper);
-
-            // Fetch screenshot
-            const shot = await getScreenshot(normalized);
-            hideSpinner();
-
-            // Clear viewport
-            viewport.innerHTML = '';
-
-            if (shot) {
-                const img = document.createElement('img');
-                img.src = shot;
-                img.alt = `Live preview of ${hostname}`;
-                img.style.cssText = 'width:100%;height:auto;display:block;';
-                viewport.appendChild(img);
-
-                // Small "LIVE PREVIEW" badge on top-right
-                const badge = document.createElement('div');
-                badge.className = 'ws-screenshot-badge';
-                badge.textContent = 'LIVE PREVIEW';
-                viewport.appendChild(badge);
-            } else {
-                viewport.appendChild(makeFallback(hostname));
-            }
-        }
+        // Use last known scan level if URL matches
+        const level = (window._wsLastUrl === normalized) ? (window._wsLastLevel || 'safe') : 'safe';
+        await renderPreview(normalized, level);
     });
+
+    // ── Expose for check_link to call after a scan ────────────────────────────
+    window._wsOpenLiveFrame = async function(url, level) {
+        await renderPreview(url, level || 'safe');
+    };
+
 })();
 
 
