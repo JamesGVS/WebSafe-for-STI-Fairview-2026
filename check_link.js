@@ -521,9 +521,26 @@ function friendlyFlagDetail(f) {
                     ? 'Connection is private and encrypted'
                     : 'Site does not use encryption — avoid entering personal info'});
 
-            // Reachable
-            checks.push({label:'Reachable', ok:d.reachable!==false,
-                detail: d.reachable ? 'Website is online and responding' : 'Could not reach this website'});
+            // Reachable — any HTTP response means the site exists.
+            // 403/429/503 = Cloudflare/bot protection = site IS live, just blocking scrapers.
+            const sc = d.statusCode;
+            let reachDetail;
+            if (d.reachable) {
+                if (!sc || sc === 200 || sc === 301 || sc === 302 || sc === 304) {
+                    reachDetail = 'Website is online and responding';
+                } else if (sc === 403) {
+                    reachDetail = 'Website exists — server responded (HTTP 403: bot/Cloudflare protection active)';
+                } else if (sc === 429) {
+                    reachDetail = 'Website exists — server responded (HTTP 429: rate-limiting active)';
+                } else if (sc === 503 || sc === 502) {
+                    reachDetail = `Website exists but is temporarily unavailable (HTTP ${sc})`;
+                } else {
+                    reachDetail = `Website is online and responded (HTTP ${sc})`;
+                }
+            } else {
+                reachDetail = 'Could not reach this website — it may be offline or the domain does not exist';
+            }
+            checks.push({label:'Reachable', ok:d.reachable !== false, detail: reachDetail});
 
             // SSL Certificate
             const certDetail = d.certValid
@@ -626,18 +643,35 @@ function friendlyFlagDetail(f) {
 
         } else {
             // ── Client-only fallback (no server) ────────────────────────────
-            let reachable = false;
+            // Key insight: browsers block cross-origin fetches (CORS), so we get
+            // network errors even for live sites. r.type === 'opaque' = site IS live
+            // but blocked by CORS. Any HTTP response (even 403/429) = site exists.
+            let reachable  = false;
+            let reachStatus = null;
+            let reachBlocked = false; // CORS / bot protection blocked us but site is live
+
             try {
-                const ctrl = new AbortController(); const tid = setTimeout(()=>ctrl.abort(), 5000);
-                const r = await fetch(normalized, {method:'HEAD', signal:ctrl.signal});
-                clearTimeout(tid); reachable = r.ok || r.type === 'opaque';
+                const ctrl = new AbortController();
+                const tid  = setTimeout(() => ctrl.abort(), 6000);
+                const r    = await fetch(normalized, { method: 'HEAD', signal: ctrl.signal, mode: 'no-cors' });
+                clearTimeout(tid);
+                // no-cors always gives type=opaque — that means server responded = site is live
+                if (r.type === 'opaque' || r.ok) {
+                    reachable     = true;
+                    reachBlocked  = r.type === 'opaque';
+                }
             } catch(e) {
+                // Network error / DNS failure / timeout — might still be a CORS block
+                // Try again with GET and catch opaque responses
                 try {
-                    const ctrl2 = new AbortController(); const tid2 = setTimeout(()=>ctrl2.abort(), 5000);
-                    const r2 = await fetch(normalized, {method:'GET', signal:ctrl2.signal});
-                    clearTimeout(tid2); reachable = r2.ok || r2.type === 'opaque';
+                    const ctrl2 = new AbortController();
+                    const tid2  = setTimeout(() => ctrl2.abort(), 6000);
+                    const r2    = await fetch(normalized, { method: 'GET', signal: ctrl2.signal, mode: 'no-cors' });
+                    clearTimeout(tid2);
+                    if (r2.type === 'opaque' || r2.ok) { reachable = true; reachBlocked = r2.type === 'opaque'; }
                 } catch(e2) { reachable = false; }
             }
+
             const WELL_KNOWN = [
                 'youtube.com','google.com','facebook.com','twitter.com','x.com','instagram.com',
                 'microsoft.com','apple.com','amazon.com','wikipedia.org','linkedin.com','reddit.com',
@@ -647,19 +681,61 @@ function friendlyFlagDetail(f) {
                 'office.com','outlook.com','bing.com','zoom.us','slack.com',
                 'gcash.com','maya.ph','paymaya.com','bdo.com.ph','bpi.com.ph',
                 'shopee.ph','lazada.com.ph','grab.com',
+                // Well-known protected/bot-blocked sites
+                '1337x.to','thepiratebay.org','rarbg.to','nyaa.si','cloudflare.com',
+                'fandom.com','archive.org','twitch.tv','stackoverflow.com','imgur.com',
             ];
             let hostname = '';
             try { hostname = new URL(normalized).hostname.toLowerCase(); } catch(e) {}
             const isWellKnown = WELL_KNOWN.some(d => hostname === d || hostname.endsWith('.' + d));
-            const httpsOk = normalized.startsWith('https://');
+
+            // DNS existence check via public DNS-over-HTTPS as a last resort
+            let dnsExists = null;
+            if (!reachable && !isWellKnown) {
+                try {
+                    const dnsRes = await fetch(
+                        `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(hostname)}&type=A`,
+                        { headers: { Accept: 'application/dns-json' }, signal: AbortSignal.timeout(4000) }
+                    );
+                    if (dnsRes.ok) {
+                        const dnsJson = await dnsRes.json();
+                        // Status 0 = NOERROR (domain exists), 3 = NXDOMAIN (does not exist)
+                        dnsExists = dnsJson.Status === 0 && Array.isArray(dnsJson.Answer) && dnsJson.Answer.length > 0;
+                    }
+                } catch(e) { dnsExists = null; }
+            }
+
+            const confirmed = reachable || isWellKnown || dnsExists === true;
+            const httpsOk   = normalized.startsWith('https://');
+
+            let reachDetail;
+            if (confirmed) {
+                if (isWellKnown && !reachable)      reachDetail = 'Well-known website — confirmed to exist';
+                else if (dnsExists && !reachable)   reachDetail = 'Domain exists (DNS verified) — site may block direct access';
+                else if (reachBlocked)               reachDetail = 'Website is online (server responded — access restricted by bot protection)';
+                else                                 reachDetail = 'Website is online and responding';
+            } else {
+                reachDetail = dnsExists === false
+                    ? 'Domain does not exist (DNS lookup returned NXDOMAIN)'
+                    : 'Could not reach this website — it may be offline or the domain does not exist';
+            }
+
             checks.push({label:'HTTPS', ok:httpsOk, detail:httpsOk?'Connection is private and encrypted':'Site does not use encryption — avoid entering personal info'});
-            checks.push({label:'Reachable', ok:reachable||isWellKnown, detail:reachable?'Website is online and responding':isWellKnown?'Well-known trusted website — confirmed safe':'Could not reach this website'});
-            checks.push({label:'SSL Certificate', ok:null, detail:'Certificate details unavailable in this mode'});
-            checks.push({label:'Threat Database', ok:null, detail:'Threat database lookup unavailable in this mode'});
-            checks.push({label:'Domain Age', ok:null, detail:'Domain age could not be determined in this mode'});
-            if (!reachable && !isWellKnown) { level='danger'; reason='Could not reach this website — it may not exist or is currently offline'; }
-            else if (!httpsOk)              { level='hazard'; reason='Site is not using a secure HTTPS connection — data is not encrypted'; }
-            else                            { level='safe';   reason='HTTPS is active and site is reachable — deeper checks unavailable'; }
+            checks.push({label:'Reachable', ok:confirmed, detail:reachDetail});
+            checks.push({label:'SSL Certificate', ok:null, detail:'Certificate details unavailable without server'});
+            checks.push({label:'Threat Database', ok:null, detail:'Threat database lookup unavailable without server'});
+            checks.push({label:'Domain Age', ok:null, detail:'Domain age could not be determined without server'});
+
+            if (!confirmed && dnsExists === false) {
+                level='danger'; reason='This domain does not exist — the URL is invalid or the site has been taken down';
+            } else if (!confirmed) {
+                // Could not confirm, but don't call it danger — mark hazard with unknown reachability
+                level='hazard'; reason='Could not confirm this website is reachable — it may be offline or blocking access';
+            } else if (!httpsOk) {
+                level='hazard'; reason='Site is not using a secure HTTPS connection — data is not encrypted';
+            } else {
+                reason='HTTPS is active and site is reachable — run a full scan for deeper checks';
+            }
         }
 
         const score = (serverData && typeof serverData.riskScore === 'number')

@@ -1074,7 +1074,13 @@ app.get('/api/check', async (req, res) => {
         const html        = fetched ? (fetched.text || '') : '';
         const finalUrl    = fetched ? (fetched.finalUrl || resolvedUrl) : resolvedUrl;
         const statusCode  = fetched ? fetched.status : null;
-        const reachable   = fetched ? !!fetched.ok : isWellKnown;
+        // A site is "reachable" if we got ANY HTTP response at all — including
+        // 403 Forbidden, 429 Too Many Requests, 503 (Cloudflare bot challenges),
+        // and other non-2xx codes. Those mean the server IS online and responded.
+        // Only a network error, DNS failure, or timeout truly means unreachable.
+        const reachable   = fetched
+            ? (fetched.status != null && fetched.status > 0)
+            : isWellKnown;
 
         const certValid        = tlsResult.certValid;
         const certExpiresDays  = tlsResult.certExpiresDays;
