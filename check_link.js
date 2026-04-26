@@ -197,37 +197,37 @@ function calcSafetyScore(checks, level) {
 // ─── Flag label map ───────────────────────────────────────────────────────────
 function flagTypeLabel(type) {
     const map = {
-        'brand-impersonation':       'Brand Impersonation',
-        'keywords-high':             'High-Risk Phrases',
-        'keywords-medium':           'Suspicious Phrases',
-        'multiple-password-fields':  'Credential Harvesting',
+        'brand-impersonation':       'Fake Brand',
+        'keywords-high':             'Dangerous Wording',
+        'keywords-medium':           'Suspicious Wording',
+        'multiple-password-fields':  'Password Stealing Attempt',
         'form-external-post':        'Data Theft Risk',
-        'hidden-iframe':             'Hidden Frame',
-        'meta-redirect':             'Silent Redirect',
-        'obfuscation':               'Code Obfuscation',
-        'base64-payload':            'Hidden Payload',
-        'base64-large':              'Hidden Payload',
-        'fake-trust-badges':         'Fake Security Badges',
-        'ip-address':                'Raw IP Address',
-        'at-sign-url':               'URL Spoofing',
-        'dash-heavy-domain':         'Suspicious Domain Name',
-        'suspicious-tld':            'Suspicious Domain Extension',
-        'excessive-subdomains':      'Subdomain Spoofing',
-        'brand-in-subdomain':        'Brand Spoofing',
-        'long-url':                  'Obfuscated URL',
-        'encoded-hostname':          'Encoded Hostname',
-        'dynamic-dns':               'Dynamic DNS Abuse',
+        'hidden-iframe':             'Hidden Trap',
+        'meta-redirect':             'Sneaky Redirect',
+        'obfuscation':               'Hidden Code',
+        'base64-payload':            'Hidden Code',
+        'base64-large':              'Hidden Code',
+        'fake-trust-badges':         'Fake Trust Badges',
+        'ip-address':                'No Real Domain Name',
+        'at-sign-url':               'Misleading Web Address',
+        'dash-heavy-domain':         'Suspicious Site Name',
+        'suspicious-tld':            'Risky Website Ending',
+        'excessive-subdomains':      'Complex Address — Could Be a Trick',
+        'brand-in-subdomain':        'Fake Brand in Address',
+        'long-url':                  'Unusually Long Address',
+        'encoded-hostname':          'Hidden Characters in Address',
+        'dynamic-dns':               'Untrusted Dynamic Address',
         'suspicious-hosting':        'Suspicious Hosting',
-        'free-site-builder':         'Free Site Builder (Phishing Risk)',
-        'crypto-brand-on-free-host': 'Crypto Brand on Free Hosting',
-        'wix-phishing':              'Wix-Hosted Phishing Site',
-        'google-safebrowsing':       'Google Safe Browsing Alert',
-        'virustotal-flag':           'VirusTotal Malicious Flag',
-        'disposable-hosting':        'Disposable/Free Hosting',
-        'dangerous-protocol':        'Dangerous Protocol',
-        'high-entropy-domain':       'Random-Looking Domain',
-        'homograph-attack':          'Homograph/Lookalike Attack',
-        'numeric-substitution':      'Numeric Letter Substitution',
+        'free-site-builder':         'Free Hosting — Scammer Favourite',
+        'crypto-brand-on-free-host': 'Crypto Scam Risk',
+        'wix-phishing':              'Possible Scam Page on Free Host',
+        'google-safebrowsing':       'Google Safety Alert',
+        'virustotal-flag':           'Flagged by Antivirus Tools',
+        'disposable-hosting':        'Temporary Free Hosting',
+        'dangerous-protocol':        'Dangerous Link Type',
+        'high-entropy-domain':       'Random-Looking Site Name',
+        'homograph-attack':          'Lookalike Web Address',
+        'numeric-substitution':      'Letter-Number Trick',
     };
     return map[type] || 'Suspicious Signal';
 }
@@ -236,7 +236,7 @@ function flagTypeLabel(type) {
 function friendlyFlagDetail(f) {
     switch(f.type) {
         case 'brand-impersonation':
-            return f.detail || 'This page is pretending to be a brand it isn\'t — a classic phishing tactic';
+            return f.detail || 'This page is pretending to be a well-known brand to trick you into trusting it';
         case 'keywords-high':
             { const kws = Array.isArray(f.detail) ? f.detail : [f.detail];
               return `Contains high-risk phrases (${kws.map(k=>`"${k}"`).join(', ')}) — strongly associated with phishing`; }
@@ -244,53 +244,53 @@ function friendlyFlagDetail(f) {
             { const kws = Array.isArray(f.detail) ? f.detail : [f.detail];
               return `Contains suspicious phrases (${kws.map(k=>`"${k}"`).join(', ')}) — verify the URL is correct`; }
         case 'multiple-password-fields':
-            return f.detail || 'Multiple password fields detected — possible credential harvesting';
+            return f.detail || 'This page has multiple password boxes — it may be trying to steal your login details';
         case 'form-external-post':
-            return f.detail || 'This page sends your data to a different server — common in phishing attacks';
+            return f.detail || 'This page sends what you type to a completely different website — a common trick used by scammers';
         case 'hidden-iframe':
-            return f.detail || 'Hidden frame detected — may be used for silent tracking or clickjacking';
+            return f.detail || 'A hidden panel was found on this page — it may be used to track you or trick your clicks';
         case 'meta-redirect':
-            return f.detail || 'Page silently redirects to another domain — often used in phishing relay attacks';
+            return f.detail || 'This page automatically sends you to a different website without warning — a common scam tactic';
         case 'obfuscation':
-            return f.detail || 'Scrambled/hidden code detected — often used to conceal malicious behaviour';
+            return f.detail || 'The code on this page is deliberately scrambled — often done to hide malicious activity';
         case 'base64-payload': case 'base64-large':
-            return f.detail || 'Large encoded data blobs found — may be hiding malicious content';
+            return f.detail || 'Suspicious hidden data was found on this page — it may be concealing something harmful';
         case 'fake-trust-badges':
             return f.detail || 'Multiple fake "security verified" claims — a common scam site tactic';
         case 'ip-address':
-            return f.detail || 'URL uses a raw IP address instead of a domain — almost always suspicious';
+            return f.detail || 'This link uses a raw number address instead of a real website name — almost always a red flag';
         case 'at-sign-url':
-            return f.detail || 'URL contains @ symbol — can be used to disguise the real destination';
+            return f.detail || 'This link contains an @ symbol which can be used to hide where it actually takes you';
         case 'dash-heavy-domain':
-            return f.detail || 'Over-hyphenated domain — a common pattern in phishing domains';
+            return f.detail || 'This website name has lots of hyphens — a common trick scammers use to imitate real sites';
         case 'suspicious-tld':
-            return f.detail || 'Domain uses a TLD frequently abused for scams';
+            return f.detail || 'This website uses a web ending (.extension) that is frequently used by scammers';
         case 'excessive-subdomains':
-            return f.detail || 'Unusual subdomain depth — often used to make phishing URLs look legitimate';
+            return f.detail || 'This web address has an unusually complex structure that can make fake sites look real';
         case 'brand-in-subdomain':
-            return f.detail || 'A trusted brand is used in the subdomain to impersonate the real site';
+            return f.detail || 'A well-known brand name appears early in this address to make it look legitimate — but the real site is different';
         case 'long-url':
-            return f.detail || 'Unusually long URL — often used to obscure the real destination';
+            return f.detail || 'This web address is unusually long — long links are often used to hide where they really take you';
         case 'encoded-hostname':
-            return f.detail || 'Percent-encoded characters in the hostname — common phishing obfuscation';
+            return f.detail || 'This web address contains hidden characters — a trick used to disguise scam links';
         case 'dynamic-dns':
-            return f.detail || 'Uses a free dynamic DNS service — frequently abused in phishing campaigns';
+            return f.detail || 'This site uses a free dynamic address service that is commonly abused by scammers';
         case 'suspicious-hosting':
-            return f.detail || 'Hosted on an IP range associated with bulletproof hosting';
+            return f.detail || 'This site is hosted in a location known for ignoring abuse reports — a red flag';
         case 'free-site-builder':
-            return f.detail || 'Site is hosted on a free website builder — commonly abused for phishing pages';
+            return f.detail || 'This site is built on a free website platform — scammers commonly use these to create fake pages quickly';
         case 'crypto-brand-on-free-host':
-            return f.detail || 'A crypto wallet or financial brand is referenced on a free hosting platform — extremely high phishing risk';
+            return f.detail || 'A crypto or financial brand appears on a free hosting site — this is an extremely common setup for scams';
         case 'wix-phishing':
-            return f.detail || 'This site is hosted on Wix and shows crypto/financial brand content — a known phishing vector. Legitimate services never use free website builders.';
+            return f.detail || 'This appears to be a scam page on Wix pretending to be a crypto or financial service. Real financial companies never use free website builders.';
         case 'google-safebrowsing':
-            return f.detail || 'Google Safe Browsing has flagged this URL as dangerous';
+            return f.detail || 'Google has marked this link as dangerous';
         case 'virustotal-flag':
-            return f.detail || 'Multiple antivirus engines on VirusTotal flagged this URL as malicious';
+            return f.detail || 'Multiple antivirus tools have flagged this link as malicious';
         case 'disposable-hosting':
-            return f.detail || 'Hosted on a known free/disposable platform used for temporary scam sites';
+            return f.detail || 'This site is hosted on a free, temporary platform commonly used for short-lived scam pages';
         case 'high-entropy-domain':
-            return f.detail || 'Domain name appears algorithmically generated — typical of phishing infrastructure';
+            return f.detail || 'This website name looks randomly generated by a computer — a common sign of scam infrastructure';
         case 'homograph-attack':
             return f.detail || 'Hostname uses lookalike characters from non-Latin scripts to impersonate a real website';
         case 'numeric-substitution':
@@ -311,14 +311,6 @@ function friendlyFlagDetail(f) {
     function clearResults() {
         if (statusEl) statusEl.innerHTML = '';
         if (safetyEl) { safetyEl.textContent = ''; safetyEl.className = ''; }
-        const pa = document.getElementById('preview_area');
-        if (pa) pa.style.display = 'none';
-        ['preview_actions','preview_checks'].forEach(id => {
-            const el = document.getElementById(id); if (el) el.innerHTML = '';
-        });
-        ['preview_title','preview_domain'].forEach(id => {
-            const el = document.getElementById(id); if (el) el.textContent = '';
-        });
     }
     let _debounceTimer = null;
     if (input) {
@@ -513,13 +505,13 @@ function friendlyFlagDetail(f) {
 
             // Shortened link
             if (d.shortened && d.resolvedUrl)
-                checks.push({label:'Shortened Link', ok:null, detail:`Short link resolves to: ${d.resolvedUrl}`});
+                checks.push({label:'Shortened Link', ok:null, detail:`This is a shortened link — it actually leads to: ${d.resolvedUrl}`});
 
             // HTTPS
-            checks.push({label:'HTTPS', ok:!!d.httpsOk,
+            checks.push({label:'Secure Connection', ok:!!d.httpsOk,
                 detail: d.httpsOk
-                    ? 'Connection is private and encrypted'
-                    : 'Site does not use encryption — avoid entering personal info'});
+                    ? 'Your connection to this site is private and secure'
+                    : 'This site is not secure — don\'t enter passwords or personal info here'});
 
             // Reachable — any HTTP response means the site exists.
             // 403/429/503 = Cloudflare/bot protection = site IS live, just blocking scrapers.
@@ -527,47 +519,47 @@ function friendlyFlagDetail(f) {
             let reachDetail;
             if (d.reachable) {
                 if (!sc || sc === 200 || sc === 301 || sc === 302 || sc === 304) {
-                    reachDetail = 'Website is online and responding';
+                    reachDetail = 'We can reach this website — it\'s live';
                 } else if (sc === 403) {
-                    reachDetail = 'Website exists — server responded (HTTP 403: bot/Cloudflare protection active)';
+                    reachDetail = 'The website is live — it\'s protected by a security filter that blocked our automated check';
                 } else if (sc === 429) {
-                    reachDetail = 'Website exists — server responded (HTTP 429: rate-limiting active)';
+                    reachDetail = 'The website is live — it temporarily blocked our check due to too many requests';
                 } else if (sc === 503 || sc === 502) {
                     reachDetail = `Website exists but is temporarily unavailable (HTTP ${sc})`;
                 } else {
                     reachDetail = `Website is online and responded (HTTP ${sc})`;
                 }
             } else {
-                reachDetail = 'Could not reach this website — it may be offline or the domain does not exist';
+                reachDetail = 'We couldn\'t reach this website — it may be offline or the address may be wrong';
             }
-            checks.push({label:'Reachable', ok:d.reachable !== false, detail: reachDetail});
+            checks.push({label:'Website Exists', ok:d.reachable !== false, detail: reachDetail});
 
             // SSL Certificate
             const certDetail = d.certValid
                 ? (d.selfSignedCert
-                    ? 'Certificate is self-signed — not issued by a trusted authority'
+                    ? 'This site\'s security certificate wasn\'t issued by a trusted source — treat with caution'
                     : d.certExpiresSoon
-                        ? `Certificate expires in ${d.certExpiresDays} days — suspicious`
-                        : `Security certificate valid (expires in ${d.certExpiresDays ?? '?'} days)`)
-                : 'Security certificate is missing or expired — red flag';
-            checks.push({label:'SSL Certificate', ok: d.certValid && !d.selfSignedCert && !d.certExpiresSoon, detail: certDetail});
+                        ? `This site\'s security certificate expires very soon (${d.certExpiresDays} days) — this is unusual`
+                        : `This site has a valid security certificate (expires in ${d.certExpiresDays ?? '?'} days) — all good`)
+                : 'This site is missing a valid security certificate — a major warning sign';
+            checks.push({label:'Website Identity', ok: d.certValid && !d.selfSignedCert && !d.certExpiresSoon, detail: certDetail});
 
             // Threat database
             const isFlagged = d.blacklisted || d.brandSpoof || d.patternMatch;
-            checks.push({label:'Threat Database', ok:!isFlagged,
+            checks.push({label:'Known Threats', ok:!isFlagged,
                 detail: d.blacklisted
-                    ? 'Domain is on known-dangerous list — do NOT proceed'
+                    ? 'This website is on our list of known dangerous sites — do not visit it'
                     : d.brandSpoof
                         ? `Domain is impersonating "${d.spoofedBrand}" — NOT the real website`
                         : d.patternMatch
-                            ? 'Domain matches known phishing patterns'
-                            : 'Not found on any known threat list'});
+                            ? 'This website address matches patterns commonly used by scammers'
+                            : 'Not found on any known scam or malware list — good sign'});
 
             // Connection safety
-            checks.push({label:'Connection Safety', ok:!d.redirectsToHttp,
+            checks.push({label:'Stay-Safe Check', ok:!d.redirectsToHttp,
                 detail: d.redirectsToHttp
-                    ? 'Site starts secure then drops encryption — warning sign'
-                    : 'Connection stays protected throughout'});
+                    ? 'This site starts secure but then switches to an unprotected connection — suspicious'
+                    : 'The connection stays secure the whole time — good'});
 
             // Domain age
             if (d.domainAgeDays != null) {
@@ -577,35 +569,35 @@ function friendlyFlagDetail(f) {
                 const ageText = years > 0
                     ? `${years} year${years>1?'s':''}${months>0?` and ${months} month${months>1?'s':''}`:''}`
                     : `${months>0 ? months+' month'+(months>1?'s':'') : d.domainAgeDays+' days'}`;
-                checks.push({label:'Domain Age', ok:ageOk,
+                checks.push({label:'How Old Is This Site?', ok:ageOk,
                     detail: ageOk
-                        ? `Domain has been around for ${ageText} — legitimate sign`
-                        : `Domain was registered only ${ageText} ago — new domains are a major phishing red flag`});
+                        ? `This website has been around for ${ageText} — that\'s a good sign`
+                        : `This website was only created ${ageText} ago — brand-new sites are a common trick used by scammers`});
             } else {
-                checks.push({label:'Domain Age', ok:null, detail:'Could not determine domain age'});
+                checks.push({label:'How Old Is This Site?', ok:null, detail:'We couldn\'t find out how old this website is'});
             }
 
             // Google Safe Browsing (v7)
             if (d.googleSafeBrowsing != null) {
-                checks.push({label:'Google Safe Browsing', ok:!d.googleSafeBrowsing,
+                checks.push({label:'Google Safety Check', ok:!d.googleSafeBrowsing,
                     detail: d.googleSafeBrowsing
-                        ? `Google Safe Browsing flagged this as: ${d.safeBrowsingThreat || 'MALWARE/PHISHING'}`
-                        : 'Google Safe Browsing: no threats detected'});
+                        ? `Google has flagged this site as dangerous: ${d.safeBrowsingThreat || 'malware or phishing'}`
+                        : 'Google has checked this site and found no threats'});
             }
 
             // VirusTotal (v7)
             if (d.virusTotalPositives != null) {
                 const vtOk = d.virusTotalPositives === 0;
-                checks.push({label:'VirusTotal Scan', ok:vtOk,
+                checks.push({label:'Antivirus Scan', ok:vtOk,
                     detail: vtOk
-                        ? 'VirusTotal: no engines flagged this URL'
-                        : `${d.virusTotalPositives} of ${d.virusTotalTotal} antivirus engines flagged this URL as malicious`});
+                        ? 'None of the antivirus tools we checked flagged this link — looks clean'
+                        : `${d.virusTotalPositives} out of ${d.virusTotalTotal} antivirus tools flagged this link as dangerous`});
             }
 
             // Free site builder warning (v7)
             if (d.freeSiteBuilder) {
-                checks.push({label:'Free Site Builder', ok:false,
-                    detail: d.freeSiteBuilderDetail || 'Hosted on a free website builder — frequently abused for phishing'});
+                checks.push({label:'Suspicious Hosting', ok:false,
+                    detail: d.freeSiteBuilderDetail || 'This site is hosted on a free website builder — scammers often use these to create fake pages'});
             }
 
             // Content / URL / DNS flags
@@ -618,7 +610,7 @@ function friendlyFlagDetail(f) {
                 if (highFlags.length) { level = 'danger'; reason = friendlyFlagDetail(highFlags[0]); }
                 else if (mediumFlags.length && level !== 'danger') { level = 'hazard'; reason = 'Page has suspicious characteristics — proceed with caution'; }
             } else {
-                checks.push({label:'Page Content', ok:true, detail:'No suspicious content detected'});
+                checks.push({label:'Page Content', ok:true, detail:'Nothing suspicious found on this page — looks normal'});
             }
 
             if (d.verdict) level = d.verdict;
@@ -627,18 +619,18 @@ function friendlyFlagDetail(f) {
             // Final reason string
             if (level === 'danger') {
                 if (!reason || reason === 'Could not complete all checks') {
-                    if (d.googleSafeBrowsing)  reason = '🚨 Google Safe Browsing has flagged this URL as dangerous';
-                    else if (d.blacklisted)    reason = '🚨 This website is on our known-dangerous list — do NOT visit';
+                    if (d.googleSafeBrowsing)  reason = '🚨 Google has flagged this link as dangerous — do not visit';
+                    else if (d.blacklisted)    reason = '🚨 This website is on our list of known dangerous sites — stay away';
                     else if (d.brandSpoof)     reason = `🚨 This site is impersonating "${d.spoofedBrand}" — phishing site`;
-                    else if (d.freeSiteBuilder) reason = '🚨 Phishing brand content detected on a free hosting platform';
-                    else if (d.patternMatch)   reason = '🚨 URL matches known phishing patterns';
-                    else                       reason = '🚨 Multiple high-risk signals detected — avoid this site';
+                    else if (d.freeSiteBuilder) reason = '🚨 This looks like a scam page pretending to be a real brand, hosted on a free site';
+                    else if (d.patternMatch)   reason = '🚨 This web address matches patterns used by known scammers';
+                    else                       reason = '🚨 Multiple red flags found — avoid this site';
                 }
             } else if (level === 'hazard') {
                 if (!reason || reason === 'Could not complete all checks')
-                    reason = '⚠️ Warning signs found — double-check before proceeding';
+                    reason = '⚠️ A few warning signs found — double-check this site before doing anything';
             } else {
-                reason = `✅ ${checks.filter(c=>c.ok===true).length} of ${checks.filter(c=>c.ok!==null).length} checks passed — this link looks safe`;
+                reason = `✅ ${checks.filter(c=>c.ok===true).length} of ${checks.filter(c=>c.ok!==null).length} checks passed — this link looks safe to visit`;
             }
 
         } else {
@@ -710,31 +702,31 @@ function friendlyFlagDetail(f) {
 
             let reachDetail;
             if (confirmed) {
-                if (isWellKnown && !reachable)      reachDetail = 'Well-known website — confirmed to exist';
-                else if (dnsExists && !reachable)   reachDetail = 'Domain exists (DNS verified) — site may block direct access';
-                else if (reachBlocked)               reachDetail = 'Website is online (server responded — access restricted by bot protection)';
-                else                                 reachDetail = 'Website is online and responding';
+                if (isWellKnown && !reachable)      reachDetail = 'This is a well-known website — confirmed as legitimate';
+                else if (dnsExists && !reachable)   reachDetail = 'This web address exists — the site may be blocking our automated check';
+                else if (reachBlocked)               reachDetail = 'The website is live — it\'s protected by a security filter that blocked our automated check';
+                else                                 reachDetail = 'We can reach this website — it\'s live';
             } else {
                 reachDetail = dnsExists === false
                     ? 'Domain does not exist (DNS lookup returned NXDOMAIN)'
-                    : 'Could not reach this website — it may be offline or the domain does not exist';
+                    : 'We couldn\'t reach this website — it may be offline or the address may be wrong';
             }
 
-            checks.push({label:'HTTPS', ok:httpsOk, detail:httpsOk?'Connection is private and encrypted':'Site does not use encryption — avoid entering personal info'});
-            checks.push({label:'Reachable', ok:confirmed, detail:reachDetail});
-            checks.push({label:'SSL Certificate', ok:null, detail:'Certificate details unavailable without server'});
-            checks.push({label:'Threat Database', ok:null, detail:'Threat database lookup unavailable without server'});
-            checks.push({label:'Domain Age', ok:null, detail:'Domain age could not be determined without server'});
+            checks.push({label:'Secure Connection', ok:httpsOk, detail:httpsOk?'Your connection to this site is private and secure':'This site is not secure — don\'t enter passwords or personal info here'});
+            checks.push({label:'Website Exists', ok:confirmed, detail:reachDetail});
+            checks.push({label:'Website Identity', ok:null, detail:'We couldn\'t check the security certificate without a server connection'});
+            checks.push({label:'Known Threats', ok:null, detail:'Scam database check wasn\'t available — try again with a server connection'});
+            checks.push({label:'How Old Is This Site?', ok:null, detail:'We couldn\'t check how old this site is without a server connection'});
 
             if (!confirmed && dnsExists === false) {
-                level='danger'; reason='This domain does not exist — the URL is invalid or the site has been taken down';
+                level='danger'; reason='This web address doesn\'t exist — it may be mistyped or the site may have been removed';
             } else if (!confirmed) {
                 // Could not confirm, but don't call it danger — mark hazard with unknown reachability
-                level='hazard'; reason='Could not confirm this website is reachable — it may be offline or blocking access';
+                level='hazard'; reason='We couldn\'t confirm this website is online — it may be down or blocking our check';
             } else if (!httpsOk) {
-                level='hazard'; reason='Site is not using a secure HTTPS connection — data is not encrypted';
+                level='hazard'; reason='This site is not using a secure connection — avoid entering any personal info';
             } else {
-                reason='HTTPS is active and site is reachable — run a full scan for deeper checks';
+                reason='The connection is secure and the site is live — run a full scan for a deeper check';
             }
         }
 
@@ -743,10 +735,10 @@ function friendlyFlagDetail(f) {
             : calcSafetyScore(checks, level);
 
         const fourBadges = [
-            checks.find(c=>c.label==='HTTPS')                ||{label:'HTTPS',                ok:null,detail:''},
-            checks.find(c=>c.label==='SSL Certificate')      ||{label:'SSL Certificate',      ok:null,detail:''},
-            checks.find(c=>c.label==='Threat Database')      ||{label:'Threat Database',      ok:null,detail:''},
-            checks.find(c=>c.label==='Google Safe Browsing') || checks.find(c=>c.label==='Domain Age') ||{label:'Domain Age',ok:null,detail:''},
+            checks.find(c=>c.label==='Secure Connection')                ||{label:'Secure Connection',                ok:null,detail:''},
+            checks.find(c=>c.label==='Website Identity')      ||{label:'Website Identity',      ok:null,detail:''},
+            checks.find(c=>c.label==='Known Threats')      ||{label:'Known Threats',      ok:null,detail:''},
+            checks.find(c=>c.label==='Google Safety Check') || checks.find(c=>c.label==='How Old Is This Site?') ||{label:'How Old Is This Site?',ok:null,detail:''},
         ];
 
         // ── Extra client-side heuristic flags (entropy, homograph, etc.) ──────
@@ -767,21 +759,6 @@ function friendlyFlagDetail(f) {
         logSafetyReport(normalized, level, reason, checks);
         addToHistory(normalized, level);
 
-        // ── Show "Open Live Frame" button below result card ──────────────────
-        const openBtn = document.getElementById('open_live_frame_btn');
-        if (openBtn) {
-            openBtn.style.display = 'inline-block';
-            openBtn.onclick = () => {
-                if (typeof window._wsOpenLiveFrame === 'function')
-                    window._wsOpenLiveFrame(normalized, level);
-            };
-            const toggleRow = document.getElementById('live_frame_toggle_row');
-            if (toggleRow) toggleRow.style.display = 'block';
-            // Store for live frame module
-            window._wsLastUrl   = normalized;
-            window._wsLastLevel = level;
-        }
-
         btn.disabled = false;
         hideSpinner();
     }
@@ -798,1059 +775,6 @@ function friendlyFlagDetail(f) {
 
 
 
-
-// ─── Preview module ───────────────────────────────────────────────────────────
-(function () {
-    const previewBtn  = document.getElementById('preview_btn');
-    const previewArea = document.getElementById('preview_area');
-    const pvDomain    = document.getElementById('preview_domain');
-    const pvChecks    = document.getElementById('preview_checks');
-    const pvActions   = document.getElementById('preview_actions');
-
-    if (!previewBtn) return;
-
-    // ── Inject all styles once ────────────────────────────────────────────────
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes ws-shimmer {
-            0%   { background-position: -800px 0 }
-            100% { background-position:  800px 0 }
-        }
-        @keyframes ws-fadeUp {
-            from { opacity: 0; transform: translateY(20px) scale(0.985); }
-            to   { opacity: 1; transform: translateY(0)    scale(1);    }
-        }
-        @keyframes ws-spin {
-            to { transform: rotate(360deg); }
-        }
-        @keyframes ws-dot-bounce {
-            0%, 80%, 100% { transform: translateY(0);    opacity: .35; }
-            40%           { transform: translateY(-7px); opacity: 1;   }
-        }
-        @keyframes ws-danger-pulse {
-            0%   { box-shadow: 0 0 0 0   rgba(239,68,68,0.5); }
-            70%  { box-shadow: 0 0 0 10px rgba(239,68,68,0);  }
-            100% { box-shadow: 0 0 0 0   rgba(239,68,68,0);   }
-        }
-
-        /* ── Skeleton shimmer ── */
-        .ws-skel {
-            background: linear-gradient(90deg, #172035 25%, #1f2f4a 50%, #172035 75%);
-            background-size: 800px 100%;
-            animation: ws-shimmer 1.5s infinite linear;
-            border-radius: 6px;
-        }
-
-        /* ── Main wrapper card ── */
-        .ws-preview-wrap {
-            width: 100%;
-            max-width: 720px;
-            margin: 18px auto 0;
-            border-radius: 18px;
-            overflow: hidden;
-            background: #0b1120;
-            border: 1px solid rgba(59,130,246,0.2);
-            box-shadow:
-                0 0 0 1px rgba(59,130,246,0.06),
-                0 12px 50px rgba(0,0,0,0.6),
-                0 2px 10px rgba(59,130,246,0.1);
-            animation: ws-fadeUp 0.45s cubic-bezier(0.22,1,0.36,1) both;
-        }
-
-        /* Danger state wrapper */
-        .ws-preview-wrap.ws-danger-mode {
-            border-color: rgba(239,68,68,0.45);
-            box-shadow:
-                0 0 0 1px rgba(239,68,68,0.15),
-                0 12px 50px rgba(0,0,0,0.6),
-                0 0 24px rgba(239,68,68,0.12);
-        }
-
-        /* ── Danger banner ── */
-        .ws-danger-banner {
-            background: linear-gradient(135deg, rgba(220,38,38,0.18), rgba(153,27,27,0.18));
-            border-bottom: 1px solid rgba(239,68,68,0.4);
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 12.5px;
-            font-weight: 600;
-            color: #fca5a5;
-            letter-spacing: 0.01em;
-        }
-        .ws-danger-banner svg { stroke: #f87171; flex-shrink: 0; }
-        .ws-danger-banner strong { color: #ff6b6b; }
-
-        /* ── Browser chrome bar ── */
-        .ws-browser-chrome {
-            background: #0f1929;
-            border-bottom: 1px solid rgba(59,130,246,0.15);
-            padding: 10px 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            user-select: none;
-        }
-        .ws-traffic-lights { display: flex; gap: 6px; flex-shrink: 0; }
-        .ws-tl {
-            width: 11px; height: 11px;
-            border-radius: 50%;
-            display: inline-block;
-            transition: filter 0.2s;
-        }
-        .ws-tl:hover { filter: brightness(1.3); }
-        .ws-tl-red   { background: #ff5f57; box-shadow: 0 0 6px #ff5f5766; }
-        .ws-tl-amber { background: #febc2e; box-shadow: 0 0 6px #febc2e66; }
-        .ws-tl-green { background: #28c840; box-shadow: 0 0 6px #28c84066; }
-
-        .ws-url-bar {
-            flex: 1;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(59,130,246,0.15);
-            border-radius: 8px;
-            padding: 5px 12px 5px 10px;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            min-width: 0;
-            transition: border-color 0.2s, background 0.2s;
-        }
-        .ws-url-bar:hover {
-            border-color: rgba(59,130,246,0.35);
-            background: rgba(59,130,246,0.06);
-        }
-        .ws-lock-icon { flex-shrink: 0; display: flex; align-items: center; }
-        .ws-lock-icon svg { stroke: #22c55e; }
-        .ws-lock-icon.ws-no-lock svg { stroke: #f87171; }
-        .ws-url-text {
-            font-family: 'JetBrains Mono', 'IBM Plex Mono', monospace;
-            font-size: 11.5px;
-            color: #94a3b8;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .ws-url-text em { font-style: normal; color: #e2e8f0; font-weight: 600; }
-
-        /* ── Chrome action buttons ── */
-        .ws-chrome-actions { display: flex; gap: 4px; flex-shrink: 0; }
-        .ws-chrome-btn {
-            width: 28px; height: 28px;
-            border-radius: 7px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.07);
-            display: grid;
-            place-items: center;
-            cursor: pointer;
-            transition: background 0.15s, border-color 0.15s, color 0.15s;
-            text-decoration: none;
-            color: #64748b;
-            position: relative;
-        }
-        .ws-chrome-btn:hover {
-            background: rgba(59,130,246,0.15);
-            border-color: rgba(59,130,246,0.35);
-            color: #60a5fa;
-        }
-        .ws-chrome-btn svg { stroke: currentColor; }
-        /* Active/on state for live frame toggle */
-        .ws-chrome-btn.ws-active {
-            background: rgba(34,197,94,0.15);
-            border-color: rgba(34,197,94,0.4);
-            color: #4ade80;
-        }
-        /* Tooltip */
-        .ws-chrome-btn::after {
-            content: attr(data-tip);
-            position: absolute;
-            bottom: calc(100% + 6px);
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1e2d47;
-            color: #e2e8f0;
-            font-size: 10px;
-            font-family: 'Space Grotesk', sans-serif;
-            white-space: nowrap;
-            padding: 3px 8px;
-            border-radius: 5px;
-            border: 1px solid rgba(59,130,246,0.2);
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.15s;
-            z-index: 10;
-        }
-        .ws-chrome-btn:hover::after { opacity: 1; }
-
-        /* ── Mode toggle tab bar ── */
-        .ws-mode-bar {
-            background: #0d1729;
-            border-bottom: 1px solid rgba(59,130,246,0.12);
-            padding: 0 16px;
-            display: flex;
-            align-items: center;
-            gap: 0;
-        }
-        .ws-mode-tab {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            font-size: 11.5px;
-            font-weight: 600;
-            color: #64748b;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: color 0.2s, border-color 0.2s;
-            user-select: none;
-            letter-spacing: 0.02em;
-        }
-        .ws-mode-tab svg { stroke: currentColor; }
-        .ws-mode-tab:hover { color: #94a3b8; }
-        .ws-mode-tab.ws-tab-active {
-            color: #60a5fa;
-            border-bottom-color: #3b82f6;
-        }
-        .ws-mode-tab.ws-tab-live.ws-tab-active { color: #4ade80; border-bottom-color: #22c55e; }
-        .ws-live-dot {
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: #22c55e;
-            box-shadow: 0 0 5px #22c55e;
-            animation: ws-dot-bounce 1.4s infinite ease-in-out;
-            flex-shrink: 0;
-        }
-
-        /* ── Viewport area ── */
-        .ws-viewport {
-            position: relative;
-            background: #0e1928;
-            min-height: 320px;
-            overflow: hidden;
-        }
-
-        /* Screenshot mode — scrollable */
-        .ws-viewport.ws-scroll-mode {
-            overflow-y: auto;
-            max-height: 520px;
-            scroll-behavior: smooth;
-        }
-        .ws-viewport.ws-scroll-mode::-webkit-scrollbar {
-            width: 6px;
-        }
-        .ws-viewport.ws-scroll-mode::-webkit-scrollbar-track {
-            background: #0b1120;
-        }
-        .ws-viewport.ws-scroll-mode::-webkit-scrollbar-thumb {
-            background: rgba(59,130,246,0.3);
-            border-radius: 3px;
-        }
-        .ws-viewport.ws-scroll-mode::-webkit-scrollbar-thumb:hover {
-            background: rgba(59,130,246,0.55);
-        }
-
-        .ws-screenshot-img {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: opacity 0.3s ease;
-        }
-
-        /* Zoom controls overlay on screenshot */
-        .ws-zoom-controls {
-            position: sticky;
-            bottom: 10px;
-            right: 10px;
-            display: flex;
-            justify-content: flex-end;
-            padding: 0 10px;
-            pointer-events: none;
-            z-index: 5;
-            margin-top: -40px;
-        }
-        .ws-zoom-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 2px;
-            background: rgba(11,17,32,0.85);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(59,130,246,0.25);
-            border-radius: 20px;
-            padding: 4px 6px;
-            pointer-events: all;
-        }
-        .ws-zoom-btn {
-            width: 26px; height: 26px;
-            border-radius: 50%;
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            display: grid;
-            place-items: center;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 700;
-            transition: background 0.15s, color 0.15s;
-        }
-        .ws-zoom-btn:hover {
-            background: rgba(59,130,246,0.2);
-            color: #60a5fa;
-        }
-        .ws-zoom-label {
-            font-family: 'IBM Plex Mono', monospace;
-            font-size: 10px;
-            color: #64748b;
-            min-width: 32px;
-            text-align: center;
-        }
-
-        /* ── Live frame ── */
-        .ws-live-frame-wrap {
-            position: relative;
-            width: 100%;
-            height: 480px;
-            background: #0e1928;
-        }
-        .ws-live-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-        /* Safety shield overlay for live frame */
-        .ws-frame-shield {
-            position: absolute;
-            inset: 0;
-            background: rgba(11,17,32,0.92);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            z-index: 10;
-            padding: 28px 24px;
-            text-align: center;
-        }
-        .ws-frame-shield.ws-shield-hidden { display: none; }
-        .ws-shield-icon {
-            width: 64px; height: 64px;
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            border: 1px solid;
-            margin-bottom: 4px;
-        }
-        .ws-shield-icon.green {
-            background: rgba(34,197,94,0.12);
-            border-color: rgba(34,197,94,0.35);
-        }
-        .ws-shield-icon.red {
-            background: rgba(239,68,68,0.12);
-            border-color: rgba(239,68,68,0.4);
-            animation: ws-danger-pulse 2s infinite;
-        }
-        .ws-shield-icon.amber {
-            background: rgba(251,191,36,0.12);
-            border-color: rgba(251,191,36,0.35);
-        }
-        .ws-shield-icon svg { stroke: currentColor; }
-        .ws-shield-title {
-            font-size: 17px;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin: 0;
-        }
-        .ws-shield-body {
-            font-size: 13px;
-            color: #64748b;
-            margin: 0;
-            max-width: 340px;
-            line-height: 1.6;
-        }
-        .ws-shield-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-        .ws-shield-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 9px 20px;
-            border-radius: 9px;
-            font-size: 13px;
-            font-weight: 600;
-            border: 1px solid;
-            cursor: pointer;
-            transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
-            text-decoration: none;
-            letter-spacing: 0.02em;
-        }
-        .ws-shield-btn:hover { transform: translateY(-1px); }
-        .ws-shield-btn.proceed {
-            background: rgba(34,197,94,0.12);
-            border-color: rgba(34,197,94,0.4);
-            color: #4ade80;
-        }
-        .ws-shield-btn.proceed:hover {
-            background: rgba(34,197,94,0.22);
-            box-shadow: 0 0 14px rgba(34,197,94,0.2);
-        }
-        .ws-shield-btn.danger {
-            background: rgba(239,68,68,0.12);
-            border-color: rgba(239,68,68,0.4);
-            color: #fca5a5;
-        }
-        .ws-shield-btn.danger:hover {
-            background: rgba(239,68,68,0.22);
-            box-shadow: 0 0 14px rgba(239,68,68,0.2);
-        }
-        .ws-shield-btn.cancel {
-            background: rgba(100,116,139,0.12);
-            border-color: rgba(100,116,139,0.3);
-            color: #94a3b8;
-        }
-        .ws-shield-btn.cancel:hover { background: rgba(100,116,139,0.2); }
-        .ws-shield-btn svg { stroke: currentColor; flex-shrink: 0; }
-
-        /* ── Loading overlay ── */
-        .ws-loading-overlay {
-            position: absolute;
-            inset: 0;
-            background: #0b1120;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 18px;
-            z-index: 8;
-        }
-        .ws-spinner {
-            width: 38px; height: 38px;
-            border: 3px solid rgba(59,130,246,0.12);
-            border-top-color: #3b82f6;
-            border-radius: 50%;
-            animation: ws-spin 0.75s linear infinite;
-        }
-        .ws-loading-dots { display: flex; gap: 5px; }
-        .ws-loading-dots span {
-            width: 6px; height: 6px;
-            border-radius: 50%;
-            background: #3b82f6;
-            animation: ws-dot-bounce 1.2s infinite ease-in-out;
-        }
-        .ws-loading-dots span:nth-child(2) { animation-delay: 0.15s; }
-        .ws-loading-dots span:nth-child(3) { animation-delay: 0.30s; }
-        .ws-loading-label { font-size: 12.5px; color: #64748b; letter-spacing: 0.02em; }
-
-        /* Skeleton body */
-        .ws-skel-body {
-            padding: 18px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            background: #0b1120;
-        }
-
-        /* ── Fallback (no screenshot) ── */
-        .ws-fallback {
-            padding: 52px 24px 56px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            background: #0b1120;
-        }
-        .ws-fallback-globe {
-            width: 68px; height: 68px;
-            border-radius: 50%;
-            background: rgba(59,130,246,0.08);
-            border: 1px solid rgba(59,130,246,0.22);
-            display: grid;
-            place-items: center;
-            margin-bottom: 6px;
-        }
-        .ws-fallback-globe svg { stroke: #60a5fa; }
-        .ws-fallback h4 { font-size: 16px; font-weight: 700; color: #e2e8f0; margin: 0; }
-        .ws-fallback p  { font-size: 12.5px; color: #64748b; margin: 0; max-width: 320px; line-height: 1.6; }
-
-        /* ── Screenshot badge ── */
-        .ws-screenshot-badge {
-            position: absolute;
-            top: 10px; right: 10px;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 3px 10px;
-            font-size: 10.5px;
-            color: #94a3b8;
-            letter-spacing: 0.05em;
-            pointer-events: none;
-            font-family: 'IBM Plex Mono', monospace;
-        }
-
-        /* ── Footer bar ── */
-        .ws-preview-footer {
-            padding: 11px 16px;
-            background: #090f1e;
-            border-top: 1px solid rgba(59,130,246,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .ws-footer-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-width: 0;
-            flex: 1;
-        }
-        .ws-footer-favicon {
-            width: 16px; height: 16px;
-            border-radius: 3px;
-            flex-shrink: 0;
-            background: rgba(59,130,246,0.1);
-        }
-        .ws-footer-domain {
-            font-size: 12px;
-            color: #64748b;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-        .ws-footer-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-        .ws-open-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px 16px;
-            background: rgba(59,130,246,0.1);
-            border: 1px solid rgba(59,130,246,0.3);
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: 600;
-            color: #60a5fa;
-            letter-spacing: 0.02em;
-            transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
-            white-space: nowrap;
-        }
-        .ws-open-btn:hover {
-            background: rgba(59,130,246,0.2);
-            box-shadow: 0 0 16px rgba(59,130,246,0.22);
-            transform: translateY(-1px);
-        }
-        .ws-open-btn svg { stroke: #60a5fa; }
-
-        /* Mobile */
-        @media (max-width: 520px) {
-            .ws-preview-wrap { border-radius: 14px; }
-            .ws-mode-tab { padding: 7px 10px; font-size: 10.5px; }
-            .ws-live-frame-wrap { height: 360px; }
-            .ws-viewport.ws-scroll-mode { max-height: 380px; }
-        }
-    `;
-    document.head.appendChild(style);
-
-    // ── State ─────────────────────────────────────────────────────────────────
-    let _currentUrl   = '';
-    let _currentLevel = 'safe';
-    let _currentZoom  = 100;
-    let _mode         = 'screenshot'; // 'screenshot' | 'live'
-    let _frameUnlocked = false;
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
-    function setPreviewVisible(v) {
-        if (previewArea) previewArea.style.display = v ? 'block' : 'none';
-    }
-    function resetPreviewContent() {
-        if (pvDomain)  pvDomain.textContent = '';
-        if (pvChecks)  pvChecks.innerHTML   = '';
-        if (pvActions) pvActions.innerHTML  = '';
-        _currentZoom   = 100;
-        _mode          = 'screenshot';
-        _frameUnlocked = false;
-    }
-
-    function formatDisplayUrl(url) {
-        try {
-            const u    = new URL(url);
-            const rest = u.pathname + u.search + u.hash;
-            const path = rest.length > 1
-                ? rest.substring(0, 28) + (rest.length > 28 ? '…' : '')
-                : '';
-            return `${u.protocol}//<em>${u.hostname}</em>${path}`;
-        } catch(e) { return url; }
-    }
-
-    // ── Screenshot sources ────────────────────────────────────────────────────
-    function tryLoadImage(src, ms) {
-        return new Promise(resolve => {
-            const img = new Image();
-            const tid = setTimeout(() => { img.src = ''; resolve(null); }, ms);
-            img.onload  = () => { clearTimeout(tid); resolve(img.src); };
-            img.onerror = () => { clearTimeout(tid); resolve(null); };
-            img.src = src;
-        });
-    }
-
-    async function getScreenshot(url) {
-        const enc = encodeURIComponent(url);
-        const sources = [
-            `https://image.thum.io/get/width/960/crop/700/noanimate/${url}`,
-            `https://pageshot.site/v1/screenshot?url=${enc}&width=960&height=700&format=png&block_ads=true&hide_banners=true`,
-            `https://mini.s-shot.ru/1024x768/PNG/1024/Z100/?${url}`,
-        ];
-        for (const src of sources) {
-            const r = await tryLoadImage(src, 13000);
-            if (r) return r;
-        }
-        return null;
-    }
-
-    // ── Build browser chrome ──────────────────────────────────────────────────
-    function makeBrowserChrome(url) {
-        const isHttps = url.startsWith('https://');
-        const div = document.createElement('div');
-        div.className = 'ws-browser-chrome';
-        div.innerHTML = `
-            <div class="ws-traffic-lights">
-                <span class="ws-tl ws-tl-red"></span>
-                <span class="ws-tl ws-tl-amber"></span>
-                <span class="ws-tl ws-tl-green"></span>
-            </div>
-            <div class="ws-url-bar">
-                <span class="ws-lock-icon${isHttps ? '' : ' ws-no-lock'}">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        ${isHttps
-                            ? `<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>`
-                            : `<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1M17 11V9"/>`
-                        }
-                    </svg>
-                </span>
-                <span class="ws-url-text">${formatDisplayUrl(url)}</span>
-            </div>
-            <div class="ws-chrome-actions" id="ws_chrome_actions"></div>
-        `;
-        return div;
-    }
-
-    // ── Mode tab bar ──────────────────────────────────────────────────────────
-    function makeModeBar(onSwitch) {
-        const bar = document.createElement('div');
-        bar.className = 'ws-mode-bar';
-        bar.innerHTML = `
-            <div class="ws-mode-tab ws-tab-active" data-tab="screenshot">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-                </svg>
-                Screenshot
-            </div>
-            <div class="ws-mode-tab ws-tab-live" data-tab="live">
-                <span class="ws-live-dot"></span>
-                Live Frame
-            </div>
-        `;
-        bar.querySelectorAll('.ws-mode-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                bar.querySelectorAll('.ws-mode-tab').forEach(t => t.classList.remove('ws-tab-active'));
-                tab.classList.add('ws-tab-active');
-                onSwitch(tab.dataset.tab);
-            });
-        });
-        return bar;
-    }
-
-    // ── Loading overlay ───────────────────────────────────────────────────────
-    function makeLoadingOverlay(msg) {
-        const div = document.createElement('div');
-        div.className = 'ws-loading-overlay';
-        div.innerHTML = `
-            <div class="ws-spinner"></div>
-            <div class="ws-loading-dots"><span></span><span></span><span></span></div>
-            <p class="ws-loading-label">${msg || 'Capturing screenshot…'}</p>
-        `;
-        return div;
-    }
-
-    // ── Skeleton ──────────────────────────────────────────────────────────────
-    function makeSkeletonBody() {
-        const body = document.createElement('div');
-        body.className = 'ws-skel-body';
-        body.innerHTML = `<div class="ws-skel" style="height:180px;width:100%;border-radius:8px;margin-bottom:4px;"></div>`;
-        [100, 82, 90, 68, 50].forEach(w => {
-            const l = document.createElement('div');
-            l.className = 'ws-skel';
-            l.style.cssText = `height:12px;width:${w}%;`;
-            body.appendChild(l);
-        });
-        return body;
-    }
-
-    // ── Fallback UI ───────────────────────────────────────────────────────────
-    function makeFallback(hostname) {
-        const div = document.createElement('div');
-        div.className = 'ws-fallback';
-        div.innerHTML = `
-            <div class="ws-fallback-globe">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="2" y1="12" x2="22" y2="12"/>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                </svg>
-            </div>
-            <h4>${hostname}</h4>
-            <p>Screenshot unavailable — this site may block preview services, or the page requires a login to display content.</p>
-        `;
-        return div;
-    }
-
-    // ── Danger banner ─────────────────────────────────────────────────────────
-    function makeDangerBanner(level) {
-        if (level === 'safe') return null;
-        const div = document.createElement('div');
-        div.className = 'ws-danger-banner';
-        if (level === 'danger') {
-            div.innerHTML = `
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
-                <span><strong>⚠ Dangerous Link Detected</strong> — This preview is shown in a sandboxed frame. Do not enter any personal information or click any links on this page.</span>
-            `;
-        } else {
-            div.innerHTML = `
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="stroke:#fbbf24">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <span style="color:#fde68a"><strong>⚠ Proceed With Caution</strong> — This site has suspicious characteristics. Avoid entering personal details.</span>
-            `;
-        }
-        return div;
-    }
-
-    // ── Safety shield (shown before live frame loads) ─────────────────────────
-    function makeFrameShield(url, level, onProceed, onCancel) {
-        const div = document.createElement('div');
-        div.className = 'ws-frame-shield';
-
-        let iconColor, iconSvg, titleText, bodyText, proceedLabel, showProceed;
-
-        if (level === 'danger') {
-            iconColor  = 'red';
-            iconSvg    = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
-            titleText  = 'Dangerous Site Detected';
-            bodyText   = 'Our scan flagged this URL as potentially dangerous. Loading it — even in a sandboxed frame — may expose you to drive-by scripts. We strongly recommend <strong>not</strong> proceeding.';
-            proceedLabel = 'I understand the risk — Load anyway';
-            showProceed  = true;
-        } else if (level === 'hazard') {
-            iconColor  = 'amber';
-            iconSvg    = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
-            titleText  = 'Suspicious Site — Proceed Carefully';
-            bodyText   = 'This site has warning signs. It will be loaded in an isolated sandbox with scripting restricted. <strong>Do not enter any personal information.</strong>';
-            proceedLabel = 'Load in sandboxed frame';
-            showProceed  = true;
-        } else {
-            iconColor  = 'green';
-            iconSvg    = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`;
-            titleText  = 'Sandboxed Live Frame';
-            bodyText   = 'This site will load inside an isolated frame. Scripting is restricted for your safety. You can scroll and browse, but links may not open as expected.';
-            proceedLabel = 'Load sandboxed frame';
-            showProceed  = true;
-        }
-
-        div.innerHTML = `
-            <div class="ws-shield-icon ${iconColor}">${iconSvg}</div>
-            <p class="ws-shield-title">${titleText}</p>
-            <p class="ws-shield-body">${bodyText}</p>
-            <div class="ws-shield-actions"></div>
-        `;
-
-        const actions = div.querySelector('.ws-shield-actions');
-
-        if (showProceed) {
-            const proceedBtn = document.createElement('button');
-            proceedBtn.className = `ws-shield-btn ${level === 'danger' ? 'danger' : 'proceed'}`;
-            proceedBtn.innerHTML = `
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                </svg>
-                ${proceedLabel}
-            `;
-            proceedBtn.addEventListener('click', onProceed);
-            actions.appendChild(proceedBtn);
-        }
-
-        const cancelBtn = document.createElement('button');
-        cancelBtn.className = 'ws-shield-btn cancel';
-        cancelBtn.innerHTML = `
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-            Cancel
-        `;
-        cancelBtn.addEventListener('click', onCancel);
-        actions.appendChild(cancelBtn);
-
-        return div;
-    }
-
-    // ── Footer bar ────────────────────────────────────────────────────────────
-    function makeFooter(url) {
-        let hostname = '';
-        try { hostname = new URL(url).hostname; } catch(e) { hostname = url; }
-
-        const footer = document.createElement('div');
-        footer.className = 'ws-preview-footer';
-        footer.innerHTML = `
-            <div class="ws-footer-left">
-                <img class="ws-footer-favicon"
-                     src="https://www.google.com/s2/favicons?sz=16&domain=${encodeURIComponent(hostname)}"
-                     onerror="this.style.display='none'"
-                     alt="">
-                <span class="ws-footer-domain">${hostname}</span>
-            </div>
-            <div class="ws-footer-right">
-                <a href="${url}" target="_blank" rel="noopener noreferrer" class="ws-open-btn" data-ws-newtab="1">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                        <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
-                    </svg>
-                    Open in new tab
-                </a>
-            </div>
-        `;
-        return footer;
-    }
-
-    // ── Zoom controls for screenshot ──────────────────────────────────────────
-    function makeZoomControls(imgEl) {
-        const wrap = document.createElement('div');
-        wrap.className = 'ws-zoom-controls';
-        wrap.innerHTML = `
-            <div class="ws-zoom-pill">
-                <button class="ws-zoom-btn" id="ws_zoom_out" title="Zoom out">−</button>
-                <span class="ws-zoom-label" id="ws_zoom_label">100%</span>
-                <button class="ws-zoom-btn" id="ws_zoom_in" title="Zoom in">+</button>
-            </div>
-        `;
-        wrap.querySelector('#ws_zoom_out').addEventListener('click', () => updateZoom(-25, imgEl, wrap));
-        wrap.querySelector('#ws_zoom_in').addEventListener('click',  () => updateZoom(+25, imgEl, wrap));
-        return wrap;
-    }
-
-    function updateZoom(delta, imgEl, controlsWrap) {
-        _currentZoom = Math.max(50, Math.min(200, _currentZoom + delta));
-        imgEl.style.width = _currentZoom + '%';
-        imgEl.style.height = 'auto';
-        const lbl = controlsWrap.querySelector('#ws_zoom_label');
-        if (lbl) lbl.textContent = _currentZoom + '%';
-    }
-
-    // ── Main render ───────────────────────────────────────────────────────────
-    async function renderPreview(url, level) {
-        _currentUrl   = url;
-        _currentLevel = level || 'safe';
-        let hostname = '';
-        try { hostname = new URL(url).hostname; } catch(e) {}
-
-        // Hide old content
-        setPreviewVisible(true);
-        resetPreviewContent();
-        if (pvDomain) pvDomain.textContent = hostname;
-        showSpinner();
-
-        if (!pvActions) { hideSpinner(); return; }
-
-        // ── Build wrapper ─────────────────────────────────────────────────────
-        const wrapper = document.createElement('div');
-        wrapper.className = 'ws-preview-wrap' + (_currentLevel === 'danger' ? ' ws-danger-mode' : '');
-
-        // Danger/hazard banner
-        const banner = makeDangerBanner(_currentLevel);
-        if (banner) wrapper.appendChild(banner);
-
-        // Browser chrome
-        wrapper.appendChild(makeBrowserChrome(url));
-
-        // Mode tab bar
-        const viewport = document.createElement('div');
-        viewport.className = 'ws-viewport ws-scroll-mode';
-
-        // Live frame container (hidden initially)
-        const liveWrap = document.createElement('div');
-        liveWrap.className = 'ws-live-frame-wrap';
-        liveWrap.style.display = 'none';
-
-        // Skeleton + loading overlay in viewport
-        viewport.appendChild(makeSkeletonBody());
-        viewport.appendChild(makeLoadingOverlay('Capturing screenshot…'));
-
-        // Mode bar
-        const modeBar = makeModeBar((tab) => {
-            _mode = tab;
-            if (tab === 'screenshot') {
-                viewport.style.display = 'block';
-                liveWrap.style.display = 'none';
-            } else {
-                viewport.style.display = 'none';
-                liveWrap.style.display = 'block';
-                if (!_frameUnlocked) {
-                    // Show shield
-                } // shield is already inside liveWrap
-            }
-        });
-
-        wrapper.appendChild(modeBar);
-        wrapper.appendChild(viewport);
-        wrapper.appendChild(liveWrap);
-        wrapper.appendChild(makeFooter(url));
-
-        pvActions.appendChild(wrapper);
-
-        // ── Build live frame section (shield first) ───────────────────────────
-        const shield = makeFrameShield(
-            url,
-            _currentLevel,
-            () => {
-                // Proceed — load iframe
-                _frameUnlocked = true;
-                shield.classList.add('ws-shield-hidden');
-                const iframe = document.createElement('iframe');
-                iframe.className = 'ws-live-iframe';
-                // Sandbox: allow-same-origin so page loads, restrict scripts on danger
-                const sandboxVal = _currentLevel === 'danger'
-                    ? 'allow-same-origin'
-                    : 'allow-same-origin allow-forms allow-popups';
-                iframe.setAttribute('sandbox', sandboxVal);
-                iframe.setAttribute('loading', 'lazy');
-                iframe.setAttribute('referrerpolicy', 'no-referrer');
-                iframe.src = url;
-
-                const iframeOverlay = document.createElement('div');
-                iframeOverlay.className = 'ws-loading-overlay';
-                iframeOverlay.innerHTML = `
-                    <div class="ws-spinner"></div>
-                    <p class="ws-loading-label">Loading sandboxed frame…</p>
-                `;
-                liveWrap.appendChild(iframeOverlay);
-                liveWrap.appendChild(iframe);
-
-                iframe.addEventListener('load', () => iframeOverlay.remove());
-                iframe.addEventListener('error', () => {
-                    iframeOverlay.innerHTML = `<p style="color:#64748b;font-size:13px;text-align:center;padding:20px">Could not load site in frame — it may block embedding.</p>`;
-                });
-            },
-            () => {
-                // Cancel — switch back to screenshot tab
-                const screenshotTab = modeBar.querySelector('[data-tab="screenshot"]');
-                if (screenshotTab) screenshotTab.click();
-            }
-        );
-        liveWrap.appendChild(shield);
-
-        // ── Fetch screenshot ──────────────────────────────────────────────────
-        const shot = await getScreenshot(url);
-        hideSpinner();
-        viewport.innerHTML = '';
-
-        if (shot) {
-            viewport.style.overflowY = 'auto';
-            const img = document.createElement('img');
-            img.className = 'ws-screenshot-img';
-            img.src  = shot;
-            img.alt  = `Preview of ${hostname}`;
-            viewport.appendChild(img);
-
-            // Badge
-            const badge = document.createElement('div');
-            badge.className = 'ws-screenshot-badge';
-            badge.textContent = 'SCREENSHOT';
-            viewport.appendChild(badge);
-
-            // Zoom controls
-            viewport.appendChild(makeZoomControls(img));
-
-            // Chrome action buttons (refresh screenshot)
-            const actions = wrapper.querySelector('#ws_chrome_actions');
-            if (actions) {
-                const refreshBtn = document.createElement('button');
-                refreshBtn.className = 'ws-chrome-btn';
-                refreshBtn.setAttribute('data-tip', 'Refresh screenshot');
-                refreshBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>`;
-                refreshBtn.addEventListener('click', async () => {
-                    viewport.innerHTML = '';
-                    viewport.appendChild(makeSkeletonBody());
-                    viewport.appendChild(makeLoadingOverlay('Refreshing…'));
-                    const newShot = await getScreenshot(url + '?_ws=' + Date.now());
-                    viewport.innerHTML = '';
-                    if (newShot) {
-                        const img2 = document.createElement('img');
-                        img2.className = 'ws-screenshot-img';
-                        img2.src = newShot;
-                        viewport.appendChild(img2);
-                        const b2 = document.createElement('div');
-                        b2.className = 'ws-screenshot-badge';
-                        b2.textContent = 'SCREENSHOT';
-                        viewport.appendChild(b2);
-                        viewport.appendChild(makeZoomControls(img2));
-                    } else {
-                        viewport.appendChild(makeFallback(hostname));
-                    }
-                });
-                actions.appendChild(refreshBtn);
-
-                // Open in new tab
-                const openBtn = document.createElement('a');
-                openBtn.className = 'ws-chrome-btn';
-                openBtn.href      = url;
-                openBtn.target    = '_blank';
-                openBtn.rel       = 'noopener noreferrer';
-                openBtn.setAttribute('data-tip', 'Open in new tab');
-                openBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
-                actions.appendChild(openBtn);
-            }
-        } else {
-            viewport.appendChild(makeFallback(hostname));
-            // Still add open button in chrome
-            const actions = wrapper.querySelector('#ws_chrome_actions');
-            if (actions) {
-                const openBtn = document.createElement('a');
-                openBtn.className = 'ws-chrome-btn';
-                openBtn.href      = url;
-                openBtn.target    = '_blank';
-                openBtn.rel       = 'noopener noreferrer';
-                openBtn.setAttribute('data-tip', 'Open in new tab');
-                openBtn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
-                actions.appendChild(openBtn);
-            }
-        }
-    }
-
-    // ── Preview button click ──────────────────────────────────────────────────
-    previewBtn.addEventListener('click', async () => {
-        const inputEl = document.getElementById('link_input');
-        if (!inputEl) return;
-        const raw = (inputEl.value || '').trim();
-        if (!raw) { alert('Please enter a URL first.'); return; }
-
-        const normalized = normalizeURL(raw);
-        if (!normalized) {
-            showInvalidUrlError(document.getElementById('link_status'));
-            return;
-        }
-
-        // Use last known scan level if URL matches
-        const level = (window._wsLastUrl === normalized) ? (window._wsLastLevel || 'safe') : 'safe';
-        await renderPreview(normalized, level);
-    });
-
-    // ── Expose for check_link to call after a scan ────────────────────────────
-    window._wsOpenLiveFrame = async function(url, level) {
-        await renderPreview(url, level || 'safe');
-    };
-
-})();
 
 
 // ─── Extra Client-Side Phishing Heuristics ────────────────────────────────────
@@ -1926,20 +850,20 @@ function friendlyFlagDetail(f) {
         try { hostname = new URL(url).hostname.toLowerCase(); } catch(e) { return flags; }
 
         if (hasDangerousProtocol(url)) {
-            flags.push({ label: 'Dangerous Protocol', ok: false, detail: 'URL uses a dangerous protocol (data:/javascript:) — never visit' });
+            flags.push({ label: 'Dangerous Link Type', ok: false, detail: 'URL uses a dangerous protocol (data:/javascript:) — never visit' });
         }
         if (hasHomographChars(hostname)) {
-            flags.push({ label: 'Homograph Attack', ok: false, detail: 'Hostname contains non-ASCII characters — possible lookalike spoofing (e.g. Cyrillic letters)' });
+            flags.push({ label: 'Lookalike Web Address', ok: false, detail: 'This web address contains look-alike characters from other languages, designed to impersonate a real site' });
         }
         const domainPart = hostname.replace(/^www\./, '');
         const domainLabel = domainPart.split('.')[0];
         const isAlphaOnly = /^[a-zA-Z]+$/.test(domainLabel);
         const entScore = domainEntropy(domainPart.replace(/\./g, ''));
         if (isAlphaOnly && entScore > 3.8 && domainPart.length > 12) {
-            flags.push({ label: 'High Domain Entropy', ok: false, detail: `Domain name looks randomly generated (entropy ${entScore.toFixed(2)}) — common in phishing infrastructure` });
+            flags.push({ label: 'Random-Looking Site Name', ok: false, detail: `This website name looks randomly generated by a computer (score: ${entScore.toFixed(2)}) — a common pattern in scam networks` });
         }
         if (hasNumericSubstitution(hostname)) {
-            flags.push({ label: 'Numeric Substitution', ok: false, detail: 'Numbers replacing letters detected (e.g. g00gle, p4ypal) — classic URL spoofing technique' });
+            flags.push({ label: 'Letter-Number Trick', ok: false, detail: 'This address swaps letters for numbers (like g00gle or p4ypal) to imitate a real brand — a classic scammer trick' });
         }
         const brand = brandInSubdomain(hostname);
         if (brand) {

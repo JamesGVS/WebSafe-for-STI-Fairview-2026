@@ -123,7 +123,6 @@
 
         <div class="controls">
             <button id="check_btn">Verify Security</button>
-            <button id="preview_btn">Preview Now</button>
         </div>
 
         <div class="divider">OR</div>
@@ -154,18 +153,6 @@
 
     <div id="results_row">
         <div id="link_status"></div>
-        <div id="preview_area">
-            <div id="preview_card">
-                <img id="preview_favicon">
-                <div>
-                    <h3 id="preview_title"></h3>
-                    <p id="preview_domain"></p>
-                    <p id="preview_description"></p>
-                    <div id="preview_actions"></div>
-                </div>
-            </div>
-            <div id="preview_checks"></div>
-        </div>
     </div>
 </section>
 
@@ -837,19 +824,13 @@ setInterval(syncSidebarHistory, 2000);
 /* ELEMENT REFERENCES */
 const input       = document.getElementById("link_input");
 const checkBtn    = document.getElementById("check_btn");
-const previewBtn  = document.getElementById("preview_btn");
+const previewBtn  = null; // preview removed
 const scanBtn     = document.getElementById("scan_qr_btn");
 const uploadQrBtn = document.getElementById("upload_qr_btn");
 const spinner     = document.getElementById("loading_spinner");
 const status      = document.getElementById("safety_status");
 const resultBox   = document.getElementById("link_status");
-const previewArea    = document.getElementById("preview_area");
-const previewTitle   = document.getElementById("preview_title");
-const previewDomain  = document.getElementById("preview_domain");
-const previewDesc    = document.getElementById("preview_description");
-const previewFavicon = document.getElementById("preview_favicon");
-const previewActions = document.getElementById("preview_actions");
-const previewChecks  = document.getElementById("preview_checks");
+// preview variables removed
 const qrModal           = document.getElementById("qr_modal");
 const closeQR           = document.getElementById("close_qr");
 const startScan         = document.getElementById("start_scan");
