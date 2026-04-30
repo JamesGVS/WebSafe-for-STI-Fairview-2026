@@ -223,6 +223,8 @@ function flagTypeLabel(type) {
         'wix-phishing':              'Possible Scam Page on Free Host',
         'google-safebrowsing':       'Google Safety Alert',
         'virustotal-flag':           'Flagged by Antivirus Tools',
+        'urlscan-malicious':         'Sandbox: Malicious Page Detected',
+        'checkphish-flag':           'Brand Impersonation Detected',
         'disposable-hosting':        'Temporary Free Hosting',
         'dangerous-protocol':        'Dangerous Link Type',
         'high-entropy-domain':       'Random-Looking Site Name',
@@ -295,6 +297,10 @@ function friendlyFlagDetail(f) {
             return f.detail || 'Hostname uses lookalike characters from non-Latin scripts to impersonate a real website';
         case 'numeric-substitution':
             return f.detail || 'Numbers replace letters in the domain to impersonate a real brand (e.g. g00gle, p4ypal)';
+        case 'urlscan-malicious':
+            return f.detail || 'urlscan.io opened this page in an isolated sandbox and confirmed it is malicious';
+        case 'checkphish-flag':
+            return f.detail || 'CheckPhish AI detected brand impersonation or phishing content on this page';
         default:
             return f.detail || 'Suspicious signal detected';
     }
@@ -593,16 +599,38 @@ function friendlyFlagDetail(f) {
                         : 'Google has checked this site and found no threats'});
             }
 
-            // VirusTotal (v7)
+            // VirusTotal
             if (d.virusTotalPositives != null) {
                 const vtOk = d.virusTotalPositives === 0;
-                checks.push({label:'Antivirus Scan', ok:vtOk,
+                checks.push({label:'Antivirus Scan (VirusTotal)', ok:vtOk,
                     detail: vtOk
-                        ? 'None of the antivirus tools we checked flagged this link — looks clean'
-                        : `${d.virusTotalPositives} out of ${d.virusTotalTotal} antivirus tools flagged this link as dangerous`});
+                        ? 'None of the antivirus engines flagged this link — looks clean'
+                        : `${d.virusTotalPositives} of ${d.virusTotalTotal} antivirus engines flagged this link as dangerous`});
             }
 
-            // Free site builder warning (v7)
+            // urlscan.io
+            if (d.urlScanMalicious != null) {
+                const urlscanOk = !d.urlScanMalicious;
+                const reportLink = d.urlScanReport ? ` (<a href="${d.urlScanReport}" target="_blank" rel="noopener noreferrer" style="color:#60a5fa">full report</a>)` : '';
+                checks.push({label:'Visual Sandbox (urlscan.io)', ok:urlscanOk,
+                    detail: urlscanOk
+                        ? 'urlscan.io loaded the page in an isolated sandbox and found no threats'
+                        : `urlscan.io flagged this page as malicious${d.urlScanVerdict ? ` (${d.urlScanVerdict})` : ''}${reportLink}`});
+            }
+
+            // CheckPhish
+            if (d.checkPhishDisposition != null) {
+                const cpOk = d.checkPhishDisposition === 'clean';
+                const cpLabel = { clean:'clean', phish:'phishing site', suspect:'suspicious', unknown:'unknown' }[d.checkPhishDisposition] || d.checkPhishDisposition;
+                checks.push({label:'Brand Impersonation Check (CheckPhish)', ok:cpOk,
+                    detail: cpOk
+                        ? 'CheckPhish found no brand impersonation or phishing patterns'
+                        : d.checkPhishBrand
+                            ? `CheckPhish identified this page as impersonating "${d.checkPhishBrand}" — ${cpLabel}`
+                            : `CheckPhish flagged this page as ${cpLabel}`});
+            }
+
+            // Free site builder warning
             if (d.freeSiteBuilder) {
                 checks.push({label:'Suspicious Hosting', ok:false,
                     detail: d.freeSiteBuilderDetail || 'This site is hosted on a free website builder — scammers often use these to create fake pages'});
@@ -613,6 +641,8 @@ function friendlyFlagDetail(f) {
                 const highFlags   = d.contentFlags.filter(f => f.severity === 'high');
                 const mediumFlags = d.contentFlags.filter(f => f.severity === 'medium');
                 for (const f of d.contentFlags) {
+                    // Skip flags already rendered above
+                    if (['urlscan-malicious','checkphish-flag','free-site-builder','crypto-brand-on-free-host'].includes(f.type)) continue;
                     checks.push({ label: flagTypeLabel(f.type), ok: false, detail: friendlyFlagDetail(f) });
                 }
                 if (highFlags.length) { level = 'danger'; reason = friendlyFlagDetail(highFlags[0]); }
@@ -627,18 +657,28 @@ function friendlyFlagDetail(f) {
             // Final reason string
             if (level === 'danger') {
                 if (!reason || reason === 'Could not complete all checks') {
-                    if (d.googleSafeBrowsing)  reason = '🚨 Google has flagged this link as dangerous — do not visit';
-                    else if (d.blacklisted)    reason = '🚨 This website is on our list of known dangerous sites — stay away';
-                    else if (d.brandSpoof)     reason = `🚨 This site is impersonating "${d.spoofedBrand}" — phishing site`;
-                    else if (d.freeSiteBuilder) reason = '🚨 This looks like a scam page pretending to be a real brand, hosted on a free site';
-                    else if (d.patternMatch)   reason = '🚨 This web address matches patterns used by known scammers';
-                    else                       reason = '🚨 Multiple red flags found — avoid this site';
+                    if (d.googleSafeBrowsing)        reason = '🚨 Google has flagged this link as dangerous — do not visit';
+                    else if (d.urlScanMalicious)     reason = '🚨 urlscan.io sandbox detected this page as malicious';
+                    else if (d.checkPhishDisposition === 'phish') reason = d.checkPhishBrand
+                        ? `🚨 CheckPhish confirmed this is a phishing site impersonating "${d.checkPhishBrand}"`
+                        : '🚨 CheckPhish confirmed this is a phishing site';
+                    else if (d.blacklisted)          reason = '🚨 This website is on our known-dangerous list — stay away';
+                    else if (d.brandSpoof)           reason = `🚨 This site is impersonating "${d.spoofedBrand}" — phishing site`;
+                    else if (d.freeSiteBuilder && d.cryptoFinancialContent) reason = '🚨 Scam page pretending to be a real brand, hosted on a free site';
+                    else if (d.patternMatch)         reason = '🚨 This web address matches patterns used by known scammers';
+                    else if (d.virusTotalPositives > 3) reason = `🚨 ${d.virusTotalPositives} antivirus engines flagged this link`;
+                    else                             reason = '🚨 Multiple red flags detected — avoid this site';
                 }
             } else if (level === 'hazard') {
-                if (!reason || reason === 'Could not complete all checks')
-                    reason = '⚠️ A few warning signs found — double-check this site before doing anything';
+                if (!reason || reason === 'Could not complete all checks') {
+                    if (d.checkPhishDisposition === 'suspect') reason = '⚠️ CheckPhish flagged this page as suspicious — verify before proceeding';
+                    else reason = '⚠️ A few warning signs found — double-check this site before doing anything';
+                }
             } else {
-                reason = `✅ ${checks.filter(c=>c.ok===true).length} of ${checks.filter(c=>c.ok!==null).length} checks passed — this link looks safe to visit`;
+                const apiCount = [d.googleSafeBrowsing != null, d.virusTotalPositives != null, d.urlScanMalicious != null, d.checkPhishDisposition != null].filter(Boolean).length;
+                reason = apiCount >= 2
+                    ? `✅ Checked against ${apiCount} threat intelligence APIs — this link looks safe`
+                    : `✅ ${checks.filter(c=>c.ok===true).length} of ${checks.filter(c=>c.ok!==null).length} checks passed — this link looks safe to visit`;
             }
 
         } else {
@@ -746,7 +786,11 @@ function friendlyFlagDetail(f) {
             checks.find(c=>c.label==='Secure Connection')                ||{label:'Secure Connection',                ok:null,detail:''},
             checks.find(c=>c.label==='Website Identity')      ||{label:'Website Identity',      ok:null,detail:''},
             checks.find(c=>c.label==='Known Threats')      ||{label:'Known Threats',      ok:null,detail:''},
-            checks.find(c=>c.label==='Google Safety Check') || checks.find(c=>c.label==='How Old Is This Site?') ||{label:'How Old Is This Site?',ok:null,detail:''},
+            checks.find(c=>c.label==='Google Safety Check')
+                || checks.find(c=>c.label==='Visual Sandbox (urlscan.io)')
+                || checks.find(c=>c.label==='Brand Impersonation Check (CheckPhish)')
+                || checks.find(c=>c.label==='How Old Is This Site?')
+                ||{label:'How Old Is This Site?',ok:null,detail:''},
         ];
 
         // ── Extra client-side heuristic flags (entropy, homograph, etc.) ──────
