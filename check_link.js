@@ -517,6 +517,14 @@ function friendlyFlagDetail(f) {
         if (serverData) {
             const d = serverData;
 
+            // ── Dead / Expired link detection ─────────────────────────────
+            if (d.deadLink) {
+                const deadIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>`;
+                checks.unshift({ label: 'Dead / Expired Link', ok: false,
+                    detail: d.deadLabel || 'This URL is unreachable — the page may have been taken down or the domain has expired',
+                    icon: deadIcon });
+            }
+
             // Shortened link
             if (d.shortened && d.resolvedUrl)
                 checks.push({label:'Shortened Link', ok:null, detail:`This is a shortened link — it actually leads to: ${d.resolvedUrl}`});
@@ -653,6 +661,12 @@ function friendlyFlagDetail(f) {
 
             if (d.verdict) level = d.verdict;
             if (!level) level = 'safe';
+
+            // Dead link overrides verdict messaging (but don't override 'danger' threat verdict)
+            if (d.deadLink) {
+                if (level !== 'danger') level = 'hazard';
+                reason = `☠️ Dead or expired link — ${d.deadLabel || 'This URL is unreachable'}`;
+            }
 
             // Final reason string
             if (level === 'danger') {
@@ -810,6 +824,12 @@ function friendlyFlagDetail(f) {
             resolvedUrl: serverData && serverData.resolvedUrl});
         logSafetyReport(normalized, level, reason, checks);
         addToHistory(normalized, level);
+
+        // Store for preview button
+        window._wsLastUrl       = normalized;
+        window._wsLastLevel     = level;
+        window._wsLastDeadLink  = !!(serverData && serverData.deadLink);
+        window._wsLastDeadLabel = (serverData && serverData.deadLabel) || null;
 
         btn.disabled = false;
         hideSpinner();
@@ -1362,7 +1382,40 @@ function friendlyFlagDetail(f) {
         return div;
     }
 
-    // ── Danger banner ─────────────────────────────────────────────────────────
+    // ── Dead link UI ──────────────────────────────────────────────────────────
+    function makeDeadLinkUI(url, deadLabel) {
+        let hostname = url;
+        try { hostname = new URL(url).hostname; } catch(e) {}
+
+        const div = document.createElement('div');
+        div.className = 'ws-dead-link-ui';
+        div.style.cssText = `
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            gap:14px; padding:40px 24px; text-align:center;
+            background: repeating-linear-gradient(
+                -45deg,
+                rgba(220,38,38,0.04) 0px, rgba(220,38,38,0.04) 10px,
+                transparent 10px, transparent 20px
+            );
+        `;
+        div.innerHTML = `
+            <div style="width:56px;height:56px;border-radius:50%;background:rgba(220,38,38,0.12);border:2px solid rgba(220,38,38,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                </svg>
+            </div>
+            <div>
+                <div style="font-size:15px;font-weight:700;color:#f87171;margin-bottom:6px;">Dead / Unreachable Link</div>
+                <div style="font-size:12px;color:#94a3b8;line-height:1.55;max-width:320px;margin:0 auto;">
+                    ${deadLabel || 'This URL is unreachable — the page may have been taken down, the domain has expired, or the server is offline.'}
+                </div>
+            </div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#475569;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.06);padding:6px 12px;border-radius:6px;word-break:break-all;max-width:320px;">${hostname}</div>
+            <div style="font-size:11px;color:#64748b;">Preview unavailable — cannot load a page that doesn't exist.</div>
+        `;
+        return div;
+    }
     function makeDangerBanner(level) {
         if (level === 'safe') return null;
         const div = document.createElement('div');
@@ -1439,17 +1492,19 @@ function friendlyFlagDetail(f) {
     }
 
     // ── Main render ───────────────────────────────────────────────────────────
-    async function renderPreview(url, level) {
+    async function renderPreview(url, level, opts) {
+        // opts = { deadLink, deadLabel } — passed from scan result when URL is dead
         _currentUrl   = url;
         _currentLevel = level || 'safe';
         let hostname = '';
         try { hostname = new URL(url).hostname; } catch(e) {}
 
+        const isDead = opts?.deadLink === true;
+
         // Hide old content
         setPreviewVisible(true);
         resetPreviewContent();
         if (pvDomain) pvDomain.textContent = hostname;
-        showSpinner();
 
         if (!pvActions) { hideSpinner(); return; }
 
@@ -1468,6 +1523,24 @@ function friendlyFlagDetail(f) {
         const viewport = document.createElement('div');
         viewport.className = 'ws-viewport ws-scroll-mode';
 
+        // ── Dead link fast-path — no screenshot attempt ───────────────────────
+        if (isDead) {
+            viewport.appendChild(makeDeadLinkUI(url, opts?.deadLabel));
+            wrapper.appendChild(viewport);
+            wrapper.appendChild(makeFooter(url));
+
+            // Remove the "open in new tab" link from the footer for dead links
+            const ftLink = wrapper.querySelector('.ws-open-btn');
+            if (ftLink) {
+                ftLink.style.opacity = '0.4';
+                ftLink.style.pointerEvents = 'none';
+                ftLink.title = 'Link is unreachable';
+            }
+
+            pvActions.appendChild(wrapper);
+            return;
+        }
+
         // Skeleton + loading overlay in viewport
         viewport.appendChild(makeSkeletonBody());
         viewport.appendChild(makeLoadingOverlay('Capturing screenshot…'));
@@ -1478,6 +1551,7 @@ function friendlyFlagDetail(f) {
         pvActions.appendChild(wrapper);
 
         // ── Fetch screenshot ──────────────────────────────────────────────────
+        showSpinner();
         const shot = await getScreenshot(url);
         hideSpinner();
         viewport.innerHTML = '';
@@ -1568,9 +1642,11 @@ function friendlyFlagDetail(f) {
             return;
         }
 
-        // Use last known scan level if URL matches
-        const level = (window._wsLastUrl === normalized) ? (window._wsLastLevel || 'safe') : 'safe';
-        await renderPreview(normalized, level);
+        // Use last known scan level + dead-link status if URL matches
+        const level    = (window._wsLastUrl === normalized) ? (window._wsLastLevel || 'safe') : 'safe';
+        const deadLink = (window._wsLastUrl === normalized) ? (window._wsLastDeadLink || false) : false;
+        const deadLabel= (window._wsLastUrl === normalized) ? (window._wsLastDeadLabel || null) : null;
+        await renderPreview(normalized, level, { deadLink, deadLabel });
     });
 
 })();
