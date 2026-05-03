@@ -102,14 +102,16 @@ app.use((req, res, next) => {
 
 // ── Static file allowlist — source files are NEVER exposed ───────────────────
 const PUBLIC_FILES = {
-    '/main.html':          'main.html',
-    '/main.css':           'main.css',
-    '/check_link.js':      'check_link.js',
-    '/tld_list.js':        'tld_list.js',
-    '/about_us.html':      'about_us.html',
-    '/about_us.css':       'about_us.css',
-    '/contact_local.html': 'contact_local.html',
-    '/contact_local.css':  'contact_local.css',
+    '/main.html':              'main.html',
+    '/main.css':               'main.css',
+    '/check_link.js':          'check_link.js',
+    '/tld_list.js':            'tld_list.js',
+    '/about_us.html':          'about_us.html',
+    '/about_us.css':           'about_us.css',
+    '/contact_local.html':     'contact_local.html',
+    '/contact_local.css':      'contact_local.css',
+    '/jsQR.min.js':            'jsQR.min.js',
+    '/html5-qrcode.min.js':    'html5-qrcode.min.js',
 };
 
 app.use('/images', express.static(path.join(__dirname, 'images'), {
