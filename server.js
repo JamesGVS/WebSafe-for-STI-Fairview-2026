@@ -13,6 +13,9 @@
 
 'use strict';
 
+// Load .env file first — must be before any process.env reads
+require('dotenv').config();
+
 const express  = require('express');
 const fetch    = require('node-fetch');
 const tls      = require('tls');
@@ -57,6 +60,25 @@ app.use((req, res, next) => {
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+    // Content-Security-Policy — lock down what the browser is allowed to load/run
+    res.setHeader('Content-Security-Policy', [
+        "default-src 'self'",
+        // Inline styles are required by the current UI (heavy inline style= usage)
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "font-src 'self' https://fonts.gstatic.com",
+        // Scripts: self + inline event handlers used by the UI (onmouseover etc.)
+        // 'unsafe-inline' scripts are intentional — no eval() is used
+        "script-src 'self' 'unsafe-inline'",
+        // Images: self + data URIs (favicons) + external screenshot services
+        "img-src 'self' data: https:",
+        // Fetch/XHR: only back to same origin (all API calls go to our own server)
+        "connect-src 'self'",
+        // Frames: completely blocked — users should never be iframed or iframe others
+        "frame-src 'none'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+    ].join('; '));
     next();
 });
 
@@ -91,24 +113,38 @@ app.use((req, res, next) => {
     next();
 });
 
-// ── Rate limiter (20 req/min per IP) ─────────────────────────────────────────
-const _rateMap = new Map();
-app.use('/api/', (req, res, next) => {
-    const ip    = req.ip || req.socket?.remoteAddress || 'unknown';
-    const now   = Date.now();
-    const entry = _rateMap.get(ip) || { count: 0, reset: now + 60_000 };
-    if (now > entry.reset) { entry.count = 0; entry.reset = now + 60_000; }
-    entry.count++;
-    _rateMap.set(ip, entry);
-    if (entry.count > 20) {
-        return res.status(429).json({ ok: false, error: 'Too many requests — please wait a moment.' });
-    }
-    next();
-});
-setInterval(() => {
-    const now = Date.now();
-    for (const [ip, e] of _rateMap) { if (now > e.reset) _rateMap.delete(ip); }
-}, 300_000);
+// ── Rate limiters — separate budgets per endpoint cost ────────────────────────
+//
+//   /api/check  → 5 req/min  (fires 8 external API calls each — most expensive)
+//   /api/chat   → 10 req/min (costs real Anthropic tokens per message)
+//   everything  → 30 req/min (fetch, whois, status — cheap reads)
+//
+function makeRateLimiter(maxPerMin, message) {
+    const map = new Map();
+    setInterval(() => {
+        const now = Date.now();
+        for (const [ip, e] of map) { if (now > e.reset) map.delete(ip); }
+    }, 300_000);
+    return (req, res, next) => {
+        const ip    = req.ip || req.socket?.remoteAddress || 'unknown';
+        const now   = Date.now();
+        const entry = map.get(ip) || { count: 0, reset: now + 60_000 };
+        if (now > entry.reset) { entry.count = 0; entry.reset = now + 60_000; }
+        entry.count++;
+        map.set(ip, entry);
+        if (entry.count > maxPerMin) {
+            return res.status(429).json({ ok: false, error: message || 'Too many requests — please wait a moment.' });
+        }
+        next();
+    };
+}
+
+// Most expensive: /api/check fires 8 parallel external API calls
+app.use('/api/check', makeRateLimiter(5,  'Scan limit reached (5/min) — please wait before scanning again.'));
+// Chat burns real API tokens — tighter cap
+app.use('/api/chat',  makeRateLimiter(10, 'Chat limit reached (10/min) — please slow down.'));
+// Cheap endpoints: fetch, whois, status
+app.use('/api/',      makeRateLimiter(30, 'Too many requests — please wait a moment.'));
 
 // ── Request logger ────────────────────────────────────────────────────────────
 app.use((req, res, next) => {
@@ -805,6 +841,69 @@ async function followRedirects(url, maxRedirects = 10, timeout = 10000) {
     return { finalUrl: current, chain };
 }
 
+/**
+ * Probe whether a URL is truly dead/unreachable vs just blocking bots.
+ * Returns { dead, reason }
+ *   dead   : true  → DNS NXDOMAIN, connection refused, or TLS handshake failure
+ *            false → site responded (even with 4xx/5xx) or is DNS-resolvable
+ *   reason : human-readable explanation when dead === true
+ */
+async function checkDeadLink(urlStr, timeout = 8000) {
+    let parsed;
+    try { parsed = new URL(urlStr); } catch(e) { return { dead: false, reason: null }; }
+    const hostname = parsed.hostname;
+
+    // Step 1: DNS — does the domain even exist?
+    try {
+        const addresses = await dns.resolve4(hostname).catch(() => null)
+                       || await dns.resolve6(hostname).catch(() => null);
+        if (!addresses || addresses.length === 0) {
+            // Double-check with AAAA
+            return { dead: true, reason: 'DNS_NXDOMAIN' };
+        }
+    } catch(e) {
+        return { dead: true, reason: 'DNS_NXDOMAIN' };
+    }
+
+    // Step 2: Try an HTTP HEAD request — any response means server is alive
+    try {
+        const ctrl = new AbortController();
+        const tid  = setTimeout(() => ctrl.abort(), timeout);
+        const res  = await fetch(urlStr, {
+            method: 'HEAD',
+            redirect: 'follow',
+            signal: ctrl.signal,
+            headers: { 'User-Agent': 'Mozilla/5.0 (compatible; WebSafe/8.0)' },
+        });
+        clearTimeout(tid);
+        // Any HTTP response — even 404 / 410 / 503 — means the server is alive
+        // 404 = page not found (could be expired/removed), 410 = explicitly gone
+        if (res.status === 404 || res.status === 410) {
+            return { dead: true, reason: `HTTP_${res.status}`, statusCode: res.status };
+        }
+        return { dead: false, reason: null, statusCode: res.status };
+    } catch(e) {
+        const msg = e.message || '';
+        if (msg.includes('ECONNREFUSED'))  return { dead: true, reason: 'CONNECTION_REFUSED' };
+        if (msg.includes('ETIMEDOUT') || msg.includes('abort')) return { dead: true, reason: 'TIMEOUT' };
+        if (msg.includes('certificate') || msg.includes('SSL') || msg.includes('TLS')) {
+            return { dead: true, reason: 'TLS_ERROR' };
+        }
+        // Other network errors — treat as dead
+        return { dead: true, reason: 'NETWORK_ERROR' };
+    }
+}
+
+const DEAD_REASON_LABELS = {
+    DNS_NXDOMAIN:      'Domain does not exist — it may have expired or never been registered',
+    HTTP_404:          'Page not found (404) — this URL no longer exists on the server',
+    HTTP_410:          'Page permanently removed (410) — the site explicitly says this content is gone',
+    CONNECTION_REFUSED:'Server is refusing connections — the site is down or no longer hosted',
+    TIMEOUT:           'Connection timed out — the server is unreachable',
+    TLS_ERROR:         'SSL/TLS handshake failed — the site\'s security certificate is broken or expired',
+    NETWORK_ERROR:     'Network error — the site could not be reached',
+};
+
 async function fetchHtml(url, timeout = 15000) {
     const ctrl = new AbortController();
     const tid  = setTimeout(() => ctrl.abort(), timeout);
@@ -1131,6 +1230,11 @@ app.get('/api/check', async (req, res) => {
     const { url } = req.query;
     if (!url) return res.status(400).json({ error: 'missing url' });
 
+    // Reject absurdly long URLs before touching any external APIs
+    if (url.length > 2083) {
+        return res.status(400).json({ ok: false, error: 'URL is too long (max 2083 characters)' });
+    }
+
     const start = Date.now();
     console.log(`\n/api/check ▶ ${url}`);
 
@@ -1175,7 +1279,8 @@ app.get('/api/check', async (req, res) => {
         // Parallelise all network + API calls
         const [
             fetched, tlsResult, whoisInfo, dnsFlags,
-            gsbResult, vtResult, urlScanResult, checkPhishResult
+            gsbResult, vtResult, urlScanResult, checkPhishResult,
+            deadResult
         ] = await Promise.all([
             fetchHtml(resolvedUrl, 10000).catch(() => null),
             resolvedHttpsOk
@@ -1187,12 +1292,19 @@ app.get('/api/check', async (req, res) => {
             checkVirusTotal(resolvedUrl, 15000).catch(() => ({ positives: null, total: null })),
             checkUrlScan(resolvedUrl, 20000).catch(() => ({ verdict: null, malicious: null })),
             checkCheckPhish(resolvedUrl, 30000).catch(() => ({ disposition: null, brand: null })),
+            checkDeadLink(resolvedUrl, 8000).catch(() => ({ dead: false, reason: null })),
         ]);
 
         const html       = fetched ? (fetched.text || '') : '';
         const finalUrl   = fetched ? (fetched.finalUrl || resolvedUrl) : resolvedUrl;
         const statusCode = fetched ? fetched.status : null;
         const reachable  = fetched ? (fetched.status != null && fetched.status > 0) : isWellKnown;
+
+        // Dead-link enrichment — confirmed dead if our probe says so AND the server
+        // also failed to fetch the page (not just bot-blocked).
+        const deadLink   = (deadResult?.dead === true) && !fetched;
+        const deadReason = deadLink ? (deadResult?.reason || 'NETWORK_ERROR') : null;
+        const deadLabel  = deadLink ? (DEAD_REASON_LABELS[deadReason] || 'This URL is unreachable') : null;
 
         const { certValid, certExpiresDays, selfSigned: selfSignedCert, issuer: certIssuer } = tlsResult;
         const certExpiresSoon = certExpiresDays !== null && certExpiresDays >= 0 && certExpiresDays < 14;
@@ -1282,6 +1394,7 @@ app.get('/api/check', async (req, res) => {
         res.json({
             ok: true,
             reachable, statusCode, httpsOk: resolvedHttpsOk,
+            deadLink, deadReason, deadLabel,
             certValid, certExpiresDays, certIssuer, selfSignedCert, certExpiresSoon,
             redirectsToHttp,
             blacklisted:  hostnameAnalysis.hardBlacklisted,
