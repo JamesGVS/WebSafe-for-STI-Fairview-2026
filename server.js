@@ -35,6 +35,24 @@ const ANTHROPIC_KEY   = process.env.ANTHROPIC_API_KEY || '';
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust the first hop proxy (Render, Railway, Fly.io, etc.) so req.ip is
+// the real client IP rather than the load-balancer IP — required for rate
+// limiting to work correctly in production.
+app.set('trust proxy', 1);
+
+// ── In-memory scan result cache (5-minute TTL) ────────────────────────────────
+// Prevents redundant external API calls when the same URL is re-scanned
+// within a short window. Especially important for VirusTotal (500/day) and
+// CheckPhish (250/month) which have tight free-tier limits.
+const SCAN_CACHE = new Map();
+const SCAN_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+setInterval(() => {
+    const now = Date.now();
+    for (const [key, entry] of SCAN_CACHE) {
+        if (now > entry.expires) SCAN_CACHE.delete(key);
+    }
+}, 60_000);
+
 // ── CORS ──────────────────────────────────────────────────────────────────────
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
     .split(',')
@@ -1238,6 +1256,14 @@ app.get('/api/check', async (req, res) => {
     const start = Date.now();
     console.log(`\n/api/check ▶ ${url}`);
 
+    // Cache hit — return previous result immediately
+    const cacheKey = url.toLowerCase();
+    const cached = SCAN_CACHE.get(cacheKey);
+    if (cached && Date.now() < cached.expires) {
+        console.log(`  cache HIT (${Math.round((cached.expires - Date.now()) / 1000)}s remaining)`);
+        return res.json({ ...cached.data, fromCache: true });
+    }
+
     let parsed;
     try { parsed = new URL(url); } catch(e) {
         return res.status(400).json({ ok: false, error: 'Invalid URL' });
@@ -1391,7 +1417,7 @@ app.get('/api/check', async (req, res) => {
 
         console.log(`  verdict=${verdict} score=${riskScore} gsb=${gsbResult.flagged} vt=${vtResult.positives} urlscan=${urlScanMalicious} checkphish=${checkPhishDisposition} freeBuild=${freeSiteBuilder} crypto=${cryptoFinancialContent} flags=${allFlags.length} ${totalDuration}ms`);
 
-        res.json({
+        const responseData = {
             ok: true,
             reachable, statusCode, httpsOk: resolvedHttpsOk,
             deadLink, deadReason, deadLabel,
@@ -1431,7 +1457,12 @@ app.get('/api/check', async (req, res) => {
             cryptoBrands,
             // Meta
             totalDuration,
-        });
+        };
+
+        // Store in cache before responding
+        SCAN_CACHE.set(cacheKey, { data: responseData, expires: Date.now() + SCAN_CACHE_TTL });
+
+        res.json(responseData);
 
     } catch(err) {
         console.warn(`/api/check ERROR ${url}:`, err?.message || err);
@@ -1439,7 +1470,7 @@ app.get('/api/check', async (req, res) => {
     }
 });
 
-// POST /api/chat — chat assistant proxy (key stays server-side)
+// POST /api/chat — streaming chat assistant proxy (key stays server-side)
 app.post('/api/chat', async (req, res) => {
     if (!ANTHROPIC_KEY) {
         return res.status(503).json({ ok: false, error: 'Chat assistant is not configured on this server.' });
@@ -1448,39 +1479,67 @@ app.post('/api/chat', async (req, res) => {
     if (!Array.isArray(messages) || messages.length === 0) {
         return res.status(400).json({ ok: false, error: 'messages array is required.' });
     }
+
     // Sanitise messages — only allow role + string content
     const safeMessages = messages
         .filter(m => m && ['user','assistant'].includes(m.role) && typeof m.content === 'string')
-        .slice(-20); // hard cap to prevent token abuse
+        .slice(-20);
 
     if (safeMessages.length === 0) {
         return res.status(400).json({ ok: false, error: 'No valid messages provided.' });
     }
 
+    // Token-budget guard: reject if total content exceeds ~40 000 chars (~10k tokens)
+    const totalChars = safeMessages.reduce((acc, m) => acc + m.content.length, 0);
+    if (totalChars > 40_000) {
+        return res.status(400).json({ ok: false, error: 'Conversation is too long — please start a new chat.' });
+    }
+
     try {
         const ctrl = new AbortController();
-        const tid  = setTimeout(() => ctrl.abort(), 25000);
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
+        const tid  = setTimeout(() => ctrl.abort(), 30000);
+
+        const upstream = await fetch('https://api.anthropic.com/v1/messages', {
             method:  'POST',
             signal:  ctrl.signal,
             headers: {
                 'Content-Type':      'application/json',
                 'x-api-key':         ANTHROPIC_KEY,
                 'anthropic-version': '2023-06-01',
+                'anthropic-beta':    'messages-2023-12-15',
             },
             body: JSON.stringify({
                 model:      'claude-sonnet-4-20250514',
                 max_tokens: 1024,
-                system:     typeof system === 'string' ? system.slice(0, 4096) : '',
+                stream:     true,
+                system:     typeof system === 'string' ? system.slice(0, 8192) : '',
                 messages:   safeMessages,
             }),
         });
+
         clearTimeout(tid);
-        const data = await response.json();
-        res.json(data);
+
+        if (!upstream.ok) {
+            const errText = await upstream.text().catch(() => '');
+            console.warn('/api/chat upstream error:', upstream.status, errText.slice(0, 200));
+            return res.status(502).json({ ok: false, error: 'Chat service returned an error. Please try again.' });
+        }
+
+        // Forward SSE stream directly to the client
+        res.setHeader('Content-Type', 'text/event-stream');
+        res.setHeader('Cache-Control', 'no-cache');
+        res.setHeader('X-Accel-Buffering', 'no'); // disable nginx buffering
+
+        upstream.body.on('data', chunk => { if (!res.writableEnded) res.write(chunk); });
+        upstream.body.on('end',  ()    => { if (!res.writableEnded) res.end(); });
+        upstream.body.on('error', err  => {
+            console.warn('/api/chat stream error:', err.message);
+            if (!res.writableEnded) res.end();
+        });
+
     } catch(err) {
         console.warn('/api/chat error:', err.message);
-        res.status(500).json({ ok: false, error: 'Chat request failed.' });
+        if (!res.headersSent) res.status(500).json({ ok: false, error: 'Chat request failed.' });
     }
 });
 

@@ -113,25 +113,41 @@ function hideSpinner() {
     if (s) s.style.display = 'none';
 }
 
-// ─── Scan History (session only) ─────────────────────────────────────────────
-const scanHistory = [];
+// ─── Scan History (persisted to localStorage, max 20 entries) ────────────────
+const HISTORY_KEY = 'ws_scan_history';
+const HISTORY_MAX = 20;
+
+function _loadHistory() {
+    try {
+        const raw = localStorage.getItem(HISTORY_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch(e) { return []; }
+}
+function _saveHistory(arr) {
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(arr)); } catch(e) {}
+}
+
+// Expose scanHistory as a live reference so syncSidebarHistory() in main.html
+// continues to work unchanged — it reads window.scanHistory directly.
+window.scanHistory = _loadHistory();
+
 function addToHistory(url, level) {
     const hostname = (() => { try { return new URL(url).hostname; } catch(e) { return url; } })();
-    scanHistory.unshift({ hostname, url, level, time: new Date().toLocaleTimeString() });
-    if (scanHistory.length > 5) scanHistory.pop();
+    const entry = { hostname, url, level, time: new Date().toLocaleTimeString() };
+    // Remove any existing entry for the same URL, then prepend
+    window.scanHistory = window.scanHistory.filter(h => h.url !== url);
+    window.scanHistory.unshift(entry);
+    if (window.scanHistory.length > HISTORY_MAX) window.scanHistory.length = HISTORY_MAX;
+    _saveHistory(window.scanHistory);
     renderHistory();
 }
+
+// Renders to BOTH the main-page list and the sidebar list so they stay in sync.
 function renderHistory() {
-    const el = document.getElementById('ws_history_list');
-    if (!el) return;
-    if (scanHistory.length === 0) {
-        el.innerHTML = '<p style="color:#64748b;font-size:13px;text-align:center;padding:8px">No scans yet this session</p>';
-        return;
-    }
     const colors = { safe:'#22c55e', hazard:'#fbbf24', danger:'#f87171' };
     const labels = { safe:'Safe', hazard:'Warning', danger:'Danger' };
-    el.innerHTML = '';
-    scanHistory.forEach((h, idx) => {
+
+    function buildRow(h) {
         const row = document.createElement('div');
         row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 12px;background:#0f1525;border:1px solid rgba(59,130,246,0.18);border-radius:8px;cursor:pointer;transition:background 0.15s,border-color 0.15s;';
         row.onmouseenter = () => { row.style.background='rgba(59,130,246,0.07)'; row.style.borderColor='rgba(59,130,246,0.35)'; };
@@ -148,9 +164,25 @@ function renderHistory() {
             if (inp) inp.value = h.url;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
-        el.appendChild(row);
+        return row;
+    }
+
+    const empty = '<p style="color:#64748b;font-size:13px;text-align:center;padding:8px">No scans yet</p>';
+    const targets = [
+        { id: 'ws_history_list',      maxItems: 20 },
+        { id: 'sidebar_history_list', maxItems: 5  },
+    ];
+    targets.forEach(({ id, maxItems }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (window.scanHistory.length === 0) { el.innerHTML = empty; return; }
+        el.innerHTML = '';
+        window.scanHistory.slice(0, maxItems).forEach(h => el.appendChild(buildRow(h)));
     });
 }
+
+// Initialise history display on page load
+renderHistory();
 
 // ─── Animated loading steps ───────────────────────────────────────────────────
 const LOADING_STEPS = [
@@ -837,6 +869,21 @@ function friendlyFlagDetail(f) {
             resolvedUrl: serverData && serverData.resolvedUrl});
         logSafetyReport(normalized, level, reason, checks);
         addToHistory(normalized, level);
+
+        // Notify chat widget of scan result for context-aware responses
+        if (typeof window._wsChatContext === "function" && serverData) {
+            window._wsChatContext({
+                url:                 normalized,
+                verdict:             level,
+                riskScore:           serverData.riskScore    ?? null,
+                httpsOk:             serverData.httpsOk      ?? false,
+                domainAgeDays:       serverData.domainAgeDays ?? null,
+                googleSafeBrowsing:  serverData.googleSafeBrowsing  ?? false,
+                virusTotalPositives: serverData.virusTotalPositives  ?? null,
+                virusTotalTotal:     serverData.virusTotalTotal       ?? null,
+                flags:               serverData.contentFlags ?? [],
+            });
+        }
 
         // Store for preview button
         window._wsLastUrl       = normalized;

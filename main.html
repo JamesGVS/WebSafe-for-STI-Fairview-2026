@@ -596,105 +596,7 @@
 </div>
 
 
-<!-- CHAT TOGGLE BUTTON -->
-<button class="chat-toggle" id="chatToggle" aria-label="Open chat assistant" aria-expanded="false">
-    <div class="chat-toggle-inner">
-        <svg class="chat-icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        <svg class="chat-icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-    </div>
-    <span class="chat-toggle-pulse"></span>
-</button>
 
-<!-- CHAT WIDGET -->
-<div class="chat-widget" id="chatWidget" aria-hidden="true">
-    <div class="chat-header">
-        <div class="chat-header-left">
-            <div class="chat-avatar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                </svg>
-            </div>
-            <div class="chat-header-info">
-                <span class="chat-header-name">WebSafe Assistant</span>
-                <span class="chat-header-status">
-                    <span class="chat-status-dot"></span>Online
-                </span>
-            </div>
-        </div>
-        <button id="closeChat" aria-label="Close chat">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-        </button>
-    </div>
-
-    <div class="chat-body" id="chatBody">
-        <div class="chat-messages" id="chatMessages">
-            <div class="chat-msg bot-msg">
-                <div class="msg-avatar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                </div>
-                <div class="msg-bubble">
-                    Hi there! I'm your <strong>WebSafe Assistant</strong>. I can help you understand cybersecurity threats, guide you on using WebSafe, and advise on what to do if you encounter a scam.
-                </div>
-            </div>
-        </div>
-
-        <div class="chat-quick-actions" id="chatQuickActions">
-            <p class="quick-actions-label">Quick questions</p>
-            <div class="quick-actions-grid">
-                <button class="quick-action-btn" data-msg="How do I report a phishing scam in the Philippines?">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    Report a phishing scam
-                </button>
-                <button class="quick-action-btn" data-msg="What are the cybercrime authorities I can contact in the Philippines?">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.08 6.08l1.97-1.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                    Contact authorities
-                </button>
-                <button class="quick-action-btn" data-msg="What types of online threats should I watch out for?">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    Online threat types
-                </button>
-                <button class="quick-action-btn" data-msg="How does WebSafe check if a URL is safe?">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    How WebSafe works
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="chat-typing" id="chatTyping" aria-hidden="true">
-        <div class="msg-avatar small">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-        </div>
-        <div class="typing-bubble">
-            <span></span><span></span><span></span>
-        </div>
-    </div>
-
-    <div class="chat-footer">
-        <div class="chat-input-wrap">
-            <input type="text" id="chatInput" placeholder="Ask me anything…" autocomplete="off" maxlength="500">
-            <button id="chatSendBtn" aria-label="Send message">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15">
-                    <line x1="22" y1="2" x2="11" y2="13"/>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                </svg>
-            </button>
-        </div>
-        <p class="chat-footer-note">Powered by Claude AI · WebSafe 2026</p>
-    </div>
-</div>
 
 </div><!-- /#main_content -->
 
@@ -929,39 +831,267 @@ function showUploadResult(type, icon, label, detail, url) { qrResultIcon.textCon
 
 /* CHAT WIDGET */
 (function () {
-    const toggle = document.getElementById("chatToggle"), widget = document.getElementById("chatWidget"), closeBtn = document.getElementById("closeChat"), inputEl = document.getElementById("chatInput"), sendBtn = document.getElementById("chatSendBtn"), messagesEl = document.getElementById("chatMessages"), typingEl = document.getElementById("chatTyping"), quickEl = document.getElementById("chatQuickActions");
-    let isOpen = false, conversationHistory = [];
-    const SYSTEM_PROMPT = `You are the WebSafe Assistant — a friendly, knowledgeable cybersecurity helper embedded in WebSafe, a Philippine-based URL safety checker tool. Your purpose: Help users understand online threats: phishing, malware, QR code scams, fake websites. Explain how WebSafe works. Guide users on what to do if they encounter a phishing scam, especially in the Philippines. Provide contact info for Philippine cybercrime authorities when relevant: PNP Cybercrime Division: (+632) 724-3660, Globe: 211, Smart: 1511, DICT: onlinecims.ocs@gmail.com. Tone: Friendly, clear, and reassuring. Keep responses concise (2-4 sentences). Do not help with anything unrelated to cybersecurity.`;
-    function openChat()  { isOpen = true; widget.classList.add("show"); widget.setAttribute("aria-hidden","false"); toggle.setAttribute("aria-expanded","true"); toggle.classList.add("is-open"); setTimeout(() => inputEl.focus(), 350); }
-    function closeChat() { isOpen = false; widget.classList.remove("show"); widget.setAttribute("aria-hidden","true"); toggle.setAttribute("aria-expanded","false"); toggle.classList.remove("is-open"); }
+    const toggle    = document.getElementById("chatToggle");
+    const widget    = document.getElementById("chatWidget");
+    const closeBtn  = document.getElementById("closeChat");
+    const inputEl   = document.getElementById("chatInput");
+    const sendBtn   = document.getElementById("chatSendBtn");
+    const messagesEl= document.getElementById("chatMessages");
+    const typingEl  = document.getElementById("chatTyping");
+    const quickEl   = document.getElementById("chatQuickActions");
+    const dot       = document.getElementById("chatDot");
+
+    let isOpen = false;
+    let conversationHistory = [];
+    let lastScanContext = null; // set by window._wsChatContext after each scan
+
+    // ── Build system prompt, injecting latest scan result when available ──────
+    function buildSystemPrompt() {
+        const base = `You are the WebSafe Assistant — a friendly, knowledgeable cybersecurity helper embedded in WebSafe, a Philippine-based URL safety checker. Your purpose: Help users understand online threats (phishing, malware, QR code scams, fake websites). Explain how WebSafe works. Guide users on what to do if they encounter a scam, especially in the Philippines. Contacts: PNP Cybercrime Division (+632) 724-3660, Globe 211, Smart 1511, DICT onlinecims.ocs@gmail.com. Tone: Friendly, clear, reassuring. Keep responses to 2–5 sentences. Do not help with topics unrelated to cybersecurity.`;
+        if (!lastScanContext) return base;
+        const ctx = lastScanContext;
+        const flagList = (ctx.flags || []).map(f => `• ${f.detail || f.type}`).join("\n");
+        return base + `\n\n--- LATEST SCAN RESULT (refer to this when the user asks about the current link) ---\nURL: ${ctx.url}\nVerdict: ${ctx.verdict.toUpperCase()}\nRisk score: ${ctx.riskScore}/100\nHTTPS: ${ctx.httpsOk ? "Yes" : "No"}\nDomain age: ${ctx.domainAgeDays != null ? ctx.domainAgeDays + " days" : "Unknown"}\nGoogle Safe Browsing: ${ctx.googleSafeBrowsing ? "FLAGGED" : "Clean"}\nVirusTotal detections: ${ctx.virusTotalPositives != null ? ctx.virusTotalPositives + "/" + ctx.virusTotalTotal : "N/A"}\nFlags (${(ctx.flags||[]).length}):\n${flagList || "None"}\n--- END SCAN RESULT ---`;
+    }
+
+    // Called by check_link.js after every completed scan
+    window._wsChatContext = function(scanData) {
+        lastScanContext = scanData;
+        // Show attention dot on toggle when a danger result just came in
+        if (dot) {
+            dot.className = scanData.verdict === "danger" ? "chat-dot chat-dot-danger" :
+                            scanData.verdict === "hazard" ? "chat-dot chat-dot-hazard" : "";
+        }
+        // Auto-open and prompt with a contextual message on danger
+        if (scanData.verdict === "danger" && !isOpen) {
+            openChat();
+            setTimeout(() => {
+                appendMessage("bot", `⚠️ This link looks dangerous (risk score ${scanData.riskScore}/100). I can explain what was found — just ask!`);
+            }, 400);
+        }
+    };
+
+    function openChat()  {
+        isOpen = true;
+        widget.classList.add("show");
+        widget.setAttribute("aria-hidden","false");
+        toggle.setAttribute("aria-expanded","true");
+        toggle.classList.add("is-open");
+        if (dot) dot.className = "";
+        setTimeout(() => inputEl.focus(), 350);
+    }
+    function closeChat() {
+        isOpen = false;
+        widget.classList.remove("show");
+        widget.setAttribute("aria-hidden","true");
+        toggle.setAttribute("aria-expanded","false");
+        toggle.classList.remove("is-open");
+    }
     toggle.addEventListener("click", () => isOpen ? closeChat() : openChat());
     closeBtn.addEventListener("click", closeChat);
-    document.querySelectorAll(".quick-action-btn").forEach(btn => { btn.addEventListener("click", () => { const msg = btn.getAttribute("data-msg"); if (msg) sendMessage(msg); }); });
-    inputEl.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(inputEl.value.trim()); } });
+    document.querySelectorAll(".quick-action-btn").forEach(btn => {
+        btn.addEventListener("click", () => { const msg = btn.getAttribute("data-msg"); if (msg) sendMessage(msg); });
+    });
+    inputEl.addEventListener("keydown", e => {
+        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(inputEl.value.trim()); }
+    });
+    // Auto-grow textarea
+    inputEl.addEventListener("input", () => {
+        inputEl.style.height = "auto";
+        inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + "px";
+    });
     sendBtn.addEventListener("click", () => sendMessage(inputEl.value.trim()));
-    function sendMessage(text) { if (!text) return; inputEl.value = ""; if (quickEl) quickEl.style.display = "none"; appendMessage("user", text); conversationHistory.push({ role:"user", content:text }); showTyping(); callClaude(); }
+
+    function sendMessage(text) {
+        if (!text) return;
+        inputEl.value = "";
+        inputEl.style.height = "auto";
+        if (quickEl) quickEl.style.display = "none";
+        appendMessage("user", text);
+        conversationHistory.push({ role:"user", content:text });
+        showTyping();
+        callClaude();
+    }
+
+    // ── Streaming callClaude ──────────────────────────────────────────────────
     async function callClaude() {
+        let botWrapper = null;
+        let bubbleEl   = null;
+        let fullText   = "";
+
         try {
-            const response = await fetch("/api/chat", { method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ system:SYSTEM_PROMPT, messages:conversationHistory }) });
-            const data = await response.json();
+            const response = await fetch("/api/chat", {
+                method:  "POST",
+                headers: { "Content-Type": "application/json" },
+                body:    JSON.stringify({ system: buildSystemPrompt(), messages: conversationHistory }),
+            });
+
+            if (!response.ok || !response.body) {
+                hideTyping();
+                appendMessage("bot", "Sorry, I couldn't get a response right now. Please try again.");
+                return;
+            }
+
             hideTyping();
-            if (data && data.content && data.content[0]) { const replyText = data.content.filter(b => b.type==="text").map(b => b.text).join("\n"); conversationHistory.push({ role:"assistant", content:replyText }); appendMessage("bot", replyText); }
-            else appendMessage("bot", "Sorry, I couldn't get a response. Please try again.");
-        } catch { hideTyping(); appendMessage("bot", "Something went wrong connecting to the assistant. Please check your connection and try again."); }
+
+            // Create bot bubble early so tokens stream into it
+            botWrapper = document.createElement("div");
+            botWrapper.className = "chat-msg bot-msg";
+            botWrapper.innerHTML = `<div class="msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="msg-bubble streaming"></div>`;
+            messagesEl.appendChild(botWrapper);
+            bubbleEl = botWrapper.querySelector(".msg-bubble");
+            scrollToBottom();
+
+            const reader  = response.body.getReader();
+            const decoder = new TextDecoder();
+            let   buffer  = "";
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split("\n");
+                buffer = lines.pop(); // keep incomplete line
+                for (const line of lines) {
+                    if (!line.startsWith("data:")) continue;
+                    const raw = line.slice(5).trim();
+                    if (raw === "[DONE]") continue;
+                    try {
+                        const evt = JSON.parse(raw);
+                        if (evt.type === "content_block_delta" && evt.delta?.type === "text_delta") {
+                            fullText += evt.delta.text;
+                            bubbleEl.innerHTML = formatMessage(fullText);
+                            scrollToBottom();
+                        }
+                    } catch(e) { /* partial JSON — ignore */ }
+                }
+            }
+
+            bubbleEl.classList.remove("streaming");
+            if (!fullText) { bubbleEl.textContent = "Sorry, I got an empty response. Please try again."; }
+            conversationHistory.push({ role:"assistant", content: fullText });
+
+        } catch(err) {
+            hideTyping();
+            if (bubbleEl) { bubbleEl.classList.remove("streaming"); bubbleEl.textContent = "Connection error — please check your internet and try again."; }
+            else appendMessage("bot", "Something went wrong. Please try again.");
+        }
     }
+
     function appendMessage(role, text) {
-        const isBot = role === "bot"; const wrapper = document.createElement("div"); wrapper.className = `chat-msg ${isBot ? "bot-msg" : "user-msg"}`;
-        if (isBot) { wrapper.innerHTML = `<div class="msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="msg-bubble">${formatMessage(text)}</div>`; }
-        else { wrapper.innerHTML = `<div class="msg-bubble">${escapeHtml(text)}</div>`; }
-        messagesEl.appendChild(wrapper); scrollToBottom();
+        const isBot = role === "bot";
+        const wrapper = document.createElement("div");
+        wrapper.className = `chat-msg ${isBot ? "bot-msg" : "user-msg"}`;
+        if (isBot) {
+            wrapper.innerHTML = `<div class="msg-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="msg-bubble">${formatMessage(text)}</div>`;
+        } else {
+            wrapper.innerHTML = `<div class="msg-bubble">${escapeHtml(text)}</div>`;
+        }
+        messagesEl.appendChild(wrapper);
+        scrollToBottom();
     }
-    function formatMessage(text) { return escapeHtml(text).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/`(.*?)`/g,'<code style="background:rgba(29,106,255,0.15);padding:1px 5px;border-radius:3px;font-family:\'JetBrains Mono\',monospace;font-size:11px;">$1</code>').replace(/\n\n/g,'</p><p style="margin-top:8px">').replace(/\n/g,'<br>'); }
-    function escapeHtml(str) { return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-    function showTyping() { typingEl.style.display = "flex"; typingEl.setAttribute("aria-hidden","false"); scrollToBottom(); }
-    function hideTyping() { typingEl.style.display = "none"; typingEl.setAttribute("aria-hidden","true"); }
-    function scrollToBottom() { const body = document.getElementById("chatBody"); setTimeout(() => { body.scrollTop = body.scrollHeight; }, 50); }
+    function formatMessage(text) {
+        return escapeHtml(text)
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code style="background:rgba(29,106,255,0.15);padding:1px 5px;border-radius:3px;font-family:\'JetBrains Mono\',monospace;font-size:11px">$1</code>')
+            .replace(/\n\n/g, '</p><p style="margin-top:8px">')
+            .replace(/\n/g, '<br>');
+    }
+    function escapeHtml(str) {
+        return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+    function showTyping()    { typingEl.style.display = "flex"; typingEl.setAttribute("aria-hidden","false"); scrollToBottom(); }
+    function hideTyping()    { typingEl.style.display = "none";  typingEl.setAttribute("aria-hidden","true"); }
+    function scrollToBottom(){ const body = document.getElementById("chatBody"); setTimeout(() => { body.scrollTop = body.scrollHeight; }, 50); }
 })();
 </script>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     CHAT WIDGET
+     ═════════════════════════════════════════════════════════ -->
+
+<!-- Floating toggle bubble -->
+<button id="chatToggle" aria-label="Open WebSafe assistant" aria-expanded="false">
+    <span class="chat-toggle-icon chat-icon-open">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+    </span>
+    <span class="chat-toggle-icon chat-icon-close" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+    </span>
+    <span class="chat-toggle-label">Ask WebSafe</span>
+    <span class="chat-toggle-dot" id="chatDot" aria-hidden="true"></span>
+</button>
+
+<!-- Chat panel -->
+<div id="chatWidget" role="dialog" aria-label="WebSafe assistant" aria-hidden="true">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="chat-header-info">
+            <div class="chat-avatar-sm">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <div>
+                <p class="chat-header-name">WebSafe Assistant</p>
+                <p class="chat-header-sub">Cybersecurity helper</p>
+            </div>
+        </div>
+        <button id="closeChat" class="chat-close-btn" aria-label="Close chat">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Messages -->
+    <div id="chatBody" class="chat-body">
+        <div id="chatMessages" class="chat-messages">
+            <!-- Welcome message -->
+            <div class="chat-msg bot-msg">
+                <div class="msg-avatar">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <div class="msg-bubble">Hi! I'm your WebSafe assistant. Paste a link and scan it — I can explain the results, help you spot scams, or answer cybersecurity questions.</div>
+            </div>
+        </div>
+
+        <!-- Typing indicator -->
+        <div id="chatTyping" class="chat-typing" aria-hidden="true" style="display:none">
+            <div class="msg-avatar">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>
+    </div>
+
+    <!-- Quick action chips -->
+    <div id="chatQuickActions" class="chat-quick-actions">
+        <button class="quick-action-btn" data-msg="What does the risk score mean?">What is the risk score?</button>
+        <button class="quick-action-btn" data-msg="How do I spot a phishing link?">How to spot phishing?</button>
+        <button class="quick-action-btn" data-msg="Who do I call if I got scammed in the Philippines?">Got scammed — who to call?</button>
+    </div>
+
+    <!-- Input row -->
+    <div class="chat-input-row">
+        <textarea id="chatInput" class="chat-input" placeholder="Ask about this scan or any online threat…" rows="1" aria-label="Chat message"></textarea>
+        <button id="chatSendBtn" class="chat-send-btn" aria-label="Send message">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+        </button>
+    </div>
+</div>
 
 </body>
 </html>
