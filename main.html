@@ -633,6 +633,92 @@
 </div>
 
 
+
+<!-- ═══════════════════════════════════════════════════════════
+     CHAT WIDGET
+     ═════════════════════════════════════════════════════════ -->
+
+<!-- Floating toggle bubble -->
+<button id="chatToggle" aria-label="Open WebSafe assistant" aria-expanded="false">
+    <span class="chat-toggle-icon chat-icon-open">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+    </span>
+    <span class="chat-toggle-icon chat-icon-close" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+    </span>
+    <span class="chat-toggle-label">Ask WebSafe</span>
+    <span class="chat-toggle-dot" id="chatDot" aria-hidden="true"></span>
+</button>
+
+<!-- Chat panel -->
+<div id="chatWidget" role="dialog" aria-label="WebSafe assistant" aria-hidden="true">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="chat-header-info">
+            <div class="chat-avatar-sm">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <div>
+                <p class="chat-header-name">WebSafe Assistant</p>
+                <p class="chat-header-sub">Cybersecurity helper</p>
+            </div>
+        </div>
+        <button id="closeChat" class="chat-close-btn" aria-label="Close chat">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Messages -->
+    <div id="chatBody" class="chat-body">
+        <div id="chatMessages" class="chat-messages">
+            <!-- Welcome message -->
+            <div class="chat-msg bot-msg">
+                <div class="msg-avatar">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <div class="msg-bubble">Hi! I'm your WebSafe assistant. Paste a link and scan it — I can explain the results, help you spot scams, or answer cybersecurity questions.</div>
+            </div>
+        </div>
+
+        <!-- Typing indicator -->
+        <div id="chatTyping" class="chat-typing" aria-hidden="true" style="display:none">
+            <div class="msg-avatar">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>
+    </div>
+
+    <!-- Quick action chips -->
+    <div id="chatQuickActions" class="chat-quick-actions">
+        <button class="quick-action-btn" data-msg="What does the risk score mean?">What is the risk score?</button>
+        <button class="quick-action-btn" data-msg="How do I spot a phishing link?">How to spot phishing?</button>
+        <button class="quick-action-btn" data-msg="Who do I call if I got scammed in the Philippines?">Got scammed — who to call?</button>
+    </div>
+
+    <!-- Input row -->
+    <div class="chat-input-row">
+        <textarea id="chatInput" class="chat-input" placeholder="Ask about this scan or any online threat…" rows="1" aria-label="Chat message"></textarea>
+        <button id="chatSendBtn" class="chat-send-btn" aria-label="Send message">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+        </button>
+    </div>
+</div>
+
 <!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <script src="https://unpkg.com/html5-qrcode"></script>
@@ -1006,93 +1092,6 @@ function showUploadResult(type, icon, label, detail, url) { qrResultIcon.textCon
     function scrollToBottom(){ const body = document.getElementById("chatBody"); setTimeout(() => { body.scrollTop = body.scrollHeight; }, 50); }
 })();
 </script>
-
-
-<!-- ═══════════════════════════════════════════════════════════
-     CHAT WIDGET
-     ═════════════════════════════════════════════════════════ -->
-
-<!-- Floating toggle bubble -->
-<button id="chatToggle" aria-label="Open WebSafe assistant" aria-expanded="false">
-    <span class="chat-toggle-icon chat-icon-open">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-    </span>
-    <span class="chat-toggle-icon chat-icon-close" aria-hidden="true">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-    </span>
-    <span class="chat-toggle-label">Ask WebSafe</span>
-    <span class="chat-toggle-dot" id="chatDot" aria-hidden="true"></span>
-</button>
-
-<!-- Chat panel -->
-<div id="chatWidget" role="dialog" aria-label="WebSafe assistant" aria-hidden="true">
-    <!-- Header -->
-    <div class="chat-header">
-        <div class="chat-header-info">
-            <div class="chat-avatar-sm">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                </svg>
-            </div>
-            <div>
-                <p class="chat-header-name">WebSafe Assistant</p>
-                <p class="chat-header-sub">Cybersecurity helper</p>
-            </div>
-        </div>
-        <button id="closeChat" class="chat-close-btn" aria-label="Close chat">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-        </button>
-    </div>
-
-    <!-- Messages -->
-    <div id="chatBody" class="chat-body">
-        <div id="chatMessages" class="chat-messages">
-            <!-- Welcome message -->
-            <div class="chat-msg bot-msg">
-                <div class="msg-avatar">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                </div>
-                <div class="msg-bubble">Hi! I'm your WebSafe assistant. Paste a link and scan it — I can explain the results, help you spot scams, or answer cybersecurity questions.</div>
-            </div>
-        </div>
-
-        <!-- Typing indicator -->
-        <div id="chatTyping" class="chat-typing" aria-hidden="true" style="display:none">
-            <div class="msg-avatar">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                </svg>
-            </div>
-            <div class="typing-dots"><span></span><span></span><span></span></div>
-        </div>
-    </div>
-
-    <!-- Quick action chips -->
-    <div id="chatQuickActions" class="chat-quick-actions">
-        <button class="quick-action-btn" data-msg="What does the risk score mean?">What is the risk score?</button>
-        <button class="quick-action-btn" data-msg="How do I spot a phishing link?">How to spot phishing?</button>
-        <button class="quick-action-btn" data-msg="Who do I call if I got scammed in the Philippines?">Got scammed — who to call?</button>
-    </div>
-
-    <!-- Input row -->
-    <div class="chat-input-row">
-        <textarea id="chatInput" class="chat-input" placeholder="Ask about this scan or any online threat…" rows="1" aria-label="Chat message"></textarea>
-        <button id="chatSendBtn" class="chat-send-btn" aria-label="Send message">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-            </svg>
-        </button>
-    </div>
-</div>
-
 </body>
 </html>
 
