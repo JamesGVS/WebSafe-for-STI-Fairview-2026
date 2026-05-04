@@ -30,7 +30,7 @@ const GSB_KEY         = process.env.GSB_KEY          || '';
 const VT_KEY          = process.env.VT_KEY           || '';
 const URLSCAN_KEY     = process.env.URLSCAN_KEY      || '';
 const CHECKPHISH_KEY  = process.env.CHECKPHISH_KEY   || '';
-const ANTHROPIC_KEY   = process.env.ANTHROPIC_API_KEY || '';
+const GEMINI_KEY      = process.env.GEMINI_API_KEY   || '';
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -1244,7 +1244,7 @@ app.get('/api/status', (req, res) => {
             virusTotal:         !!VT_KEY,
             urlscan:            !!URLSCAN_KEY,
             checkPhish:         !!CHECKPHISH_KEY,
-            chatAssistant:      !!ANTHROPIC_KEY,
+            chatAssistant:      !!GEMINI_KEY,
         },
     });
 });
@@ -1476,9 +1476,9 @@ app.get('/api/check', async (req, res) => {
     }
 });
 
-// POST /api/chat — streaming chat assistant proxy (key stays server-side)
+// POST /api/chat — Gemini streaming chat assistant proxy (key stays server-side)
 app.post('/api/chat', async (req, res) => {
-    if (!ANTHROPIC_KEY) {
+    if (!GEMINI_KEY) {
         return res.status(503).json({ ok: false, error: 'Chat assistant is not configured on this server.' });
     }
     const { messages, system } = req.body || {};
@@ -1487,59 +1487,99 @@ app.post('/api/chat', async (req, res) => {
     }
 
     // Sanitise messages — only allow role + string content
+    // Gemini uses "user" / "model" roles (not "assistant")
     const safeMessages = messages
-        .filter(m => m && ['user','assistant'].includes(m.role) && typeof m.content === 'string')
-        .slice(-20);
+        .filter(m => m && ['user', 'assistant'].includes(m.role) && typeof m.content === 'string')
+        .slice(-20)
+        .map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] }));
 
     if (safeMessages.length === 0) {
         return res.status(400).json({ ok: false, error: 'No valid messages provided.' });
     }
 
     // Token-budget guard: reject if total content exceeds ~40 000 chars (~10k tokens)
-    const totalChars = safeMessages.reduce((acc, m) => acc + m.content.length, 0);
+    const totalChars = safeMessages.reduce((acc, m) => acc + (m.parts[0]?.text?.length || 0), 0);
     if (totalChars > 40_000) {
         return res.status(400).json({ ok: false, error: 'Conversation is too long — please start a new chat.' });
     }
+
+    // Build Gemini request body
+    const geminiBody = {
+        system_instruction: typeof system === 'string' && system
+            ? { parts: [{ text: system.slice(0, 8192) }] }
+            : undefined,
+        contents: safeMessages,
+        generationConfig: {
+            maxOutputTokens: 1024,
+            temperature: 0.7,
+        },
+    };
+
+    // Remove undefined key so JSON.stringify omits it cleanly
+    if (!geminiBody.system_instruction) delete geminiBody.system_instruction;
+
+    const GEMINI_URL =
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent` +
+        `?alt=sse&key=${GEMINI_KEY}`;
 
     try {
         const ctrl = new AbortController();
         const tid  = setTimeout(() => ctrl.abort(), 30000);
 
-        const upstream = await fetch('https://api.anthropic.com/v1/messages', {
+        const upstream = await fetch(GEMINI_URL, {
             method:  'POST',
             signal:  ctrl.signal,
-            headers: {
-                'Content-Type':      'application/json',
-                'x-api-key':         ANTHROPIC_KEY,
-                'anthropic-version': '2023-06-01',
-                'anthropic-beta':    'messages-2023-12-15',
-            },
-            body: JSON.stringify({
-                model:      'claude-sonnet-4-20250514',
-                max_tokens: 1024,
-                stream:     true,
-                system:     typeof system === 'string' ? system.slice(0, 8192) : '',
-                messages:   safeMessages,
-            }),
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify(geminiBody),
         });
 
         clearTimeout(tid);
 
         if (!upstream.ok) {
             const errText = await upstream.text().catch(() => '');
-            console.warn('/api/chat upstream error:', upstream.status, errText.slice(0, 200));
+            console.warn('/api/chat Gemini upstream error:', upstream.status, errText.slice(0, 300));
             return res.status(502).json({ ok: false, error: 'Chat service returned an error. Please try again.' });
         }
 
-        // Forward SSE stream directly to the client
+        // Stream Gemini SSE → client using our own SSE format
+        // Gemini sends: data: {"candidates":[{"content":{"parts":[{"text":"..."}]}}]}
+        // We re-emit as:  data: {"text":"..."}   (simpler format the frontend reads)
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
-        res.setHeader('X-Accel-Buffering', 'no'); // disable nginx buffering
+        res.setHeader('X-Accel-Buffering', 'no');
 
-        upstream.body.on('data', chunk => { if (!res.writableEnded) res.write(chunk); });
-        upstream.body.on('end',  ()    => { if (!res.writableEnded) res.end(); });
-        upstream.body.on('error', err  => {
-            console.warn('/api/chat stream error:', err.message);
+        let buffer = '';
+
+        upstream.body.on('data', chunk => {
+            if (res.writableEnded) return;
+            buffer += chunk.toString('utf8');
+            const lines = buffer.split('\n');
+            buffer = lines.pop(); // keep any incomplete line
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed.startsWith('data:')) continue;
+                const raw = trimmed.slice(5).trim();
+                if (!raw || raw === '[DONE]') continue;
+                try {
+                    const evt  = JSON.parse(raw);
+                    const text = evt?.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (text) {
+                        res.write(`data: ${JSON.stringify({ text })}\n\n`);
+                    }
+                } catch (_) { /* partial JSON — skip */ }
+            }
+        });
+
+        upstream.body.on('end', () => {
+            if (!res.writableEnded) {
+                res.write('data: [DONE]\n\n');
+                res.end();
+            }
+        });
+
+        upstream.body.on('error', err => {
+            console.warn('/api/chat Gemini stream error:', err.message);
             if (!res.writableEnded) res.end();
         });
 
@@ -1587,7 +1627,7 @@ server = app.listen(PORT, () => {
     console.log(`║    VirusTotal   : ${(VT_KEY          ? '✓ configured' : '✗ unset (VT_KEY)').padEnd(22)}║`);
     console.log(`║    urlscan.io   : ${(URLSCAN_KEY     ? '✓ configured' : '✗ unset (URLSCAN_KEY)').padEnd(22)}║`);
     console.log(`║    CheckPhish   : ${(CHECKPHISH_KEY  ? '✓ configured' : '✗ unset (CHECKPHISH_KEY)').padEnd(22)}║`);
-    console.log(`║    Chat (Claude): ${(ANTHROPIC_KEY   ? '✓ configured' : '✗ unset (ANTHROPIC_API_KEY)').padEnd(22)}║`);
+    console.log(`║    Chat (Gemini) : ${(GEMINI_KEY     ? '✓ configured' : '✗ unset (GEMINI_API_KEY)').padEnd(22)}║`);
     console.log('╚══════════════════════════════════════════╝\n');
 
     // Auto-open browser on local dev only — never runs in production
