@@ -1245,6 +1245,7 @@ app.get('/api/status', (req, res) => {
             urlscan:            !!URLSCAN_KEY,
             checkPhish:         !!CHECKPHISH_KEY,
             chatAssistant:      !!GEMINI_KEY,
+            chatProvider:       GEMINI_KEY ? 'gemini' : null,
         },
     });
 });

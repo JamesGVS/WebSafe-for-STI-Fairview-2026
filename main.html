@@ -996,11 +996,11 @@ function showUploadResult(type, icon, label, detail, url) { qrResultIcon.textCon
         appendMessage("user", text);
         conversationHistory.push({ role:"user", content:text });
         showTyping();
-        callClaude();
+        callGemini();
     }
 
-    // ── Streaming callClaude ──────────────────────────────────────────────────
-    async function callClaude() {
+    // ── Streaming callGemini ──────────────────────────────────────────────────
+    async function callGemini() {
         let botWrapper = null;
         let bubbleEl   = null;
         let fullText   = "";
@@ -1044,8 +1044,9 @@ function showUploadResult(type, icon, label, detail, url) { qrResultIcon.textCon
                     if (raw === "[DONE]") continue;
                     try {
                         const evt = JSON.parse(raw);
-                        if (evt.type === "content_block_delta" && evt.delta?.type === "text_delta") {
-                            fullText += evt.delta.text;
+                        // Our server normalises Gemini chunks to { text: "..." }
+                        if (evt.text) {
+                            fullText += evt.text;
                             bubbleEl.innerHTML = formatMessage(fullText);
                             scrollToBottom();
                         }

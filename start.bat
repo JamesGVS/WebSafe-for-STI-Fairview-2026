@@ -10,9 +10,18 @@
 :: set VT_KEY=your_virustotal_key
 :: set URLSCAN_KEY=your_urlscan_key
 :: set CHECKPHISH_KEY=your_checkphish_key
-:: set ANTHROPIC_API_KEY=your_anthropic_key
+:: set GEMINI_API_KEY=your_gemini_key
 
 cd /d "%~dp0"
+
+:: Auto-create .env from env.example if .env doesn't exist yet
+if not exist ".env" (
+    if exist "env.example" (
+        copy "env.example" ".env" >nul
+        echo [setup] Created .env from env.example
+    )
+)
+
 call npm install
 call npm start
 pause

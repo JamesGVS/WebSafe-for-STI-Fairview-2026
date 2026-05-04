@@ -1,0 +1,43 @@
+# WebSafe — Environment Variables
+# Copy this file to .env and fill in your actual keys.
+# NEVER commit .env to source control.
+#
+# ─────────────────────────────────────────────────────────
+# REQUIRED for production — all are optional for dev
+# ─────────────────────────────────────────────────────────
+
+# Google Safe Browsing v4 API key
+# Get free key: https://developers.google.com/safe-browsing/v4/get-started
+# Free tier: unlimited (non-commercial)
+GSB_KEY=AIzaSyDZBdtfkpN9KSJ5cf7yZH_E5zkFEJ9RJx4
+
+# VirusTotal Public API key
+# Sign up: https://www.virustotal.com/gui/join-us
+# Free tier: ~500 req/day, 4 req/min
+VT_KEY=16cae739ac5f8b1f7ca981dfd1a4516025347a1bf67131e001bbfcc4c785b4df
+
+# urlscan.io API key
+# Sign up: https://urlscan.io/user/signup
+# Free tier: ~5 000 scans/day  (unlisted scans)
+URLSCAN_KEY=019df2e0-4188-743f-812b-3210d0a2d705
+
+# CheckPhish API key (by Bolster)
+# Sign up: https://developers.checkphish.ai/
+# Free tier: ~250 scans/month
+CHECKPHISH_KEY=
+
+# Google Gemini API key — for the in-app chat assistant
+# Get key: https://aistudio.google.com/app/apikey
+# Free tier: 1 500 req/day, 15 req/min (gemini-2.0-flash)
+GEMINI_API_KEY=AIzaSyB9Z42ZlvgThEGiUj8bcYEE0GinJeybxEE
+
+# ─────────────────────────────────────────────────────────
+# Optional server config
+# ─────────────────────────────────────────────────────────
+
+# Server port (default: 3000)
+PORT=3000
+
+# Comma-separated list of allowed origins for CORS
+# Example: https://websafe.yourdomain.com,https://www.websafe.yourdomain.com
+ALLOWED_ORIGINS=
