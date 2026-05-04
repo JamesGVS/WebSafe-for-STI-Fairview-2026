@@ -60,6 +60,10 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || '')
     .filter(Boolean)
     .concat(['http://localhost:3000', 'http://localhost:3001']);
 
+if (process.env.NODE_ENV === 'production' && !(process.env.ALLOWED_ORIGINS || '').trim()) {
+    console.warn('[WARN] ALLOWED_ORIGINS is not set — set it to your production domain to restrict CORS.');
+}
+
 app.use(cors({
     origin: (origin, cb) => {
         if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
@@ -1545,6 +1549,19 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
+// ── Graceful shutdown (SIGTERM sent by Render / Railway / Fly.io) ─────────────────
+let server; // assigned below by app.listen
+
+process.on('SIGTERM', () => {
+    console.log('[shutdown] SIGTERM received — closing gracefully…');
+    if (server) {
+        server.close(() => { console.log('[shutdown] Closed. Exiting.'); process.exit(0); });
+        setTimeout(() => process.exit(1), 10_000).unref();
+    } else {
+        process.exit(0);
+    }
+});
+
 // ── Catch-all for unmatched routes ────────────────────────────────────────────
 app.use((req, res) => res.status(404).json({ ok: false, error: 'Not found' }));
 
@@ -1558,10 +1575,11 @@ app.use((err, req, res, _next) => {
 // SECTION 9 — STARTUP
 // ═══════════════════════════════════════════════════════════════════════════════
 
-app.listen(PORT, () => {
+server = app.listen(PORT, () => {
     const url = `http://localhost:${PORT}`;
     console.log('\n╔══════════════════════════════════════════╗');
-    console.log('║         WebSafe v8 — Local Dev           ║');
+    const envLabel = process.env.NODE_ENV === 'production' ? 'Production ' : 'Local Dev  ';
+    console.log(`║         WebSafe v8 — ${envLabel}          ║`);
     console.log('╠══════════════════════════════════════════╣');
     console.log(`║  Server : ${url.padEnd(31)}║`);
     console.log('║  APIs   :                                ║');
@@ -1572,11 +1590,13 @@ app.listen(PORT, () => {
     console.log(`║    Chat (Claude): ${(ANTHROPIC_KEY   ? '✓ configured' : '✗ unset (ANTHROPIC_API_KEY)').padEnd(22)}║`);
     console.log('╚══════════════════════════════════════════╝\n');
 
-    // Auto-open browser on local dev
-    const { exec } = require('child_process');
-    const cmd =
-        process.platform === 'win32'  ? `start "" "${url}"` :
-        process.platform === 'darwin' ? `open "${url}"` :
-                                        `xdg-open "${url}"`;
-    exec(cmd, err => { if (err) console.log(`  Open in browser: ${url}/main.html`); });
+    // Auto-open browser on local dev only — never runs in production
+    if (process.env.NODE_ENV !== 'production') {
+        const { exec } = require('child_process');
+        const cmd =
+            process.platform === 'win32'  ? `start "" "${url}"` :
+            process.platform === 'darwin' ? `open "${url}"` :
+                                            `xdg-open "${url}"`;
+        exec(cmd, err => { if (err) console.log(`  Open in browser: ${url}/main.html`); });
+    }
 });
