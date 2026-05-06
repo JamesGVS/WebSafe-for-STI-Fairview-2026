@@ -585,13 +585,20 @@
 </section>
 
 
-<!-- Hidden history section -->
-<div id="ws_history_section" style="display:none" aria-hidden="true">
+<!-- Recent scans history section -->
+<div id="ws_history_section" aria-label="Recent scans">
     <div id="ws_history_inner">
-        <h3 id="ws_history_title">Recent Scans This Session</h3>
+        <h3 id="ws_history_title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;margin-right:8px;opacity:0.7"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Recent Scans
+        </h3>
         <div id="ws_history_list">
-            <p id="ws_history_empty">No scans yet this session</p>
+            <p id="ws_history_empty" style="color:#64748b;font-size:13px;text-align:center;padding:16px 8px;">No scans yet — paste a link above to get started</p>
         </div>
+        <button id="ws_history_clear" onclick="clearHistory()" style="display:none">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+            Clear History
+        </button>
     </div>
 </div>
 

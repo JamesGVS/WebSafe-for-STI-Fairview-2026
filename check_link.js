@@ -161,13 +161,13 @@ function renderHistory() {
         row.querySelectorAll('span')[1].textContent = h.hostname;
         row.addEventListener('click', () => {
             const inp = document.getElementById('link_input');
-            if (inp) inp.value = h.url;
+            if (inp) { inp.value = h.url; inp.focus(); }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
         return row;
     }
 
-    const empty = '<p style="color:#64748b;font-size:13px;text-align:center;padding:8px">No scans yet</p>';
+    const empty = '<p style="color:#64748b;font-size:13px;text-align:center;padding:16px 8px;">No scans yet — paste a link above to get started</p>';
     const targets = [
         { id: 'ws_history_list',      maxItems: 20 },
         { id: 'sidebar_history_list', maxItems: 5  },
@@ -179,7 +179,18 @@ function renderHistory() {
         el.innerHTML = '';
         window.scanHistory.slice(0, maxItems).forEach(h => el.appendChild(buildRow(h)));
     });
+
+    // Show/hide the clear button
+    const clearBtn = document.getElementById('ws_history_clear');
+    if (clearBtn) clearBtn.style.display = window.scanHistory.length > 0 ? 'inline-flex' : 'none';
 }
+
+// Clear all history
+window.clearHistory = function() {
+    window.scanHistory = [];
+    _saveHistory([]);
+    renderHistory();
+};
 
 // Initialise history display on page load
 renderHistory();
