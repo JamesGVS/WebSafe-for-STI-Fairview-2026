@@ -75,31 +75,43 @@ app.use(cors({
 
 app.use(express.json({ limit: '64kb' }));
 
+// ── Remove Express fingerprinting ─────────────────────────────────────────────
+app.disable('x-powered-by');
+
 // ── Security headers ──────────────────────────────────────────────────────────
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
+    // Allow framing only by same origin (sidebar iframes your own pages)
     res.setHeader('X-Frame-Options', 'SAMEORIGIN');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    // XSS protection header (legacy browsers)
     res.setHeader('X-XSS-Protection', '1; mode=block');
-    res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+    res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=()');
+    // HSTS — instruct browsers to use HTTPS for 1 year (production only, avoids
+    // locking out local dev on HTTP)
+    if (process.env.NODE_ENV === 'production') {
+        res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    }
     // Content-Security-Policy — lock down what the browser is allowed to load/run
     res.setHeader('Content-Security-Policy', [
         "default-src 'self'",
         // Inline styles are required by the current UI (heavy inline style= usage)
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "font-src 'self' https://fonts.gstatic.com",
-        // Scripts: self + inline event handlers used by the UI (onmouseover etc.)
-        // 'unsafe-inline' scripts are intentional — no eval() is used
+        // Scripts: self + inline event handlers used by the UI
+        // 'unsafe-inline' is required; no eval() is used anywhere
         "script-src 'self' 'unsafe-inline'",
         // Images: self + data URIs (favicons) + external screenshot services
         "img-src 'self' data: https:",
-        // Fetch/XHR: only back to same origin (all API calls go to our own server)
+        // Fetch/XHR: only back to same origin — all API calls go to our own server
         "connect-src 'self'",
-        // Frames: completely blocked — users should never be iframed or iframe others
+        // Frames: completely blocked
         "frame-src 'none'",
         "object-src 'none'",
         "base-uri 'self'",
         "form-action 'self'",
+        // Cross-origin policy — prevents cross-origin reads of our responses
+        "cross-origin-opener-policy same-origin",
     ].join('; '));
     next();
 });
@@ -140,23 +152,49 @@ app.use((req, res, next) => {
 // ── Rate limiters — separate budgets per endpoint cost ────────────────────────
 //
 //   /api/check  → 5 req/min  (fires 8 external API calls each — most expensive)
-//   /api/chat   → 10 req/min (costs real Anthropic tokens per message)
+//   /api/chat   → 10 req/min (costs real tokens per message)
 //   everything  → 30 req/min (fetch, whois, status — cheap reads)
 //
+// IPs that exceed their budget 10+ times in a single window are soft-blocked
+// for the remainder of that window (saves external API quota from abuse).
+//
+const IP_ABUSE_THRESHOLD = 10; // violations before soft-block kicks in
+
 function makeRateLimiter(maxPerMin, message) {
-    const map = new Map();
+    const map = new Map(); // ip → { count, reset, violations }
+    // Prune stale entries every 5 minutes
     setInterval(() => {
         const now = Date.now();
         for (const [ip, e] of map) { if (now > e.reset) map.delete(ip); }
     }, 300_000);
+
     return (req, res, next) => {
         const ip    = req.ip || req.socket?.remoteAddress || 'unknown';
         const now   = Date.now();
-        const entry = map.get(ip) || { count: 0, reset: now + 60_000 };
-        if (now > entry.reset) { entry.count = 0; entry.reset = now + 60_000; }
+        let entry   = map.get(ip);
+        if (!entry || now > entry.reset) {
+            entry = { count: 0, reset: now + 60_000, violations: 0 };
+        }
         entry.count++;
         map.set(ip, entry);
+
+        const remaining = Math.max(0, maxPerMin - entry.count);
+        const resetSec  = Math.ceil((entry.reset - now) / 1000);
+
+        // Expose standard rate-limit headers so legitimate clients can back off
+        res.setHeader('RateLimit-Limit',     maxPerMin);
+        res.setHeader('RateLimit-Remaining', remaining);
+        res.setHeader('RateLimit-Reset',     resetSec);
+
         if (entry.count > maxPerMin) {
+            entry.violations = (entry.violations || 0) + 1;
+            map.set(ip, entry);
+
+            if (entry.violations >= IP_ABUSE_THRESHOLD) {
+                console.warn(`[RATE] IP soft-blocked (${entry.violations} violations): ${ip}`);
+            }
+
+            res.setHeader('Retry-After', resetSec);
             return res.status(429).json({ ok: false, error: message || 'Too many requests — please wait a moment.' });
         }
         next();
@@ -1204,12 +1242,24 @@ const SERVER_WELL_KNOWN = [
 app.get('/api/fetch', async (req, res) => {
     const { url } = req.query;
     if (!url) return res.status(400).json({ error: 'missing url' });
+
+    // Validate URL shape — must be http/https, no excessively long input
+    if (url.length > 2083) return res.status(400).json({ ok: false, error: 'URL too long' });
+    let parsedFetch;
+    try { parsedFetch = new URL(url); } catch(e) {
+        return res.status(400).json({ ok: false, error: 'Invalid URL' });
+    }
+    if (!['http:', 'https:'].includes(parsedFetch.protocol)) {
+        return res.status(400).json({ ok: false, error: 'Only http/https URLs are supported' });
+    }
+
     try {
         const result = await fetchHtml(url);
         const html   = result.text || '';
         const meta   = parseMeta(html, url);
         res.json({
             ok: true,
+            // Cap at 200 KB — enough for content analysis, prevents huge payloads
             htmlSnippet:  html.slice(0, 200_000),
             title:        meta.title,
             description:  meta.description,
@@ -1225,8 +1275,21 @@ app.get('/api/fetch', async (req, res) => {
 app.get('/api/whois', async (req, res) => {
     const { domain } = req.query;
     if (!domain) return res.status(400).json({ error: 'missing domain' });
+
+    // Sanitise: strip leading/trailing whitespace, reject obviously bad input
+    const cleanDomain = String(domain).trim().toLowerCase().replace(/^https?:\/\//i, '').split('/')[0];
+
+    // Block SSRF — refuse localhost and RFC-1918 addresses
+    const BLOCKED = /^(localhost|127\.|0\.0\.0|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|::1|fd[0-9a-f]{2}:)/i;
+    if (BLOCKED.test(cleanDomain)) {
+        return res.status(400).json({ ok: false, error: 'Invalid domain' });
+    }
+    if (cleanDomain.length > 253) {
+        return res.status(400).json({ ok: false, error: 'Domain name too long' });
+    }
+
     try {
-        const result        = await whoisLookup(domain, 15000);
+        const result        = await whoisLookup(cleanDomain, 15000);
         const domainAgeDays = parseWhoisAge(result);
         res.json({ ok: true, result, domainAgeDays, source: result?.source });
     } catch(err) {
@@ -1260,6 +1323,28 @@ app.get('/api/check', async (req, res) => {
         return res.status(400).json({ ok: false, error: 'URL is too long (max 2083 characters)' });
     }
 
+    let parsed;
+    try { parsed = new URL(url); } catch(e) {
+        return res.status(400).json({ ok: false, error: 'Invalid URL' });
+    }
+
+    // SSRF guard — block scanning of internal/private infrastructure
+    // Attackers can submit http://localhost:3000/server.js or http://10.0.0.1/admin
+    const hostname = parsed.hostname.toLowerCase();
+    const PRIVATE_HOST = /^(localhost|127\.|0\.0\.0|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|::1|\[::1\]|fd[0-9a-f]{2}:|metadata\.google\.internal|169\.254\.169\.254)/i;
+    if (PRIVATE_HOST.test(hostname)) {
+        return res.status(400).json({ ok: false, error: 'Scanning internal or private addresses is not allowed.' });
+    }
+
+    // Only scan http/https — block data:, javascript:, ftp:, etc.
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+        return res.status(400).json({ ok: false, error: 'Only http and https URLs can be scanned.' });
+    }
+
+    if (!isValidHostname(hostname)) {
+        return res.status(400).json({ ok: false, error: 'Invalid URL — hostname appears to be gibberish or malformed' });
+    }
+
     const start = Date.now();
     console.log(`\n/api/check ▶ ${url}`);
 
@@ -1269,17 +1354,6 @@ app.get('/api/check', async (req, res) => {
     if (cached && Date.now() < cached.expires) {
         console.log(`  cache HIT (${Math.round((cached.expires - Date.now()) / 1000)}s remaining)`);
         return res.json({ ...cached.data, fromCache: true });
-    }
-
-    let parsed;
-    try { parsed = new URL(url); } catch(e) {
-        return res.status(400).json({ ok: false, error: 'Invalid URL' });
-    }
-
-    const hostname = parsed.hostname.toLowerCase();
-
-    if (!isValidHostname(hostname)) {
-        return res.status(400).json({ ok: false, error: 'Invalid URL — hostname appears to be gibberish or malformed' });
     }
 
     try {
@@ -1487,12 +1561,15 @@ app.post('/api/chat', async (req, res) => {
         return res.status(400).json({ ok: false, error: 'messages array is required.' });
     }
 
-    // Sanitise messages — only allow role + string content
+    // Sanitise messages — only allow role + string content; cap each message at 4 000 chars
     // Gemini uses "user" / "model" roles (not "assistant")
     const safeMessages = messages
         .filter(m => m && ['user', 'assistant'].includes(m.role) && typeof m.content === 'string')
         .slice(-20)
-        .map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] }));
+        .map(m => ({
+            role:  m.role === 'assistant' ? 'model' : 'user',
+            parts: [{ text: String(m.content).slice(0, 4_000) }],
+        }));
 
     if (safeMessages.length === 0) {
         return res.status(400).json({ ok: false, error: 'No valid messages provided.' });
