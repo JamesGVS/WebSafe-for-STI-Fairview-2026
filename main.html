@@ -947,6 +947,7 @@ function showUploadResult(type, icon, label, detail, url) { qrResultIcon.textCon
     const dot       = document.getElementById("chatDot");
 
     let isOpen = false;
+    let chatReady = null; // null = unchecked, true/false after first status fetch
     let conversationHistory = [];
     let lastScanContext = null; // set by window._wsChatContext after each scan
 
@@ -984,6 +985,22 @@ function showUploadResult(type, icon, label, detail, url) { qrResultIcon.textCon
         toggle.classList.add("is-open");
         if (dot) dot.className = "";
         setTimeout(() => inputEl.focus(), 350);
+        // Check once whether the chat backend is configured
+        if (chatReady === null) {
+            chatReady = false; // prevent double-check
+            fetch("/api/status")
+                .then(r => r.json())
+                .then(s => {
+                    chatReady = !!s?.apis?.chatAssistant;
+                    if (!chatReady) {
+                        appendMessage("bot", "⚠️ The chat assistant isn't configured on this server yet. Add your <strong>GEMINI_API_KEY</strong> to the <code>.env</code> file and restart.");
+                        inputEl.disabled = true;
+                        sendBtn.disabled = true;
+                        inputEl.placeholder = "Chat unavailable — API key not set.";
+                    }
+                })
+                .catch(() => { chatReady = true; }); // if status fails, don't block chat
+        }
     }
     function closeChat() {
         isOpen = false;
