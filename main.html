@@ -1021,7 +1021,12 @@ function showUploadResult(type, icon, label, detail, url) { qrResultIcon.textCon
 
             if (!response.ok || !response.body) {
                 hideTyping();
-                appendMessage("bot", "Sorry, I couldn't get a response right now. Please try again.");
+                let errMsg = 'Sorry, I couldn\'t get a response right now. Please try again.';
+                try {
+                    const errJson = await response.json();
+                    if (errJson?.error) errMsg = errJson.error;
+                } catch(_) {}
+                appendMessage('bot', errMsg);
                 return;
             }
 

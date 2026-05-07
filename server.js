@@ -1621,45 +1621,40 @@ app.post('/api/chat', async (req, res) => {
 
         // Stream Gemini SSE → client using our own SSE format
         // Gemini sends: data: {"candidates":[{"content":{"parts":[{"text":"..."}]}}]}
-        // We re-emit as:  data: {"text":"..."}   (simpler format the frontend reads)
+        // We re-emit as:  data: {"text":"..."}
+        // Use async iterator — more reliable than .on('data') with node-fetch v2
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('X-Accel-Buffering', 'no');
 
         let buffer = '';
-
-        upstream.body.on('data', chunk => {
-            if (res.writableEnded) return;
-            buffer += chunk.toString('utf8');
-            const lines = buffer.split('\n');
-            buffer = lines.pop(); // keep any incomplete line
-
-            for (const line of lines) {
-                const trimmed = line.trim();
-                if (!trimmed.startsWith('data:')) continue;
-                const raw = trimmed.slice(5).trim();
-                if (!raw || raw === '[DONE]') continue;
-                try {
-                    const evt  = JSON.parse(raw);
-                    const text = evt?.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (text) {
-                        res.write(`data: ${JSON.stringify({ text })}\n\n`);
-                    }
-                } catch (_) { /* partial JSON — skip */ }
+        try {
+            for await (const chunk of upstream.body) {
+                if (res.writableEnded) break;
+                buffer += chunk.toString('utf8');
+                const lines = buffer.split('\n');
+                buffer = lines.pop();
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (!trimmed.startsWith('data:')) continue;
+                    const raw = trimmed.slice(5).trim();
+                    if (!raw || raw === '[DONE]') continue;
+                    try {
+                        const evt  = JSON.parse(raw);
+                        const text = evt?.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (text) {
+                            res.write(`data: ${JSON.stringify({ text })}\n\n`);
+                        }
+                    } catch (_) { /* partial JSON — skip */ }
+                }
             }
-        });
-
-        upstream.body.on('end', () => {
-            if (!res.writableEnded) {
-                res.write('data: [DONE]\n\n');
-                res.end();
-            }
-        });
-
-        upstream.body.on('error', err => {
-            console.warn('/api/chat Gemini stream error:', err.message);
-            if (!res.writableEnded) res.end();
-        });
+        } catch (streamErr) {
+            console.warn('/api/chat stream error:', streamErr.message);
+        }
+        if (!res.writableEnded) {
+            res.write('data: [DONE]\n\n');
+            res.end();
+        }
 
     } catch(err) {
         console.warn('/api/chat error:', err.message);
