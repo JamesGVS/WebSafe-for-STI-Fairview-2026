@@ -1457,212 +1457,251 @@ body {
    FOOTER / SOCIALS
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   FOOTER / SOCIALS
+═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   FOOTER / SOCIALS
+═══════════════════════════════════════════════════════════════════════════ */
+
 .footer-section {
     display: flex;
-    align-items: flex-start;
-    gap: 40px;
-    padding: 56px 48px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    gap: 34px;
+
+    padding: 56px 24px;
+
     border-top: 1px solid var(--border);
     background: var(--bg-mid);
-    flex-wrap: wrap;
 }
 
-/* ── Socials card (left column) ── */
+/* ─────────────────────────────────────────
+   SOCIAL CARD
+───────────────────────────────────────── */
+
 .footer-left {
-    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
 .footer-left .card {
     position: relative;
-    width: 220px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 18px;
+
+    padding: 22px 26px;
+
     background: var(--bg-card);
     border: 1px solid var(--border-accent);
     border-radius: 18px;
-    padding: 20px;
+
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
 }
 
-/* Subtle animated glow behind the card */
+/* Glow */
 .footer-left .card .background {
     position: absolute;
     inset: 0;
+
     z-index: 0;
+
     border-radius: inherit;
-    background: radial-gradient(ellipse at 60% 0%, rgba(29,106,255,0.12) 0%, transparent 70%);
+
+    background:
+        radial-gradient(
+            ellipse at 60% 0%,
+            rgba(29,106,255,0.12) 0%,
+            transparent 70%
+        );
+
     pointer-events: none;
 }
 
-/* SOCIALS label */
+/* SOCIALS text */
 .footer-left .card .logo {
     position: relative;
     z-index: 1;
+
     font-size: 10px;
     font-weight: 700;
+
     letter-spacing: 0.14em;
+
     color: var(--white-muted);
+
     text-transform: uppercase;
 }
 
-/* Social icon boxes row */
-.footer-left .card .box {
+/* ─────────────────────────────────────────
+   HORIZONTAL ICON ROW
+───────────────────────────────────────── */
+
+.footer-social-row {
     position: relative;
     z-index: 1;
-    display: inline-flex;
+
+    display: flex;
     align-items: center;
     justify-content: center;
+
+    gap: 12px;
+}
+
+/* ICON BOX */
+.footer-left .card .box {
     width: 44px;
     height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     border-radius: 10px;
+
     background: var(--bg-raised);
     border: 1px solid var(--border);
+
     text-decoration: none;
     color: var(--white-muted);
-    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
 }
 
 .footer-left .card .box:hover {
     background: var(--accent-dim);
     border-color: var(--border-accent);
+
     color: var(--white);
+
     transform: translateY(-2px);
+
     box-shadow: 0 4px 16px var(--accent-glow);
 }
 
-/* Row of boxes */
-.footer-left .card {
-    flex-direction: column;
-}
-
-/* Put the three social links in a horizontal row */
-.footer-left .card .box {
-    position: relative;
-    z-index: 1;
-}
-
-/* Horizontal row wrapper — we target the three anchor boxes */
-.footer-left .card .box1,
-.footer-left .card .box2,
-.footer-left .card .box3 {
-    float: left;
-    margin-right: 8px;
-    margin-bottom: 0;
-}
-
-/* Clear float with box4 (empty spacer) */
-.footer-left .card .box4 {
-    clear: both;
-    display: none; /* hidden spacer not needed */
-}
-
-/* Better: use a flex row wrapper via adjacent-sibling override */
-/* Re-target all boxes as a flex row */
-.footer-left .card {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.footer-social-row {
-    display: flex;
-    gap: 8px;
-}
-
-/* Since HTML uses individual .box elements without a wrapper,
-   target them with nth-of-type on the anchor elements */
-.footer-left .card a.box {
-    float: none;
-    margin: 0;
-}
-
-/* Wrap them visually — override to make boxes display inline together */
-.footer-left .card {
-    display: grid;
-    grid-template-areas:
-        "logo logo logo"
-        "b1   b2   b3";
-    grid-template-columns: 44px 44px 44px;
-    grid-template-rows: auto auto;
-    gap: 12px 8px;
-    width: fit-content;
-    min-width: 180px;
-}
-
-.footer-left .card .background { grid-area: 1 / 1 / 3 / 4; }
-.footer-left .card .logo        { grid-area: logo; }
-.footer-left .card .box1        { grid-area: b1; }
-.footer-left .card .box2        { grid-area: b2; }
-.footer-left .card .box3        { grid-area: b3; }
-.footer-left .card .box4        { display: none; }
-
+/* ICON WRAPPER */
 .footer-left .card .icon {
     display: flex;
     align-items: center;
     justify-content: center;
+
     width: 20px;
     height: 20px;
 }
 
+/* SVG */
 .footer-left .card .svg {
     width: 18px;
     height: 18px;
+
     fill: currentColor;
 }
 
-/* Email icon — outline style */
+/* EMAIL OUTLINE */
 .footer-left .card .box1 .svg {
     fill: none;
+
     stroke: currentColor;
     stroke-width: 2;
+
     stroke-linecap: round;
     stroke-linejoin: round;
 }
 
-/* Hover tints per platform */
-.footer-left .card .box2:hover { border-color: #1877f2; color: #1877f2; box-shadow: 0 4px 16px rgba(24,119,242,0.25); }
-.footer-left .card .box3:hover { border-color: #e1306c; color: #e1306c; box-shadow: 0 4px 16px rgba(225,48,108,0.25); }
-.footer-left .card .box1:hover { border-color: var(--teal); color: var(--teal); box-shadow: 0 4px 16px rgba(0,212,255,0.2); }
+/* HOVER COLORS */
+.footer-left .card .box1:hover {
+    border-color: var(--teal);
+    color: var(--teal);
 
-/* ── Footer center (description + copyright) ── */
+    box-shadow: 0 4px 16px rgba(0,212,255,0.2);
+}
+
+.footer-left .card .box2:hover {
+    border-color: #1877f2;
+    color: #1877f2;
+
+    box-shadow: 0 4px 16px rgba(24,119,242,0.25);
+}
+
+.footer-left .card .box3:hover {
+    border-color: #e1306c;
+    color: #e1306c;
+
+    box-shadow: 0 4px 16px rgba(225,48,108,0.25);
+}
+
+/* ─────────────────────────────────────────
+   FOOTER TEXT
+───────────────────────────────────────── */
+
 .footer-center {
-    flex: 1;
-    min-width: 220px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: 10px;
+
+    text-align: center;
+
+    gap: 12px;
+
+    width: 100%;
+    max-width: 760px;
 }
 
 .footer-center p {
-    font-size: 12.5px;
-    color: var(--white-muted);
-    line-height: 1.7;
     margin: 0;
-    max-width: 540px;
+
+    font-size: 13px;
+    line-height: 1.8;
+
+    color: var(--white-muted);
 }
 
 .footer-copy {
     font-size: 11px !important;
+
     color: var(--white-faint) !important;
+
     font-family: 'JetBrains Mono', monospace;
+
     letter-spacing: 0.02em;
 }
 
-/* ── Responsive ── */
+/* ─────────────────────────────────────────
+   MOBILE
+───────────────────────────────────────── */
+
 @media (max-width: 600px) {
+
     .footer-section {
-        flex-direction: column;
-        padding: 36px 20px;
+        padding: 40px 20px;
         gap: 28px;
     }
+
     .footer-left .card {
-        min-width: unset;
+        padding: 20px;
     }
+
+    .footer-social-row {
+        gap: 10px;
+    }
+
 }
-
-
 /* ═══════════════════════════════════════════════════════════════════════════
    QR UPLOAD MODAL — Clear button
    ═══════════════════════════════════════════════════════════════════════════ */

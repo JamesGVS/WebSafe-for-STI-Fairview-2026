@@ -60,10 +60,6 @@
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             Scan a Link
         </a>
-        <a href="#ws_history_section" class="sidebar-link">
-            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Recent Scans
-        </a>
         <a href="#websafe-info-anchor" class="sidebar-link">
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
             What WebSafe Does
@@ -585,59 +581,75 @@
 </section>
 
 
-<!-- Recent scans history section -->
-<div id="ws_history_section" aria-label="Recent scans">
-    <div id="ws_history_inner">
-        <h3 id="ws_history_title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-3px;margin-right:8px;opacity:0.7"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Recent Scans
-        </h3>
-        <div id="ws_history_list">
-            <p id="ws_history_empty" style="color:#64748b;font-size:13px;text-align:center;padding:16px 8px;">No scans yet — paste a link above to get started</p>
-        </div>
-        <button id="ws_history_clear" onclick="clearHistory()" style="display:none">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-            Clear History
-        </button>
-    </div>
-</div>
-
-
-
-
 </div><!-- /#main_content -->
 
 
-<!-- FOOTER -->
-<div class="footer-section">
+<footer class="footer-section">
+
+    <!-- SOCIAL CARD -->
     <div class="footer-left">
         <div class="card">
+
             <div class="background"></div>
-            <div class="logo">SOCIALS</div>
-            <a href="#" class="box box1">
-                <span class="icon">
-                    <svg viewBox="0 0 24 24" class="svg"><path d="M2 6l10 7L22 6v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6z"/><path d="M22 6l-10 7L2 6l10-4 10 4z"/></svg>
-                </span>
-            </a>
-            <a href="#" class="box box2">
-                <span class="icon">
-                    <svg viewBox="0 0 320 512" class="svg"><path d="M279.14 288l14.22-92.66h-88.91V127.69c0-25.35 12.42-50.06 52.24-50.06H293V6.26S259.43 0 225.36 0c-73.22 0-121.09 44.38-121.09 124.72v70.62H22.89V288h81.38v224h100.17V288z"/></svg>
-                </span>
-            </a>
-            <a href="#" class="box box3">
-                <span class="icon">
-                    <svg viewBox="0 0 24 24" class="svg"><path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm5 4a6 6 0 110 12 6 6 0 010-12zm6.5-1.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/></svg>
-                </span>
-            </a>
-            <div class="box box4"></div>
+
+            <div class="logo">
+                SOCIALS
+            </div>
+
+            <!-- HORIZONTAL ICON ROW -->
+            <div class="footer-social-row">
+
+                <!-- EMAIL -->
+                <a href="https://mail.google.com/mail/u/0/#search/websafe.protects%40gmail.com" class="box box1">
+                    <div class="icon">
+                        <svg class="svg" viewBox="0 0 24 24">
+                            <path d="M4 6h16v12H4z"></path>
+                            <path d="M4 7l8 6 8-6"></path>
+                        </svg>
+                    </div>
+                </a>
+
+                <!-- FACEBOOK -->
+                <a href="https://www.facebook.com/profile.php?id=61588343251116&rdid=a5Mtp9Ps8etStWA5&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1CwYwcpj5n%2F#" class="box box2">
+                    <div class="icon">
+                        <svg class="svg" viewBox="0 0 24 24">
+                            <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.19 2.23.19v2.45h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 2.89h-2.33v6.99A10 10 0 0 0 22 12z"/>
+                        </svg>
+                    </div>
+                </a>
+
+                <!-- INSTAGRAM -->
+                <a href="#" class="box box3">
+                    <div class="icon">
+                        <svg class="svg" viewBox="0 0 24 24">
+                            <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.5 5.5 0 0 1 12 7.5zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5zm5.75-3.25a1.25 1.25 0 1 1-1.25 1.25 1.25 1.25 0 0 1 1.25-1.25z"/>
+                        </svg>
+                    </div>
+                </a>
+
+            </div>
+
         </div>
     </div>
 
+    <!-- FOOTER TEXT -->
     <div class="footer-center">
-        <p>WebSafe helps people stay in control of online browsing by allowing links to be checked before opening them. Simply enter a URL to preview important details and understand what to expect before visiting a page. The platform also scans links for potential risks, helping detect suspicious or unsafe content early.</p>
-        <p class="footer-copy">&copy; 2026 WebSafe. STI College - Fairview.</p>
+
+        <p>
+            WebSafe helps people stay in control of online browsing by allowing
+            links to be checked before opening them. Simply enter a URL to preview
+            important details and understand what to expect before visiting a page.
+            The platform also scans links for potential risks, helping detect
+            suspicious or unsafe content early.
+        </p>
+
+        <p class="footer-copy">
+            © 2026 WebSafe. STI College Fairview.
+        </p>
+
     </div>
-</div>
+
+</footer>
 
 
 
@@ -1021,12 +1033,7 @@ function showUploadResult(type, icon, label, detail, url) { qrResultIcon.textCon
 
             if (!response.ok || !response.body) {
                 hideTyping();
-                let errMsg = 'Sorry, I couldn\'t get a response right now. Please try again.';
-                try {
-                    const errJson = await response.json();
-                    if (errJson?.error) errMsg = errJson.error;
-                } catch(_) {}
-                appendMessage('bot', errMsg);
+                appendMessage("bot", "Sorry, I couldn't get a response right now. Please try again.");
                 return;
             }
 
@@ -1107,5 +1114,6 @@ function showUploadResult(type, icon, label, detail, url) { qrResultIcon.textCon
 </script>
 </body>
 </html>
+
 
 
