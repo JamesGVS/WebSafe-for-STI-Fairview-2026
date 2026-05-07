@@ -1597,7 +1597,7 @@ app.post('/api/chat', async (req, res) => {
     if (!geminiBody.system_instruction) delete geminiBody.system_instruction;
 
     const GEMINI_URL =
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent` +
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:streamGenerateContent` +
         `?alt=sse&key=${GEMINI_KEY}`;
 
     try {
