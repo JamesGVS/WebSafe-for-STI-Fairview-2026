@@ -685,19 +685,8 @@ function friendlyFlagDetail(f) {
                         : `urlscan.io flagged this page as malicious${d.urlScanVerdict ? ` (${d.urlScanVerdict})` : ''}${reportLink}`});
             }
 
-            // CheckPhish
-            if (d.checkPhishDisposition != null) {
-                const cpOk = d.checkPhishDisposition === 'clean';
-                const cpLabel = { clean:'clean', phish:'phishing site', suspect:'suspicious', unknown:'unknown' }[d.checkPhishDisposition] || d.checkPhishDisposition;
-                checks.push({label:'Brand Impersonation Check (CheckPhish)', ok:cpOk,
-                    detail: cpOk
-                        ? 'CheckPhish found no brand impersonation or phishing patterns'
-                        : d.checkPhishBrand
-                            ? `CheckPhish identified this page as impersonating "${d.checkPhishBrand}" — ${cpLabel}`
-                            : `CheckPhish flagged this page as ${cpLabel}`});
-            }
-
-            // Free site builder warning
+            // urlscan.io
+            if (d.urlScanMalicious != null) {
             if (d.freeSiteBuilder) {
                 checks.push({label:'Suspicious Hosting', ok:false,
                     detail: d.freeSiteBuilderDetail || 'This site is hosted on a free website builder — scammers often use these to create fake pages'});
@@ -709,7 +698,7 @@ function friendlyFlagDetail(f) {
                 const mediumFlags = d.contentFlags.filter(f => f.severity === 'medium');
                 for (const f of d.contentFlags) {
                     // Skip flags already rendered above
-                    if (['urlscan-malicious','checkphish-flag','free-site-builder','crypto-brand-on-free-host'].includes(f.type)) continue;
+                    if (['urlscan-malicious','free-site-builder','crypto-brand-on-free-host'].includes(f.type)) continue;
                     checks.push({ label: flagTypeLabel(f.type), ok: false, detail: friendlyFlagDetail(f) });
                 }
                 if (highFlags.length) { level = 'danger'; reason = friendlyFlagDetail(highFlags[0]); }
@@ -732,9 +721,6 @@ function friendlyFlagDetail(f) {
                 if (!reason || reason === 'Could not complete all checks') {
                     if (d.googleSafeBrowsing)        reason = '🚨 Google has flagged this link as dangerous — do not visit';
                     else if (d.urlScanMalicious)     reason = '🚨 urlscan.io sandbox detected this page as malicious';
-                    else if (d.checkPhishDisposition === 'phish') reason = d.checkPhishBrand
-                        ? `🚨 CheckPhish confirmed this is a phishing site impersonating "${d.checkPhishBrand}"`
-                        : '🚨 CheckPhish confirmed this is a phishing site';
                     else if (d.blacklisted)          reason = '🚨 This website is on our known-dangerous list — stay away';
                     else if (d.brandSpoof)           reason = `🚨 This site is impersonating "${d.spoofedBrand}" — phishing site`;
                     else if (d.gamblingPattern)      reason = '🚨 Illegal gambling scam site — spread via social media with fake cash-out promises. Do NOT register or deposit.';
@@ -745,11 +731,10 @@ function friendlyFlagDetail(f) {
                 }
             } else if (level === 'hazard') {
                 if (!reason || reason === 'Could not complete all checks') {
-                    if (d.checkPhishDisposition === 'suspect') reason = '⚠️ CheckPhish flagged this page as suspicious — verify before proceeding';
-                    else reason = '⚠️ A few warning signs found — double-check this site before doing anything';
+                    reason = '⚠️ A few warning signs found — double-check this site before doing anything';
                 }
             } else {
-                const apiCount = [d.googleSafeBrowsing != null, d.virusTotalPositives != null, d.urlScanMalicious != null, d.checkPhishDisposition != null].filter(Boolean).length;
+                const apiCount = [d.googleSafeBrowsing != null, d.virusTotalPositives != null, d.urlScanMalicious != null].filter(Boolean).length;
                 reason = apiCount >= 2
                     ? `✅ Checked against ${apiCount} threat intelligence APIs — this link looks safe`
                     : `✅ ${checks.filter(c=>c.ok===true).length} of ${checks.filter(c=>c.ok!==null).length} checks passed — this link looks safe to visit`;
@@ -862,7 +847,6 @@ function friendlyFlagDetail(f) {
             checks.find(c=>c.label==='Known Threats')      ||{label:'Known Threats',      ok:null,detail:''},
             checks.find(c=>c.label==='Google Safety Check')
                 || checks.find(c=>c.label==='Visual Sandbox (urlscan.io)')
-                || checks.find(c=>c.label==='Brand Impersonation Check (CheckPhish)')
                 || checks.find(c=>c.label==='How Old Is This Site?')
                 ||{label:'How Old Is This Site?',ok:null,detail:''},
         ];
@@ -1710,7 +1694,11 @@ function friendlyFlagDetail(f) {
         const inputEl = document.getElementById('link_input');
         if (!inputEl) return;
         const raw = (inputEl.value || '').trim();
-        if (!raw) { alert('Please enter a URL first.'); return; }
+        if (!raw) {
+            const statusEl = document.getElementById('link_status');
+            if (statusEl) statusEl.innerHTML = `<p style="color:#dc2626;margin-top:8px;font-weight:600">⚠️ Please enter a URL to preview.</p>`;
+            return;
+        }
 
         const normalized = normalizeURL(raw);
         if (!normalized) {
@@ -1824,40 +1812,7 @@ function friendlyFlagDetail(f) {
     };
 })();
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// FEATURE: DARK / LIGHT MODE TOGGLE
-// ═══════════════════════════════════════════════════════════════════════════════
-(function () {
-    const THEME_KEY = 'ws_theme';
-    const btn       = document.getElementById('theme_toggle');
-    const moonIcon  = document.getElementById('theme_icon_moon');
-    const sunIcon   = document.getElementById('theme_icon_sun');
 
-    function applyTheme(theme) {
-        if (theme === 'light') {
-            document.body.classList.add('light-mode');
-            if (moonIcon) moonIcon.style.display = 'none';
-            if (sunIcon)  sunIcon.style.display  = 'block';
-            if (btn) btn.title = 'Switch to dark mode';
-        } else {
-            document.body.classList.remove('light-mode');
-            if (moonIcon) moonIcon.style.display = 'block';
-            if (sunIcon)  sunIcon.style.display  = 'none';
-            if (btn) btn.title = 'Switch to light mode';
-        }
-        try { localStorage.setItem(THEME_KEY, theme); } catch(e) {}
-    }
-
-    // Load saved preference
-    const saved = (() => { try { return localStorage.getItem(THEME_KEY); } catch(e) { return null; } })();
-    applyTheme(saved === 'light' ? 'light' : 'dark');
-
-    if (btn) {
-        btn.addEventListener('click', () => {
-            applyTheme(document.body.classList.contains('light-mode') ? 'dark' : 'light');
-        });
-    }
-})();
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // FEATURE: FILIPINO / ENGLISH LANGUAGE TOGGLE
@@ -2036,86 +1991,6 @@ function friendlyFlagDetail(f) {
 })();
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// FEATURE: REAL-TIME URL WARNING (as-you-type)
-// ═══════════════════════════════════════════════════════════════════════════════
-(function () {
-    const input   = document.getElementById('link_input');
-    const warning = document.getElementById('realtime_warning');
-    if (!input || !warning) return;
-
-    // Suspicious patterns for instant client-side detection
-    const INSTANT_DANGER = [
-        { re: /(gcash|bdo|bpi|paypal|google|facebook|apple|microsoft|amazon|netflix)\.(xyz|top|club|online|site|space|live|win|bid|tk|ml|cf|ga|gq)/i, msg: '🚨 Suspicious domain ending — this may be impersonating a real brand' },
-        { re: /^(secure|login|verify|account|update|billing|support|alert|confirm)\./i,    msg: '🚨 Suspicious subdomain — commonly used in phishing' },
-        { re: /-(verify|login|secure|update|account|billing|confirm|restore|unlock)(\.|\/)/, msg: '🚨 URL structure matches known phishing patterns' },
-        { re: /(paypal|google|facebook|gcash|bdo|bpi|apple|microsoft).*\.(xyz|top|online|site|live|bid|win|club|tk|ml)/i, msg: '🚨 Brand name + suspicious TLD — classic phishing setup' },
-        { re: /[?&]id=\d{6,}/,                msg: '⚠️ Referral ID in URL — common in gambling scam links' },
-        { re: /^data:|^javascript:|^vbscript:/i, msg: '🚨 Dangerous URL type — never visit this link' },
-        { re: /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/, msg: '⚠️ IP address URL — legitimate sites use domain names' },
-        { re: /(jili|taya|lodi|hawkplay|phlwin|betso|peraplay|nuebe|mwplay)/i, msg: '🚨 Known gambling scam site pattern detected' },
-        { re: /(free-robux|getrobux|claim-prize|you-won|winner-claim|crypto-doubler|bitcoin-generator)/i, msg: '🚨 Scam site pattern detected — this is almost certainly fake' },
-        { re: /[a-z][0-9][a-z]/i,             msg: '⚠️ Letter-number substitution detected (e.g. g00gle, p4ypal)' },
-    ];
-
-    const INSTANT_WARNING = [
-        { re: /^http:\/\//i,                   msg: '⚠️ No encryption (HTTP) — avoid entering personal info' },
-        { re: /(-){3,}/,                        msg: '⚠️ Many hyphens in domain — often used by scammers' },
-        { re: /\.{2,}/,                         msg: '⚠️ Unusual dots in URL — may be disguising destination' },
-        { re: /bit\.ly|tinyurl|goo\.gl|ow\.ly|is\.gd|t\.co|rb\.gy|s\.id/i, msg: 'ℹ️ Shortened URL — run a full scan to see where it leads' },
-    ];
-
-    let _timer = null;
-
-    input.addEventListener('input', () => {
-        clearTimeout(_timer);
-        _timer = setTimeout(() => checkRealtime(input.value.trim()), 300);
-    });
-
-    input.addEventListener('paste', () => {
-        clearTimeout(_timer);
-        setTimeout(() => checkRealtime(input.value.trim()), 350);
-    });
-
-    function clearWarning() {
-        warning.className = '';
-        warning.style.display = 'none';
-        warning.innerHTML = '';
-    }
-
-    function showWarning(type, msg) {
-        warning.className = type === 'danger' ? 'rt-danger' : type === 'warning' ? 'rt-warning' : 'rt-ok';
-        warning.style.display = 'flex';
-        warning.innerHTML = `<span style="flex-shrink:0">${type === 'danger' ? '🚨' : type === 'warning' ? '⚠️' : 'ℹ️'}</span><span>${msg}</span>`;
-    }
-
-    function checkRealtime(raw) {
-        if (!raw || raw.length < 4) { clearWarning(); return; }
-
-        let normalized = raw;
-        if (!/^[a-z][a-z0-9+\-.]*:\/\//i.test(raw)) normalized = 'https://' + raw;
-
-        let hostname = '';
-        try { hostname = new URL(normalized).hostname.toLowerCase(); } catch(e) {}
-
-        const testStr = hostname + normalized;
-
-        for (const { re, msg } of INSTANT_DANGER) {
-            if (re.test(testStr)) { showWarning('danger', msg); return; }
-        }
-        for (const { re, msg } of INSTANT_WARNING) {
-            if (re.test(testStr)) { showWarning('warning', msg); return; }
-        }
-
-        // If looks like a valid URL with HTTPS, show green ok
-        if (normalized.startsWith('https://') && hostname && hostname.includes('.')) {
-            showWarning('ok', 'URL format looks okay — hit Verify Security for a full scan');
-        } else {
-            clearWarning();
-        }
-    }
-})();
-
-// ═══════════════════════════════════════════════════════════════════════════════
 // FEATURE: API SOURCE BADGES IN RESULT CARD
 // Patches renderResultCard to add a "Checked by" badge row after the score row
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -2135,7 +2010,6 @@ function friendlyFlagDetail(f) {
             { name: 'Google Safe Browsing', ok: d.googleSafeBrowsing === false ? true : d.googleSafeBrowsing === true ? false : null,   skipped: d.googleSafeBrowsing == null },
             { name: 'VirusTotal',           ok: d.virusTotalPositives === 0 ? true : d.virusTotalPositives > 0 ? false : null,           skipped: d.virusTotalPositives == null },
             { name: 'urlscan.io',           ok: d.urlScanMalicious === false ? true : d.urlScanMalicious === true ? false : null,        skipped: d.urlScanMalicious == null },
-            { name: 'CheckPhish',           ok: d.checkPhishDisposition === 'clean' ? true : (d.checkPhishDisposition === 'phish' || d.checkPhishDisposition === 'suspect') ? false : null, skipped: d.checkPhishDisposition == null },
         ];
 
         const row = document.createElement('div');
