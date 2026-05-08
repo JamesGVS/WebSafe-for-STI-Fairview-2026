@@ -280,7 +280,6 @@ function flagTypeLabel(type) {
         'google-safebrowsing':       'Google Safety Alert',
         'virustotal-flag':           'Flagged by Antivirus Tools',
         'urlscan-malicious':         'Sandbox: Malicious Page Detected',
-        'checkphish-flag':           'Brand Impersonation Detected',
         'disposable-hosting':        'Temporary Free Hosting',
         'dangerous-protocol':        'Dangerous Link Type',
         'high-entropy-domain':       'Random-Looking Site Name',
@@ -356,8 +355,6 @@ function friendlyFlagDetail(f) {
             return f.detail || 'Numbers replace letters in the domain to impersonate a real brand (e.g. g00gle, p4ypal)';
         case 'urlscan-malicious':
             return f.detail || 'urlscan.io opened this page in an isolated sandbox and confirmed it is malicious';
-        case 'checkphish-flag':
-            return f.detail || 'CheckPhish AI detected brand impersonation or phishing content on this page';
         case 'gambling-scam':
             return f.detail || 'This site is an illegal online gambling scam. These links are spread via Messenger/Viber with fake "90%+ odds / instant cash out / red packet" lures. Victims lose their deposits and are blocked when they try to withdraw.';
         default:
@@ -370,12 +367,10 @@ function friendlyFlagDetail(f) {
     const input    = document.getElementById('link_input');
     const btn      = document.getElementById('check_btn');
     const statusEl = document.getElementById('link_status');
-    const safetyEl = document.getElementById('safety_status');
 
     let _lastValue = '';
     function clearResults() {
         if (statusEl) statusEl.innerHTML = '';
-        if (safetyEl) { safetyEl.textContent = ''; safetyEl.className = ''; }
         const pa = document.getElementById('preview_area');
         if (pa) pa.style.display = 'none';
         ['preview_actions','preview_checks'].forEach(id => {
@@ -565,6 +560,7 @@ function friendlyFlagDetail(f) {
         let checks = [];
         let serverData = null;
 
+        try {
         try {
             const apiUrl = '/api/check?url=' + encodeURIComponent(normalized);
             console.log('[WebSafe] Calling:', apiUrl);
@@ -891,8 +887,11 @@ function friendlyFlagDetail(f) {
         window._wsLastDeadLabel = (serverData && serverData.deadLabel) || null;
         window._wsLastServerData = serverData || null;
 
-        btn.disabled = false;
-        hideSpinner();
+        } finally {
+            btn.disabled = false;
+            stopLoadingSteps();
+            hideSpinner();
+        }
     }
 
     if (btn)   btn.addEventListener('click', checkLink);
@@ -2042,11 +2041,4 @@ function friendlyFlagDetail(f) {
     });
 
     observer.observe(document.getElementById('link_status') || document.body, { childList: true, subtree: true });
-
-    // Expose server data so the observer can read it
-    const _origFetch = window.fetch;
-    // We patch addToHistory instead — simpler
-    const _origAdd = window.addToHistory;
-    // Store last server response on window
-    const origCheckBtn = document.getElementById('check_btn');
 })();

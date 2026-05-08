@@ -731,7 +731,7 @@ const menuToggle   = document.getElementById("menu_toggle");
 const sidebarEl    = document.getElementById("sidebar_menu");
 const overlayEl    = document.getElementById("sidebar_overlay");
 const sidebarClose = document.getElementById("sidebar_close");
-function openSidebar()  { sidebarEl.classList.add("active"); overlayEl.classList.add("active"); menuToggle.setAttribute("aria-expanded","true"); menuToggle.style.opacity="0"; menuToggle.style.pointerEvents="none"; syncSidebarHistory(); }
+function openSidebar()  { sidebarEl.classList.add("active"); overlayEl.classList.add("active"); menuToggle.setAttribute("aria-expanded","true"); menuToggle.style.opacity="0"; menuToggle.style.pointerEvents="none"; if (typeof renderHistory === 'function') renderHistory(); }
 function closeSidebar() { sidebarEl.classList.remove("active"); overlayEl.classList.remove("active"); menuToggle.setAttribute("aria-expanded","false"); menuToggle.style.opacity="1"; menuToggle.style.pointerEvents=""; }
 menuToggle.addEventListener("click", openSidebar);
 sidebarClose.addEventListener("click", closeSidebar);
@@ -746,22 +746,6 @@ document.querySelectorAll("#sidebar_menu .sidebar-link").forEach(link => {
 document.getElementById("aboutLink").addEventListener("click", e => { e.preventDefault(); closeSidebar(); window.location.href = "about_us.html"; });
 document.getElementById("contactLocalLink").addEventListener("click", e => { e.preventDefault(); closeSidebar(); window.location.href = "contact_local.html"; });
 
-function syncSidebarHistory() {
-    const panel = document.getElementById("sidebar_history_list");
-    if (!panel) return;
-    if (typeof scanHistory === "undefined" || scanHistory.length === 0) { panel.innerHTML = '<p class="sidebar-empty">No scans yet this session</p>'; return; }
-    const colors = { safe:"#34d399", hazard:"#fbbf24", danger:"#f87171" };
-    const labels = { safe:"Safe", hazard:"Warning", danger:"Danger" };
-    panel.innerHTML = "";
-    scanHistory.slice(0,5).forEach(h => {
-        const row = document.createElement("div"); row.className = "sidebar-scan-row";
-        row.innerHTML = `<span class="sidebar-scan-dot" style="background:${colors[h.level]||"#9ca3af"}"></span><span class="sidebar-scan-host"></span><span class="sidebar-scan-badge" style="color:${colors[h.level]||"#9ca3af"}">${labels[h.level]||"?"}</span>`;
-        row.querySelector(".sidebar-scan-host").textContent = h.hostname;
-        row.addEventListener("click", () => { const inp = document.getElementById("link_input"); if (inp) inp.value = h.url; closeSidebar(); document.getElementById("link_checker").scrollIntoView({ behavior:"smooth" }); checkBtn.click(); });
-        panel.appendChild(row);
-    });
-}
-setInterval(syncSidebarHistory, 2000);
 
 /* ELEMENT REFERENCES */
 const input       = document.getElementById("link_input");
@@ -802,7 +786,6 @@ const qrScanBtnLabel   = document.getElementById("qr_scan_btn_label");
 const qrUploadSpinner  = document.getElementById("qr_upload_spinner");
 let html5QrCode; let isScanning = false; let uploadedImageData = null;
 // check_btn and preview_btn listeners are registered by check_link.js
-input.addEventListener("keydown", e => { if (e.key === "Enter") checkBtn.click(); });
 
 /* CAMERA QR MODAL */
 scanBtn.onclick = () => { qrModal.classList.remove("hidden"); setTimeout(() => qrModal.classList.add("show"), 10); document.body.style.overflow = "hidden"; };
