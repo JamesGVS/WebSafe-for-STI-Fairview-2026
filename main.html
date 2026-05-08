@@ -835,13 +835,44 @@ qrUploadClearBtn.addEventListener("click", resetUploadModal);
 qrUploadScanBtn.addEventListener("click", () => {
     if (!uploadedImageData) return;
     qrScanBtnLabel.textContent = "Scanning…"; qrUploadSpinner.classList.add("active"); qrUploadScanBtn.disabled = true; qrUploadResult.className = "qr-upload-result";
+
+    // Multi-attempt QR decode pipeline:
+    // 1. Normal  2. Inverted  3. Both orientations
+    // 4. Greyscale + contrast at 600px  5. Large rescale at 1000px
     setTimeout(() => {
-        const code = jsQR(uploadedImageData.data, uploadedImageData.width, uploadedImageData.height, { inversionAttempts:"dontInvert" });
+        function tryJsQR(imageData, inversion) {
+            return jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: inversion });
+        }
+        function getEnhancedImageData(src, targetSize) {
+            const canvas = document.createElement("canvas");
+            const scale = targetSize / Math.max(src.width, src.height);
+            canvas.width  = Math.round(src.width  * scale);
+            canvas.height = Math.round(src.height * scale);
+            const ctx = canvas.getContext("2d");
+            const tmp = document.createElement("canvas");
+            tmp.width = src.width; tmp.height = src.height;
+            tmp.getContext("2d").putImageData(src, 0, 0);
+            ctx.drawImage(tmp, 0, 0, canvas.width, canvas.height);
+            const scaled = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < scaled.data.length; i += 4) {
+                const grey = Math.round(0.299 * scaled.data[i] + 0.587 * scaled.data[i+1] + 0.114 * scaled.data[i+2]);
+                const boosted = grey < 128 ? Math.max(0, grey - 30) : Math.min(255, grey + 30);
+                scaled.data[i] = scaled.data[i+1] = scaled.data[i+2] = boosted;
+            }
+            return scaled;
+        }
+
+        let code = null;
+        code = tryJsQR(uploadedImageData, "dontInvert");
+        if (!code) code = tryJsQR(uploadedImageData, "onlyInvert");
+        if (!code) code = tryJsQR(uploadedImageData, "attemptBoth");
+        if (!code) code = tryJsQR(getEnhancedImageData(uploadedImageData, 600), "attemptBoth");
+        if (!code) code = tryJsQR(getEnhancedImageData(uploadedImageData, 1000), "attemptBoth");
+
         qrUploadSpinner.classList.remove("active"); qrScanBtnLabel.textContent = "Scan & Check Safety"; qrUploadScanBtn.disabled = false;
-        if (!code) { showUploadResult("error","⚠️","No QR code detected in this image.","Please try a clearer or higher-resolution image.",""); return; }
+        if (!code) { showUploadResult("error","⚠️","No QR code detected in this image.","Please try a clearer or higher-resolution image. Make sure the QR code fills most of the frame.",""); return; }
         const decoded = code.data.trim(); let isUrl = false; try { new URL(decoded); isUrl = true; } catch (_) {}
         if (!isUrl) { showUploadResult("info","ℹ️","QR code decoded (not a URL):",decoded,""); return; }
-        // Show a provisional result badge; the full scan runs after the modal closes
         showUploadResult("info","🔍","Link found — scanning…","",decoded);
         input.value = decoded;
         setTimeout(() => { closeUploadModal(); document.getElementById("link_checker").scrollIntoView({ behavior:"smooth" }); checkBtn.click(); }, 1800);
