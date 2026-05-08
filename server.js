@@ -102,8 +102,9 @@ app.use((req, res, next) => {
         "script-src 'self' 'unsafe-inline'",
         // Images: self + data URIs (favicons) + external screenshot services
         "img-src 'self' data: https:",
-        // Fetch/XHR: only back to same origin — all API calls go to our own server
-        "connect-src 'self'",
+        // Fetch/XHR: self for API calls + Cloudflare DoH (client-side DNS fallback)
+        // + wildcard https: for the no-cors site-reachability probe in the client fallback
+        "connect-src 'self' https://cloudflare-dns.com https:",
         // Frames: completely blocked
         "frame-src 'none'",
         "object-src 'none'",
@@ -278,6 +279,40 @@ const HARD_BLACKLIST = new Set([
     'faceb00k.com','gooogle.com','paypa1.com','amaz0n.com',
     'netfl1x.com','yout0be.com','twltter.com','lnstagram.com',
     'gogle.com','goggle.com','micosoft.com','arnazon.com',
+    // ── Online gambling scams (PH-targeted) ──────────────────────────────────
+    // These sites use referral-ID affiliate links spread via Messenger/Viber/SMS
+    // with fake "90%+ odds / instant cash out / red packet" lures.
+    // They are NOT licensed gambling operations — they are scam money-traps.
+    'fc8win.com','fc7win.com','fc9win.com','fcwin8.com','fc777.com',
+    'jili7777.com','jili8888.com','jili9999.com','jilislot.com','jili-casino.com',
+    'jilibet.com','jiligames.com','jili888.com','jiliplay.com',
+    'ph777.com','ph888casino.com','ph888.com','ph999.com',
+    '7777red.com','77ph.com','777pub.ph','777ph.com',
+    'panalo999.com','panalo888.com','panalo777.com','panalobet.com',
+    '747live.net','747live.ph','747casino.com',
+    'swerte99.com','swerte88.com','swertewin.com',
+    'bonus365.ph','bet365ph.com','luckybet888.com',
+    'mega-win-ph.com','megawin888.com','megawin777.com',
+    'betso88.com','betso99.com','taya777.com','taya365.com',
+    'lodigame.com','lodibet.com','lodi646.com',
+    'winfordbet.com','winzir.ph','hawkplay.net','hawkplay777.com',
+    'lucky777ph.com','phlwin.com','phbet.com','phwin.com',
+    'nice88bet.com','gg777ph.com','milyon88.com','mantaslot.com',
+    'okbet.ph','tmtplay.net','peso888.com','peso123.com',
+    'nuebe9.com','nuebe8.com','nuebegaming.com',
+    'mwplay888.net','mwcasino.com','mwgame.net',
+    'fun88ph.com','fun99ph.com','gawin777.com',
+    'peraplay.net','peraplay888.com',
+    'rich9.ph','rich888.ph','win888.ph','win777.ph',
+    'filbet.ph','filbet888.com','filslots.com',
+    'scbet88.com','9978win.com','1xbet-ph.com',
+    'camislot.com','camislot88.com',
+    'gogo777.ph','gogo88.ph',
+    'superph.com','super8casino.ph','super9bet.ph',
+    'online-casino-ph.com','casinoph888.com',
+    // Referral-lure domains (generic patterns for PH gambling scams)
+    'red-packet-win.com','redpacketclaim.com','redpacket888.com',
+    'instant-cashout-ph.com','highods-ph.com',
 ]);
 
 const SUSPICIOUS_PATTERNS = [
@@ -299,6 +334,21 @@ const SUSPICIOUS_PATTERNS = [
     /(prize|promo|reward|winner|claim|lottery|won|congrats).*(claim|click|collect|verify|fill|form)/i,
     /^(free|get|claim|win|earn|bonus)[-.]?(robux|vbucks|diamonds|coins|gems|credits)/i,
     /\b(exodus|metamask|ledger|trezor|coinbase|binance|trust.?wallet)\b.*(download|install|support|recover|restore|seed|phrase|connect)/i,
+    // ── Gambling scam patterns ────────────────────────────────────────────────
+    // Matches domains like fc8win.com, jili777.ph, 747live.net, taya365.com
+    /^(fc|jili|taya|lodi|hawk|phlwin|nuebe|mwplay|pera|gogo|super)\d*(win|bet|play|slot|game|casino|live)?\d*\.(com|net|ph|xyz|online|live)/i,
+    // Numeric-heavy casino domains: ph777, 77ph, 747, 888, 999, etc.
+    /^(ph|win|bet|cash|lucky|mega|swerte|panalo|bonus|rich|fun|gg)\d{2,4}\.(com|net|ph|xyz)/i,
+    /^\d{2,4}(win|bet|live|play|casino|slot|ph|game)\.(com|net|ph|xyz|live)/i,
+    // Referral/affiliate ID in query string — hallmark of gambling scam links
+    /[?&]id=\d{6,}/,
+    // Red-packet / cash-out lure domains
+    /(red.?packet|redpacket).*(win|claim|bonus|register|reward)/i,
+    /(instant.?cash|easy.?cash|fast.?cash).*(out|withdraw|claim|register)/i,
+    // Generic gambling + lure word combos
+    /\b(register|signup|join).*(red.?packet|cash.?out|bonus|reward|jackpot)/i,
+    /(sure.?win|guaranteed.?win|100.?win|sure.?odds).*(register|click|join)/i,
+    /(jili|taya|lodigame|hawkplay|phlwin|betso|winford|peraplay|nuebe|mwplay)/i,
 ];
 
 const BRAND_LEGITIMATE_DOMAINS = {
@@ -382,18 +432,34 @@ function detectCryptoFinancialContent(html, title) {
     return CRYPTO_FINANCIAL_BRANDS.filter(brand => text.includes(brand.toLowerCase()));
 }
 
+// ── Gambling scam domain patterns (matched against full hostname) ─────────────
+const GAMBLING_DOMAIN_PATTERNS = [
+    /^(fc|jili|taya|lodi|hawk|phlwin|nuebe|mwplay|pera|gogo|super)\d*(win|bet|play|slot|game|casino|live)?\d*\./i,
+    /^(ph|win|bet|cash|lucky|mega|swerte|panalo|bonus|rich|fun|gg)\d{2,4}\./i,
+    /^\d{2,4}(win|bet|live|play|casino|slot|ph|game)\./i,
+    /(jili|taya365|taya777|lodigame|hawkplay|phlwin|betso|winford|peraplay|nuebe|mwplay|mantaslot|milyon|nice88)/i,
+    /(red.?packet|redpacket)\d*\.(com|net|ph|xyz)/i,
+    /\d{3,4}(win|bet|casino|live|play)\.(com|net|ph)/i,
+];
+
+function isGamblingScamDomain(hostname) {
+    const h = hostname.toLowerCase().replace(/^www\./, '');
+    return GAMBLING_DOMAIN_PATTERNS.some(p => p.test(h));
+}
+
 function analyzeHostname(hostname) {
     const h = hostname.toLowerCase().replace(/^www\./, '');
-    if (isTrustedDomain(h)) return { hardBlacklisted: false, patternMatch: false, brandSpoof: false };
-    if (HARD_BLACKLIST.has(h)) return { hardBlacklisted: true, patternMatch: false, brandSpoof: false };
+    if (isTrustedDomain(h)) return { hardBlacklisted: false, patternMatch: false, brandSpoof: false, gamblingPattern: false };
+    if (HARD_BLACKLIST.has(h)) return { hardBlacklisted: true, patternMatch: false, brandSpoof: false, gamblingPattern: false };
 
     const parts = h.split('.');
     for (let i = 0; i < parts.length - 1; i++) {
         const sub = parts.slice(i).join('.');
-        if (HARD_BLACKLIST.has(sub)) return { hardBlacklisted: true, patternMatch: false, brandSpoof: false };
+        if (HARD_BLACKLIST.has(sub)) return { hardBlacklisted: true, patternMatch: false, brandSpoof: false, gamblingPattern: false };
     }
 
     const patternMatch = SUSPICIOUS_PATTERNS.some(p => p.test(h));
+    const gamblingPattern = isGamblingScamDomain(h);
 
     let brandSpoof = false, spoofedBrand = null;
     for (const [brand, legitDomains] of Object.entries(BRAND_LEGITIMATE_DOMAINS)) {
@@ -403,7 +469,7 @@ function analyzeHostname(hostname) {
             if (!isLegit) { brandSpoof = true; spoofedBrand = brand; break; }
         }
     }
-    return { hardBlacklisted: false, patternMatch, brandSpoof, spoofedBrand };
+    return { hardBlacklisted: false, patternMatch, brandSpoof, spoofedBrand, gamblingPattern };
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -752,6 +818,15 @@ const HIGH_RISK_PHRASES = [
     'enter your seed phrase','enter your recovery phrase','enter your private key',
     'wallet has been compromised','connect your wallet to verify','sync your wallet',
     'validate your wallet','restore your exodus','restore your metamask',
+    // ── Gambling scam lure phrases ────────────────────────────────────────────
+    'won 3 days in a row','won every day','win streak guaranteed',
+    'register for red packet','claim your red packet','red packet reward',
+    'instant cash out','super hassle-free','hassle-free withdrawal',
+    '90% odds','90%+ odds','sure win odds','guaranteed win rate',
+    'register now and win','join now and earn','sign up and get bonus',
+    'high odds instant cash','daily guaranteed earnings','daily sure win',
+    '7777 red packet','8888 red packet','register for bonus cash',
+    'no loss guarantee','0% loss','zero loss guaranteed',
 ];
 
 const MEDIUM_RISK_PHRASES = [
@@ -759,6 +834,13 @@ const MEDIUM_RISK_PHRASES = [
     'click here to verify','validate your information','confirm billing',
     'your password has expired','update payment details','reactivate your account',
     'unusual sign-in activity','verify your email address',
+    // ── Gambling / scam softer signals ───────────────────────────────────────
+    'red packet','register to win','free bonus register',
+    'instant withdrawal','referral bonus','invite friends earn',
+    'download app and earn','play and win real money',
+    'minimum deposit','first deposit bonus','unlimited withdrawal',
+    'legit and trusted','tested and proven','laro na at kumita',
+    'subok na','panalo araw araw','libre na bonus',
 ];
 
 function deepContentAnalysis(html, hostname, finalUrl) {
@@ -1124,6 +1206,7 @@ function calculateRiskScore(signals) {
     if (signals.hardBlacklisted)  score -= 80;
     if (signals.brandSpoof)       score -= 60;
     if (signals.patternMatch)     score -= 40;
+    if (signals.gamblingPattern)  score -= 55; // gambling scam domain structure
 
     // External API results
     if (signals.googleSafeBrowsing)           score -= 70;
@@ -1204,6 +1287,9 @@ function determineVerdict(score, signals) {
     if (signals.urlScanMalicious)                      return 'danger';
     if (signals.checkPhishPhish)                       return 'danger';
     if (signals.freeSiteBuilder && signals.cryptoFinancialContent) return 'danger';
+
+    // Gambling scam: pattern match on known gambling domain structures
+    if (signals.patternMatch && signals.gamblingPattern) return 'danger';
 
     const hasCriticalContent = (signals.contentFlags || []).some(f =>
         ['brand-impersonation','hidden-iframe','meta-redirect'].includes(f.type) && f.severity === 'high'
@@ -1418,6 +1504,12 @@ app.get('/api/check', async (req, res) => {
         const domainAgeDays = parseWhoisAge(whoisInfo);
         const contentFlags  = deepContentAnalysis(html, resolvedHostname, finalUrl);
 
+        // Gambling scam enrichment
+        if (hostnameAnalysis.gamblingPattern && !hostnameAnalysis.hardBlacklisted) {
+            contentFlags.unshift({ type: 'gambling-scam', severity: 'high',
+                detail: `"${resolvedHostname}" matches patterns used by illegal online gambling scam sites. These spread via Messenger/Viber with fake "90%+ odds / instant cash out" promises — victims lose their deposits and cannot withdraw.` });
+        }
+
         // Free site builder enrichment
         let freeSiteBuilder       = !!builderInfo;
         let freeSiteBuilderName   = builderInfo?.name || null;
@@ -1470,6 +1562,7 @@ app.get('/api/check', async (req, res) => {
             brandSpoof:             hostnameAnalysis.brandSpoof,
             spoofedBrand:           hostnameAnalysis.spoofedBrand,
             patternMatch:           hostnameAnalysis.patternMatch,
+            gamblingPattern:        hostnameAnalysis.gamblingPattern,
             urlFlags,
             httpsOk:                resolvedHttpsOk,
             certValid, certExpiresDays, selfSignedCert, certExpiresSoon,
@@ -1532,6 +1625,8 @@ app.get('/api/check', async (req, res) => {
             freeSiteBuilderDetail,
             cryptoFinancialContent,
             cryptoBrands,
+            // Gambling scam
+            gamblingPattern: hostnameAnalysis.gamblingPattern,
             // Meta
             totalDuration,
         };

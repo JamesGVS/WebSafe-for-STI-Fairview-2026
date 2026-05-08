@@ -681,8 +681,6 @@ function friendlyFlagDetail(f) {
                         : `urlscan.io flagged this page as malicious${d.urlScanVerdict ? ` (${d.urlScanVerdict})` : ''}${reportLink}`});
             }
 
-            // urlscan.io
-            if (d.urlScanMalicious != null) {
             if (d.freeSiteBuilder) {
                 checks.push({label:'Suspicious Hosting', ok:false,
                     detail: d.freeSiteBuilderDetail || 'This site is hosted on a free website builder — scammers often use these to create fake pages'});
