@@ -286,6 +286,7 @@ function flagTypeLabel(type) {
         'high-entropy-domain':       'Random-Looking Site Name',
         'homograph-attack':          'Lookalike Web Address',
         'numeric-substitution':      'Letter-Number Trick',
+        'gambling-scam':             '🎰 Illegal Gambling Scam Site',
     };
     return map[type] || 'Suspicious Signal';
 }
@@ -357,6 +358,8 @@ function friendlyFlagDetail(f) {
             return f.detail || 'urlscan.io opened this page in an isolated sandbox and confirmed it is malicious';
         case 'checkphish-flag':
             return f.detail || 'CheckPhish AI detected brand impersonation or phishing content on this page';
+        case 'gambling-scam':
+            return f.detail || 'This site is an illegal online gambling scam. These links are spread via Messenger/Viber with fake "90%+ odds / instant cash out / red packet" lures. Victims lose their deposits and are blocked when they try to withdraw.';
         default:
             return f.detail || 'Suspicious signal detected';
     }
@@ -734,6 +737,7 @@ function friendlyFlagDetail(f) {
                         : '🚨 CheckPhish confirmed this is a phishing site';
                     else if (d.blacklisted)          reason = '🚨 This website is on our known-dangerous list — stay away';
                     else if (d.brandSpoof)           reason = `🚨 This site is impersonating "${d.spoofedBrand}" — phishing site`;
+                    else if (d.gamblingPattern)      reason = '🚨 Illegal gambling scam site — spread via social media with fake cash-out promises. Do NOT register or deposit.';
                     else if (d.freeSiteBuilder && d.cryptoFinancialContent) reason = '🚨 Scam page pretending to be a real brand, hosted on a free site';
                     else if (d.patternMatch)         reason = '🚨 This web address matches patterns used by known scammers';
                     else if (d.virusTotalPositives > 3) reason = `🚨 ${d.virusTotalPositives} antivirus engines flagged this link`;
@@ -901,6 +905,7 @@ function friendlyFlagDetail(f) {
         window._wsLastLevel     = level;
         window._wsLastDeadLink  = !!(serverData && serverData.deadLink);
         window._wsLastDeadLabel = (serverData && serverData.deadLabel) || null;
+        window._wsLastServerData = serverData || null;
 
         btn.disabled = false;
         hideSpinner();
@@ -1817,4 +1822,357 @@ function friendlyFlagDetail(f) {
         }
         return flags;
     };
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FEATURE: DARK / LIGHT MODE TOGGLE
+// ═══════════════════════════════════════════════════════════════════════════════
+(function () {
+    const THEME_KEY = 'ws_theme';
+    const btn       = document.getElementById('theme_toggle');
+    const moonIcon  = document.getElementById('theme_icon_moon');
+    const sunIcon   = document.getElementById('theme_icon_sun');
+
+    function applyTheme(theme) {
+        if (theme === 'light') {
+            document.body.classList.add('light-mode');
+            if (moonIcon) moonIcon.style.display = 'none';
+            if (sunIcon)  sunIcon.style.display  = 'block';
+            if (btn) btn.title = 'Switch to dark mode';
+        } else {
+            document.body.classList.remove('light-mode');
+            if (moonIcon) moonIcon.style.display = 'block';
+            if (sunIcon)  sunIcon.style.display  = 'none';
+            if (btn) btn.title = 'Switch to light mode';
+        }
+        try { localStorage.setItem(THEME_KEY, theme); } catch(e) {}
+    }
+
+    // Load saved preference
+    const saved = (() => { try { return localStorage.getItem(THEME_KEY); } catch(e) { return null; } })();
+    applyTheme(saved === 'light' ? 'light' : 'dark');
+
+    if (btn) {
+        btn.addEventListener('click', () => {
+            applyTheme(document.body.classList.contains('light-mode') ? 'dark' : 'light');
+        });
+    }
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FEATURE: FILIPINO / ENGLISH LANGUAGE TOGGLE
+// ═══════════════════════════════════════════════════════════════════════════════
+(function () {
+    const LANG_KEY = 'ws_lang';
+
+    // All translatable strings. Key = data-i18n attribute value.
+    const STRINGS = {
+        en: {
+            'hero-heading':        null, // dynamic greeting, skip
+            'hero-sub':            'Before we go, let\'s check and see! Paste a link below to find out if it\'s WebSafe for you.',
+            'input-placeholder':   'Paste a URL or link to check…',
+            'btn-verify':          'Verify Security',
+            'btn-preview':         'Preview Now',
+            'btn-scan-qr':         'Scan QR Code',
+            'btn-upload-qr':       'Upload QR Image',
+            'threats-label':       'Awareness',
+            'threats-title':       'Understanding Online Threats',
+            'threats-sub':         'Cyber threats are designed to look convincing. Here\'s how you can stay protected.',
+            'threat-1-title':      'Phishing Links',
+            'threat-1-desc':       'Mimic real websites to steal passwords and personal information.',
+            'threat-2-title':      'QR Code Scams',
+            'threat-2-desc':       'Hide malicious links that redirect to fake login pages or malware.',
+            'threat-3-title':      'Malicious Files',
+            'threat-3-desc':       'Contain hidden scripts that install spyware or steal your data.',
+            'why-verify-title':    'Why Verification Matters',
+            'why-verify-desc':     'WebSafe gives you visibility before interaction. Identify suspicious links, detect non-secure domains, avoid harmful QR codes, and prevent downloading dangerous files.',
+            'browse-title':        'Browse With Confidence',
+            'browse-desc':         'Cybersecurity isn\'t about avoiding the internet — it\'s about using it with awareness. By making verification a habit, you reduce the risk of scams and stay ahead of evolving threats.',
+            'lang-label':          'EN',
+            'lang-toggle-title':   'Switch to Filipino',
+            'sidebar-scan':        'Scan a Link',
+            'sidebar-what':        'What WebSafe Does',
+            'sidebar-how':         'How It Works',
+            'sidebar-contact':     'Contact Authorities',
+            'sidebar-about':       'About Us',
+            'sidebar-history':     'Last Scans This Session',
+            'sidebar-contacts-ph': 'Quick Contacts (PH)',
+        },
+        fil: {
+            'hero-heading':        null,
+            'hero-sub':            'Bago ka mag-click, i-check muna! I-paste ang link sa ibaba para malaman kung ligtas ito para sa iyo.',
+            'input-placeholder':   'I-paste ang URL o link para i-check…',
+            'btn-verify':          'Suriin ang Seguridad',
+            'btn-preview':         'I-preview Ngayon',
+            'btn-scan-qr':         'I-scan ang QR Code',
+            'btn-upload-qr':       'Mag-upload ng QR Image',
+            'threats-label':       'Kamalayan',
+            'threats-title':       'Pag-unawa sa mga Online na Banta',
+            'threats-sub':         'Ang mga cyber threat ay dinisenyo para magmukhang totoo. Narito kung paano ka mapoprotektahan.',
+            'threat-1-title':      'Phishing Links',
+            'threat-1-desc':       'Ginagaya ang mga tunay na website para magnakaw ng password at personal na impormasyon.',
+            'threat-2-title':      'QR Code Scam',
+            'threat-2-desc':       'Nagtatago ng mga mapanganib na link na nagre-redirect sa pekeng login pages o malware.',
+            'threat-3-title':      'Mapanganib na Files',
+            'threat-3-desc':       'Naglalaman ng mga nakatagong script na nag-iinstall ng spyware o nagnanakaw ng iyong data.',
+            'why-verify-title':    'Bakit Mahalaga ang Pag-verify',
+            'why-verify-desc':     'Binibigyan ka ng WebSafe ng visibility bago mag-interact. Tukuyin ang mga kahina-hinalang link, alamin ang mga hindi secure na domain, iwasan ang mapanganib na QR codes, at pigilan ang pag-download ng mapanganib na files.',
+            'browse-title':        'Mag-browse nang may Kumpiyansa',
+            'browse-desc':         'Hindi ibig sabihin ng cybersecurity na iwasan ang internet — ito ay tungkol sa paggamit nito nang may kamalayan. Sa paggawa ng pag-verify na isang ugali, mababawasan mo ang panganib ng scam.',
+            'lang-label':          'FIL',
+            'lang-toggle-title':   'Switch to English',
+            'sidebar-scan':        'Mag-scan ng Link',
+            'sidebar-what':        'Ano ang WebSafe',
+            'sidebar-how':         'Paano Ito Gumagana',
+            'sidebar-contact':     'Makipag-ugnayan sa Awtoridad',
+            'sidebar-about':       'Tungkol sa Amin',
+            'sidebar-history':     'Mga Nakaraang Scan',
+            'sidebar-contacts-ph': 'Mabilis na Mga Kontak (PH)',
+        }
+    };
+
+    // Map data-i18n keys to DOM element + property
+    const TARGETS = [
+        { key: 'hero-sub',          sel: '#link_checker > p',              prop: 'textContent' },
+        { key: 'input-placeholder', sel: '#link_input',                    prop: 'placeholder' },
+        { key: 'btn-verify',        sel: '#check_btn',                     prop: 'textContent' },
+        { key: 'btn-preview',       sel: '#preview_btn',                   prop: 'textContent' },
+        { key: 'threats-label',     sel: '.threats-label',                 prop: 'textContent' },
+        { key: 'threats-title',     sel: '.threats-title',                 prop: 'innerHTML',
+          transform: { en: 'Understanding<br><span>Online Threats</span>', fil: 'Pag-unawa sa mga<br><span>Online na Banta</span>' } },
+        { key: 'threats-sub',       sel: '.threats-subtitle',              prop: 'textContent' },
+        { key: 'threat-1-title',    sel: '.threat-card:nth-child(1) h3',   prop: 'textContent' },
+        { key: 'threat-1-desc',     sel: '.threat-card:nth-child(1) p',    prop: 'textContent' },
+        { key: 'threat-2-title',    sel: '.threat-card:nth-child(2) h3',   prop: 'textContent' },
+        { key: 'threat-2-desc',     sel: '.threat-card:nth-child(2) p',    prop: 'textContent' },
+        { key: 'threat-3-title',    sel: '.threat-card:nth-child(3) h3',   prop: 'textContent' },
+        { key: 'threat-3-desc',     sel: '.threat-card:nth-child(3) p',    prop: 'textContent' },
+        { key: 'why-verify-title',  sel: '.threats-info-row:nth-child(1) h4', prop: 'textContent' },
+        { key: 'why-verify-desc',   sel: '.threats-info-row:nth-child(1) p',  prop: 'textContent' },
+        { key: 'browse-title',      sel: '.threats-info-row:nth-child(2) h4', prop: 'textContent' },
+        { key: 'browse-desc',       sel: '.threats-info-row:nth-child(2) p',  prop: 'textContent' },
+    ];
+
+    // Sidebar links (by text content matching)
+    const SIDEBAR_LINKS = [
+        { key: 'sidebar-scan',        text_en: 'Scan a Link' },
+        { key: 'sidebar-what',        text_en: 'What WebSafe Does' },
+        { key: 'sidebar-how',         text_en: 'How It Works' },
+        { key: 'sidebar-contact',     text_en: 'Contact Authorities' },
+        { key: 'sidebar-about',       text_en: 'About Us' },
+    ];
+
+    function applyLang(lang) {
+        const s = STRINGS[lang];
+        if (!s) return;
+
+        TARGETS.forEach(({ key, sel, prop, transform }) => {
+            if (s[key] === null) return;
+            const els = document.querySelectorAll(sel);
+            els.forEach(el => {
+                if (!el) return;
+                if (transform) {
+                    el.innerHTML = transform[lang] || s[key];
+                } else {
+                    el[prop] = s[key];
+                }
+            });
+        });
+
+        // Sidebar links
+        SIDEBAR_LINKS.forEach(({ key, text_en }) => {
+            const links = document.querySelectorAll('#sidebar_menu .sidebar-link');
+            links.forEach(link => {
+                if (link.textContent.trim() === text_en || link.textContent.trim() === STRINGS.fil[key]) {
+                    // preserve the SVG icon, update only text node
+                    const icon = link.querySelector('svg');
+                    link.textContent = s[key];
+                    if (icon) link.prepend(icon);
+                }
+            });
+        });
+
+        // Sidebar section labels
+        const sectionLabels = document.querySelectorAll('.sidebar-section-label');
+        if (sectionLabels[0]) sectionLabels[0].textContent = s['sidebar-scan'] === 'Scan a Link' ? 'Navigation' : 'Nabigasyon';
+        if (sectionLabels[1]) sectionLabels[1].textContent = s['sidebar-history'];
+        if (sectionLabels[2]) sectionLabels[2].textContent = s['sidebar-contacts-ph'];
+
+        // Language toggle label & title
+        const langLabel = document.getElementById('lang_label');
+        const langBtn   = document.getElementById('lang_toggle');
+        if (langLabel) langLabel.textContent = s['lang-label'];
+        if (langBtn)   langBtn.title = s['lang-toggle-title'];
+
+        // Scan QR / Upload QR buttons — find by current text
+        const scanQrBtn   = document.getElementById('scan_qr_btn');
+        const uploadQrBtn = document.getElementById('upload_qr_btn');
+        if (scanQrBtn) {
+            const icon = scanQrBtn.querySelector('svg');
+            scanQrBtn.textContent = s['btn-scan-qr'];
+            if (icon) scanQrBtn.prepend(icon);
+        }
+        if (uploadQrBtn) {
+            const icon = uploadQrBtn.querySelector('svg');
+            uploadQrBtn.textContent = s['btn-upload-qr'];
+            if (icon) uploadQrBtn.prepend(icon);
+        }
+
+        try { localStorage.setItem('ws_lang', lang); } catch(e) {}
+        document.documentElement.lang = lang === 'fil' ? 'tl' : 'en';
+    }
+
+    // Load saved language
+    const savedLang = (() => { try { return localStorage.getItem('ws_lang') || 'en'; } catch(e) { return 'en'; } })();
+    applyLang(savedLang);
+
+    const langBtn = document.getElementById('lang_toggle');
+    if (langBtn) {
+        langBtn.addEventListener('click', () => {
+            const cur = (() => { try { return localStorage.getItem('ws_lang') || 'en'; } catch(e) { return 'en'; } })();
+            applyLang(cur === 'en' ? 'fil' : 'en');
+        });
+    }
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FEATURE: REAL-TIME URL WARNING (as-you-type)
+// ═══════════════════════════════════════════════════════════════════════════════
+(function () {
+    const input   = document.getElementById('link_input');
+    const warning = document.getElementById('realtime_warning');
+    if (!input || !warning) return;
+
+    // Suspicious patterns for instant client-side detection
+    const INSTANT_DANGER = [
+        { re: /(gcash|bdo|bpi|paypal|google|facebook|apple|microsoft|amazon|netflix)\.(xyz|top|club|online|site|space|live|win|bid|tk|ml|cf|ga|gq)/i, msg: '🚨 Suspicious domain ending — this may be impersonating a real brand' },
+        { re: /^(secure|login|verify|account|update|billing|support|alert|confirm)\./i,    msg: '🚨 Suspicious subdomain — commonly used in phishing' },
+        { re: /-(verify|login|secure|update|account|billing|confirm|restore|unlock)(\.|\/)/, msg: '🚨 URL structure matches known phishing patterns' },
+        { re: /(paypal|google|facebook|gcash|bdo|bpi|apple|microsoft).*\.(xyz|top|online|site|live|bid|win|club|tk|ml)/i, msg: '🚨 Brand name + suspicious TLD — classic phishing setup' },
+        { re: /[?&]id=\d{6,}/,                msg: '⚠️ Referral ID in URL — common in gambling scam links' },
+        { re: /^data:|^javascript:|^vbscript:/i, msg: '🚨 Dangerous URL type — never visit this link' },
+        { re: /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/, msg: '⚠️ IP address URL — legitimate sites use domain names' },
+        { re: /(jili|taya|lodi|hawkplay|phlwin|betso|peraplay|nuebe|mwplay)/i, msg: '🚨 Known gambling scam site pattern detected' },
+        { re: /(free-robux|getrobux|claim-prize|you-won|winner-claim|crypto-doubler|bitcoin-generator)/i, msg: '🚨 Scam site pattern detected — this is almost certainly fake' },
+        { re: /[a-z][0-9][a-z]/i,             msg: '⚠️ Letter-number substitution detected (e.g. g00gle, p4ypal)' },
+    ];
+
+    const INSTANT_WARNING = [
+        { re: /^http:\/\//i,                   msg: '⚠️ No encryption (HTTP) — avoid entering personal info' },
+        { re: /(-){3,}/,                        msg: '⚠️ Many hyphens in domain — often used by scammers' },
+        { re: /\.{2,}/,                         msg: '⚠️ Unusual dots in URL — may be disguising destination' },
+        { re: /bit\.ly|tinyurl|goo\.gl|ow\.ly|is\.gd|t\.co|rb\.gy|s\.id/i, msg: 'ℹ️ Shortened URL — run a full scan to see where it leads' },
+    ];
+
+    let _timer = null;
+
+    input.addEventListener('input', () => {
+        clearTimeout(_timer);
+        _timer = setTimeout(() => checkRealtime(input.value.trim()), 300);
+    });
+
+    input.addEventListener('paste', () => {
+        clearTimeout(_timer);
+        setTimeout(() => checkRealtime(input.value.trim()), 350);
+    });
+
+    function clearWarning() {
+        warning.className = '';
+        warning.style.display = 'none';
+        warning.innerHTML = '';
+    }
+
+    function showWarning(type, msg) {
+        warning.className = type === 'danger' ? 'rt-danger' : type === 'warning' ? 'rt-warning' : 'rt-ok';
+        warning.style.display = 'flex';
+        warning.innerHTML = `<span style="flex-shrink:0">${type === 'danger' ? '🚨' : type === 'warning' ? '⚠️' : 'ℹ️'}</span><span>${msg}</span>`;
+    }
+
+    function checkRealtime(raw) {
+        if (!raw || raw.length < 4) { clearWarning(); return; }
+
+        let normalized = raw;
+        if (!/^[a-z][a-z0-9+\-.]*:\/\//i.test(raw)) normalized = 'https://' + raw;
+
+        let hostname = '';
+        try { hostname = new URL(normalized).hostname.toLowerCase(); } catch(e) {}
+
+        const testStr = hostname + normalized;
+
+        for (const { re, msg } of INSTANT_DANGER) {
+            if (re.test(testStr)) { showWarning('danger', msg); return; }
+        }
+        for (const { re, msg } of INSTANT_WARNING) {
+            if (re.test(testStr)) { showWarning('warning', msg); return; }
+        }
+
+        // If looks like a valid URL with HTTPS, show green ok
+        if (normalized.startsWith('https://') && hostname && hostname.includes('.')) {
+            showWarning('ok', 'URL format looks okay — hit Verify Security for a full scan');
+        } else {
+            clearWarning();
+        }
+    }
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// FEATURE: API SOURCE BADGES IN RESULT CARD
+// Patches renderResultCard to add a "Checked by" badge row after the score row
+// ═══════════════════════════════════════════════════════════════════════════════
+(function () {
+    // We hook into the existing flow by patching addToHistory, which fires
+    // after renderResultCard. Instead, we observe DOM insertion.
+    const observer = new MutationObserver(() => {
+        const card = document.querySelector('#link_status > div');
+        if (!card || card.dataset.wsApiBadges) return;
+        card.dataset.wsApiBadges = '1';
+
+        // Only add if we have server data (riskScore present)
+        if (!window._wsLastServerData) return;
+        const d = window._wsLastServerData;
+
+        const apis = [
+            { name: 'Google Safe Browsing', ok: d.googleSafeBrowsing === false ? true : d.googleSafeBrowsing === true ? false : null,   skipped: d.googleSafeBrowsing == null },
+            { name: 'VirusTotal',           ok: d.virusTotalPositives === 0 ? true : d.virusTotalPositives > 0 ? false : null,           skipped: d.virusTotalPositives == null },
+            { name: 'urlscan.io',           ok: d.urlScanMalicious === false ? true : d.urlScanMalicious === true ? false : null,        skipped: d.urlScanMalicious == null },
+            { name: 'CheckPhish',           ok: d.checkPhishDisposition === 'clean' ? true : (d.checkPhishDisposition === 'phish' || d.checkPhishDisposition === 'suspect') ? false : null, skipped: d.checkPhishDisposition == null },
+        ];
+
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:10px 20px;background:rgba(255,255,255,0.015);border-top:1px solid rgba(59,130,246,0.1);';
+
+        const lbl = document.createElement('span');
+        lbl.style.cssText = 'font-size:10px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-right:4px;white-space:nowrap;';
+        lbl.textContent = 'Checked by:';
+        row.appendChild(lbl);
+
+        apis.forEach(({ name, ok, skipped }) => {
+            const badge = document.createElement('div');
+            const bgCol  = skipped ? 'rgba(100,116,139,0.1)' : ok ? 'rgba(34,197,94,0.1)' : 'rgba(248,113,113,0.1)';
+            const fgCol  = skipped ? '#64748b'  : ok ? '#4ade80' : '#fca5a5';
+            const border = skipped ? 'rgba(100,116,139,0.3)' : ok ? 'rgba(34,197,94,0.35)' : 'rgba(248,113,113,0.35)';
+            const ico    = skipped ? '–' : ok ? '✓' : '✕';
+            badge.style.cssText = `display:inline-flex;align-items:center;gap:4px;background:${bgCol};color:${fgCol};border:1px solid ${border};border-radius:6px;padding:3px 9px;font-size:11px;font-weight:700;white-space:nowrap;`;
+            badge.innerHTML = `<span style="font-size:10px;font-weight:900">${ico}</span><span>${name}</span>`;
+            badge.title = skipped ? `${name}: not configured / skipped` : ok ? `${name}: no threats found` : `${name}: flagged as dangerous`;
+            row.appendChild(badge);
+        });
+
+        // Insert after summary row (2nd child)
+        const summary = card.children[1];
+        if (summary && summary.nextSibling) {
+            card.insertBefore(row, summary.nextSibling);
+        } else {
+            card.appendChild(row);
+        }
+    });
+
+    observer.observe(document.getElementById('link_status') || document.body, { childList: true, subtree: true });
+
+    // Expose server data so the observer can read it
+    const _origFetch = window.fetch;
+    // We patch addToHistory instead — simpler
+    const _origAdd = window.addToHistory;
+    // Store last server response on window
+    const origCheckBtn = document.getElementById('check_btn');
 })();
