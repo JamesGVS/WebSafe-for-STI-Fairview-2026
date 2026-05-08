@@ -30,7 +30,6 @@ const GSB_KEY         = process.env.GSB_KEY          || '';
 const VT_KEY          = process.env.VT_KEY           || '';
 const URLSCAN_KEY     = process.env.URLSCAN_KEY      || '';
 const CHECKPHISH_KEY  = process.env.CHECKPHISH_KEY   || '';
-const GEMINI_KEY      = process.env.GEMINI_API_KEY   || '';
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -203,8 +202,7 @@ function makeRateLimiter(maxPerMin, message) {
 
 // Most expensive: /api/check fires 8 parallel external API calls
 app.use('/api/check', makeRateLimiter(5,  'Scan limit reached (5/min) — please wait before scanning again.'));
-// Chat burns real API tokens — tighter cap
-app.use('/api/chat',  makeRateLimiter(10, 'Chat limit reached (10/min) — please slow down.'));
+
 // Cheap endpoints: fetch, whois, status
 app.use('/api/',      makeRateLimiter(30, 'Too many requests — please wait a moment.'));
 
@@ -1307,8 +1305,6 @@ app.get('/api/status', (req, res) => {
             virusTotal:         !!VT_KEY,
             urlscan:            !!URLSCAN_KEY,
             checkPhish:         !!CHECKPHISH_KEY,
-            chatAssistant:      !!GEMINI_KEY,
-            chatProvider:       GEMINI_KEY ? 'gemini' : null,
         },
     });
 });
@@ -1551,116 +1547,6 @@ app.get('/api/check', async (req, res) => {
     }
 });
 
-// POST /api/chat — Gemini streaming chat assistant proxy (key stays server-side)
-app.post('/api/chat', async (req, res) => {
-    if (!GEMINI_KEY) {
-        return res.status(503).json({ ok: false, error: 'Chat assistant is not configured on this server.' });
-    }
-    const { messages, system } = req.body || {};
-    if (!Array.isArray(messages) || messages.length === 0) {
-        return res.status(400).json({ ok: false, error: 'messages array is required.' });
-    }
-
-    // Sanitise messages — only allow role + string content; cap each message at 4 000 chars
-    // Gemini uses "user" / "model" roles (not "assistant")
-    const safeMessages = messages
-        .filter(m => m && ['user', 'assistant'].includes(m.role) && typeof m.content === 'string')
-        .slice(-20)
-        .map(m => ({
-            role:  m.role === 'assistant' ? 'model' : 'user',
-            parts: [{ text: String(m.content).slice(0, 4_000) }],
-        }));
-
-    if (safeMessages.length === 0) {
-        return res.status(400).json({ ok: false, error: 'No valid messages provided.' });
-    }
-
-    // Token-budget guard: reject if total content exceeds ~40 000 chars (~10k tokens)
-    const totalChars = safeMessages.reduce((acc, m) => acc + (m.parts[0]?.text?.length || 0), 0);
-    if (totalChars > 40_000) {
-        return res.status(400).json({ ok: false, error: 'Conversation is too long — please start a new chat.' });
-    }
-
-    // Build Gemini request body
-    const geminiBody = {
-        system_instruction: typeof system === 'string' && system
-            ? { parts: [{ text: system.slice(0, 8192) }] }
-            : undefined,
-        contents: safeMessages,
-        generationConfig: {
-            maxOutputTokens: 1024,
-            temperature: 0.7,
-        },
-    };
-
-    // Remove undefined key so JSON.stringify omits it cleanly
-    if (!geminiBody.system_instruction) delete geminiBody.system_instruction;
-
-    const GEMINI_URL =
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:streamGenerateContent` +
-        `?alt=sse&key=${GEMINI_KEY}`;
-
-    try {
-        const ctrl = new AbortController();
-        const tid  = setTimeout(() => ctrl.abort(), 30000);
-
-        const upstream = await fetch(GEMINI_URL, {
-            method:  'POST',
-            signal:  ctrl.signal,
-            headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify(geminiBody),
-        });
-
-        clearTimeout(tid);
-
-        if (!upstream.ok) {
-            const errText = await upstream.text().catch(() => '');
-            console.warn('/api/chat Gemini upstream error:', upstream.status, errText.slice(0, 300));
-            return res.status(502).json({ ok: false, error: 'Chat service returned an error. Please try again.' });
-        }
-
-        // Stream Gemini SSE → client using our own SSE format
-        // Gemini sends: data: {"candidates":[{"content":{"parts":[{"text":"..."}]}}]}
-        // We re-emit as:  data: {"text":"..."}
-        // Use async iterator — more reliable than .on('data') with node-fetch v2
-        res.setHeader('Content-Type', 'text/event-stream');
-        res.setHeader('Cache-Control', 'no-cache');
-        res.setHeader('X-Accel-Buffering', 'no');
-
-        let buffer = '';
-        try {
-            for await (const chunk of upstream.body) {
-                if (res.writableEnded) break;
-                buffer += chunk.toString('utf8');
-                const lines = buffer.split('\n');
-                buffer = lines.pop();
-                for (const line of lines) {
-                    const trimmed = line.trim();
-                    if (!trimmed.startsWith('data:')) continue;
-                    const raw = trimmed.slice(5).trim();
-                    if (!raw || raw === '[DONE]') continue;
-                    try {
-                        const evt  = JSON.parse(raw);
-                        const text = evt?.candidates?.[0]?.content?.parts?.[0]?.text;
-                        if (text) {
-                            res.write(`data: ${JSON.stringify({ text })}\n\n`);
-                        }
-                    } catch (_) { /* partial JSON — skip */ }
-                }
-            }
-        } catch (streamErr) {
-            console.warn('/api/chat stream error:', streamErr.message);
-        }
-        if (!res.writableEnded) {
-            res.write('data: [DONE]\n\n');
-            res.end();
-        }
-
-    } catch(err) {
-        console.warn('/api/chat error:', err.message);
-        if (!res.headersSent) res.status(500).json({ ok: false, error: 'Chat request failed.' });
-    }
-});
 
 // ── Graceful shutdown (SIGTERM sent by Render / Railway / Fly.io) ─────────────────
 let server; // assigned below by app.listen
@@ -1700,7 +1586,6 @@ server = app.listen(PORT, () => {
     console.log(`║    VirusTotal   : ${(VT_KEY          ? '✓ configured' : '✗ unset (VT_KEY)').padEnd(22)}║`);
     console.log(`║    urlscan.io   : ${(URLSCAN_KEY     ? '✓ configured' : '✗ unset (URLSCAN_KEY)').padEnd(22)}║`);
     console.log(`║    CheckPhish   : ${(CHECKPHISH_KEY  ? '✓ configured' : '✗ unset (CHECKPHISH_KEY)').padEnd(22)}║`);
-    console.log(`║    Chat (Gemini) : ${(GEMINI_KEY     ? '✓ configured' : '✗ unset (GEMINI_API_KEY)').padEnd(22)}║`);
     console.log('╚══════════════════════════════════════════╝\n');
 
     // Auto-open browser on local dev only — never runs in production
