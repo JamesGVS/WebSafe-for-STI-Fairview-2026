@@ -128,6 +128,8 @@ const PUBLIC_FILES = {
     '/contact_local.css':      'contact_local.css',
     '/jsQR.min.js':            'jsQR.min.js',
     '/html5-qrcode.min.js':    'html5-qrcode.min.js',
+    '/robots.txt':             'robots.txt',
+    '/sitemap.xml':            'sitemap.xml',
 };
 
 app.use('/images', express.static(path.join(__dirname, 'images'), {
