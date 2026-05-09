@@ -4,18 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="WebSafe — check any URL for phishing, malware, and online threats before you click. Free link safety checker.">
-    <meta name="robots" content="index, follow">
-    <meta property="og:title" content="WebSafe — Free URL Safety Checker">
-    <meta property="og:description" content="Scan any link for phishing, malware, and scams before you click. Powered by Google Safe Browsing, VirusTotal, and more.">
-    <meta property="og:type" content="website">
-    <link rel="icon" href="/images/logo_circle.png">
+    <link rel="icon" href="images/logo_circle.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="main.css">
     <title>WebSafe</title>
 </head>
-
 <body>
 
 <!-- PARTICLE CANVAS -->
@@ -33,32 +28,61 @@
     </div>
 </div>
 
+<!-- SCROLL PROGRESS BAR -->
+<div id="scroll-progress-bar"></div>
+
+<!-- PANEL NAVIGATION DOTS -->
+<div id="panel-nav">
+    <div class="panel-dot active" data-panel="0" data-label="Scan a Link"></div>
+    <div class="panel-dot" data-panel="1" data-label="Threats"></div>
+    <div class="panel-dot" data-panel="2" data-label="What We Do"></div>
+    <div class="panel-dot" data-panel="3" data-label="Why WebSafe"></div>
+    <div class="panel-dot" data-panel="4" data-label="How It Works"></div>
+    <div class="panel-dot" data-panel="5" data-label="QR Scan"></div>
+    <div class="panel-dot" data-panel="6" data-label="Stay Safe"></div>
+    <div class="panel-dot" data-panel="7" data-label="About"></div>
+</div>
+
+<!-- SCROLL NAV ARROWS -->
+<button class="scroll-nav-btn hidden-btn" id="nav-prev" aria-label="Previous panel">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+</button>
+<button class="scroll-nav-btn" id="nav-next" aria-label="Next panel">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+</button>
+
 <div id="main_content">
 
+<!-- HEADER -->
 <header id="head_logo">
     <img src="images/logo_circle.png" alt="WebSafe logo">
     <h1>Web<span>Safe</span></h1>
-    <div class="header-controls">
-        <!-- Language toggle -->
-        <button id="lang_toggle" class="header-ctrl-btn" aria-label="Switch language" title="Switch to Filipino">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            <span id="lang_label">EN</span>
-        </button>
-
+    <div class="header-right">
+        <div class="header-tag">System Online</div>
+        <div class="header-divider"></div>
+        <div class="header-stat">
+            <span class="header-stat-val">100%</span>
+            <span class="header-stat-label">Free</span>
+        </div>
+        <div class="header-divider"></div>
+        <div class="header-stat">
+            <span class="header-stat-val">PH</span>
+            <span class="header-stat-label">Region</span>
+        </div>
     </div>
 </header>
 
-<!-- Hamburger -->
+<!-- HAMBURGER -->
 <button id="menu_toggle" aria-label="Open navigation menu" aria-expanded="false">
     <span class="hamburger-bar"></span>
     <span class="hamburger-bar"></span>
     <span class="hamburger-bar"></span>
 </button>
 
-<!-- Sidebar overlay -->
+<!-- SIDEBAR OVERLAY -->
 <div id="sidebar_overlay"></div>
 
-<!-- Sidebar -->
+<!-- SIDEBAR -->
 <nav id="sidebar_menu" aria-label="Site navigation">
     <div class="sidebar-header">
         <img src="images/logo_square.jpg" alt="WebSafe logo" class="sidebar-logo-img">
@@ -68,15 +92,19 @@
 
     <div class="sidebar-section">
         <p class="sidebar-section-label">Navigation</p>
-        <a href="#link_checker" class="sidebar-link">
+        <a href="#panel-hero" class="sidebar-link" data-panel="0">
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             Scan a Link
         </a>
-        <a href="#websafe-info-anchor" class="sidebar-link">
+        <a href="#panel-threats" class="sidebar-link" data-panel="1">
+            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Online Threats
+        </a>
+        <a href="#panel-about" class="sidebar-link" data-panel="2">
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
             What WebSafe Does
         </a>
-        <a href="#how-it-works-anchor" class="sidebar-link">
+        <a href="#panel-steps" class="sidebar-link" data-panel="4">
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
             How It Works
         </a>
@@ -118,77 +146,583 @@
     </div>
 </nav>
 
+<!-- ===================================================
+     HORIZONTAL TRACK — All panels slide side to side
+=================================================== -->
+<div id="horizontal-track">
 
-<!-- HERO / LINK CHECKER -->
-<section id="link_checker">
-    <h1 id="dynamic_greeting">Let's get started, Shall we?</h1>
-    <p>Before we go, let's check and see! Paste a link below to find out if it's WebSafe for you.</p>
+    <!-- ══════════════════════════════════════════════
+         PANEL 1 — HERO / LINK CHECKER
+    ══════════════════════════════════════════════ -->
+    <div class="h-panel panel-active" id="panel-hero">
+        <span class="panel-label">01 / SCAN</span>
+        <span class="panel-index">01</span>
 
-    <div class="input-card">
-        <form onsubmit="return false;">
-            <input id="link_input" type="text" placeholder="Paste a URL or link to check…">
-        </form>
+        <div class="hero-inner">
+            <!-- Left: copy -->
+            <div class="hero-text-col">
+                <span class="hero-eyebrow">Free URL Safety Checker</span>
+                <h1 id="dynamic_greeting">Let's get started, shall we?</h1>
+                <p class="hero-sub">Before you click — let WebSafe verify the link. Paste any URL below to instantly check for phishing, malware, and deceptive sites.</p>
 
-        <div class="controls">
-            <button id="check_btn">Verify Security</button>
-            <button id="preview_btn">Preview Now</button>
-        </div>
-
-        <div class="divider">OR</div>
-
-        <button id="scan_qr_btn">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-                <rect x="3" y="14" width="7" height="7" rx="1"/>
-                <rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/>
-                <rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>
-            </svg>
-            Scan QR Code
-        </button>
-
-        <div class="divider">OR</div>
-
-        <button id="upload_qr_btn">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="17 8 12 3 7 8"/>
-                <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>
-            Upload QR Image
-        </button>
-
-        <div id="loading_spinner"></div>
-    </div>
-
-    <div id="results_row">
-        <div id="link_status"></div>
-        <div id="preview_area">
-            <div id="preview_card">
-                <img id="preview_favicon">
-                <div>
-                    <h3 id="preview_title"></h3>
-                    <p id="preview_domain"></p>
-                    <p id="preview_description"></p>
-                    <div id="preview_actions"></div>
+                <div class="hero-stats">
+                    <div class="hero-stat-item">
+                        <span class="hero-stat-num">3<span>+</span></span>
+                        <span class="hero-stat-desc">Threat Types Detected</span>
+                    </div>
+                    <div class="hero-stat-item">
+                        <span class="hero-stat-num">100<span>%</span></span>
+                        <span class="hero-stat-desc">Free to Use</span>
+                    </div>
+                    <div class="hero-stat-item">
+                        <span class="hero-stat-num">∞</span>
+                        <span class="hero-stat-desc">Scans Available</span>
+                    </div>
                 </div>
             </div>
-            <div id="preview_checks"></div>
+
+            <!-- Right: input card -->
+            <div class="hero-card-col">
+                <div class="input-card">
+                    <label class="input-label" for="link_input">Enter URL to Scan</label>
+                    <section id="link_checker">
+                        <form onsubmit="return false;">
+                            <input id="link_input" type="text" placeholder="https://example.com or paste any link…">
+                        </form>
+
+                        <div class="controls">
+                            <button id="check_btn">Verify Security</button>
+                            <button id="preview_btn">Preview Now</button>
+                        </div>
+
+                        <div class="divider">OR</div>
+
+                        <button id="scan_qr_btn">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                <rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/>
+                                <rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>
+                            </svg>
+                            Scan QR Code with Camera
+                        </button>
+
+                        <div class="divider">OR</div>
+
+                        <button id="upload_qr_btn">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                            Upload QR Image File
+                        </button>
+
+                        <div id="loading_spinner"></div>
+
+                        <!-- Results -->
+                        <div id="results_row">
+                            <div id="link_status"></div>
+                            <div id="preview_area">
+                                <div id="preview_card">
+                                    <img id="preview_favicon">
+                                    <div>
+                                        <h3 id="preview_title"></h3>
+                                        <p id="preview_domain"></p>
+                                        <p id="preview_description"></p>
+                                        <div id="preview_actions"></div>
+                                    </div>
+                                </div>
+                                <div id="preview_checks"></div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
         </div>
-    </div>
-</section>
+    </div><!-- /panel-hero -->
+
+    <!-- ══════════════════════════════════════════════
+         PANEL 2 — ONLINE THREATS
+    ══════════════════════════════════════════════ -->
+    <div class="h-panel" id="panel-threats">
+        <span class="panel-label">02 / THREATS</span>
+        <span class="panel-index">02</span>
+
+        <div class="threats-inner">
+            <div class="threats-label">Awareness</div>
+            <h2 class="threats-title">Understanding<br><span>Online Threats</span></h2>
+            <p class="threats-subtitle">Cybercriminals engineer convincing traps. Knowing the threat types is your first line of defence.</p>
+
+            <div class="threats-cards">
+                <div class="threat-card">
+                    <div class="threat-card-scan"></div>
+                    <div class="threat-num">01</div>
+                    <div class="threat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                        </svg>
+                    </div>
+                    <h3>Phishing Links</h3>
+                    <p>Fake pages that perfectly mimic banks, social media, and government sites to steal your login credentials and personal data.</p>
+                </div>
+
+                <div class="threat-card">
+                    <div class="threat-card-scan"></div>
+                    <div class="threat-num">02</div>
+                    <div class="threat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1"/>
+                            <rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/>
+                            <rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>
+                        </svg>
+                    </div>
+                    <h3>QR Code Scams</h3>
+                    <p>Printed or digital QR codes that embed harmful links — often placed on posters, menus, or fake payment terminals.</p>
+                </div>
+
+                <div class="threat-card active">
+                    <div class="threat-card-scan"></div>
+                    <div class="threat-num">03</div>
+                    <div class="threat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                            <polyline points="13 2 13 9 20 9"/>
+                            <line x1="9" y1="13" x2="15" y2="13"/>
+                            <line x1="9" y1="17" x2="13" y2="17"/>
+                        </svg>
+                    </div>
+                    <h3>Malicious Files</h3>
+                    <p>Disguised downloads — PDFs, executables, Office files — that contain hidden scripts to install ransomware or keyloggers.</p>
+                </div>
+            </div>
+
+            <div class="threats-info-rows">
+                <div class="threats-info-row">
+                    <div class="threats-info-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </div>
+                    <div class="threats-info-text">
+                        <h4>Why Verification Matters</h4>
+                        <p>WebSafe gives you visibility before interaction — detect suspicious links, non-secure domains, harmful QR codes, and dangerous downloads before damage is done.</p>
+                    </div>
+                </div>
+                <div class="threats-info-row">
+                    <div class="threats-info-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <div class="threats-info-text">
+                        <h4>Browse With Confidence</h4>
+                        <p>Cybersecurity isn't about avoiding the internet — it's about using it with awareness. One quick WebSafe check puts you back in control of your digital safety.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /panel-threats -->
+
+    <!-- ══════════════════════════════════════════════
+         PANEL 3 — WHAT WEBSAFE DOES
+    ══════════════════════════════════════════════ -->
+    <div class="h-panel" id="panel-about">
+        <span class="panel-label">03 / ABOUT</span>
+        <span class="panel-index">03</span>
+
+        <div class="about-inner">
+            <div class="info-text">
+                <span class="badge">Link Verification Tool</span>
+                <h1>What WebSafe<br>Does</h1>
+                <div class="underline"></div>
+                <p>WebSafe is a user-friendly online tool designed to help you verify links before visiting them. Simply paste any URL to receive an instant preview — including the site's title, favicon, and description — so you know exactly what you're about to open.</p>
+                <p>Our safety checks scan the destination for phishing patterns, suspicious domains, insecure protocols, and known threat databases. You get clear, plain-language results in seconds, with no technical knowledge required.</p>
+                <p>Built for Filipino internet users, WebSafe also provides direct contacts for local cybercrime reporting, keeping you connected to help when you need it most.</p>
+
+                <div class="feature-checklist">
+                    <div class="feature-check-item">
+                        <div class="feature-check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span class="feature-check-text">Instant link preview with title, favicon & description</span>
+                    </div>
+                    <div class="feature-check-item">
+                        <div class="feature-check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span class="feature-check-text">Multi-point safety scan — HTTPS, domain age, redirect chains</span>
+                    </div>
+                    <div class="feature-check-item">
+                        <div class="feature-check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span class="feature-check-text">QR code scanner — camera and image upload supported</span>
+                    </div>
+                    <div class="feature-check-item">
+                        <div class="feature-check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span class="feature-check-text">PH authority contacts built right in — report with one tap</span>
+                    </div>
+                </div>
+
+                <div class="features" style="margin-top:20px;">
+                    <div class="feature-box">Preview Links</div>
+                    <div class="feature-box">Safety Checks</div>
+                    <div class="feature-box">Instant Results</div>
+                    <div class="feature-box">100% Free</div>
+                </div>
+            </div>
+
+            <div class="info-image">
+                <div class="image-circle-wrapper">
+                    <div class="image-circle-orbit"></div>
+                    <div class="image-circle">
+                        <img src="images/logo_circle.png" alt="WebSafe logo">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /panel-about -->
+
+    <!-- ══════════════════════════════════════════════
+         PANEL 4 — WHY WEBSAFE
+    ══════════════════════════════════════════════ -->
+    <div class="h-panel" id="panel-why">
+        <span class="panel-label">04 / WHY US</span>
+        <span class="panel-index">04</span>
+
+        <div class="why-inner">
+            <span class="ws-badge">Trusted Protection</span>
+            <div class="why-grid">
+                <div class="why-visual">
+                    <div class="ws-device">
+                        <div class="ws-screen">
+                            <div class="ws-alert"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="why-content">
+                    <h2>Why Users Should<br>Choose WebSafe</h2>
+                    <p class="ws-subtext">With phishing scams rising sharply across the Philippines, having a trusted, zero-cost verification tool is no longer optional — it's essential.</p>
+                    <div class="ws-card">
+                        WebSafe makes online browsing safer and simpler. It offers a straightforward way to verify link safety before you click — no technical skills, no downloads, no fees. One check can prevent identity theft, financial loss, and account compromise. Over 97% of cyberattacks begin with a malicious link; don't let one click become a costly mistake.
+                    </div>
+                    <div class="ws-features">
+                        <div class="ws-feature-box">
+                            <div class="ws-feature-icon">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            </div>
+                            <p>Secure</p>
+                        </div>
+                        <div class="ws-feature-box">
+                            <div class="ws-feature-icon">
+                                <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            </div>
+                            <p>Fast</p>
+                        </div>
+                        <div class="ws-feature-box">
+                            <div class="ws-feature-icon">
+                                <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </div>
+                            <p>Preview</p>
+                        </div>
+                        <div class="ws-feature-box">
+                            <div class="ws-feature-icon">
+                                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <p>Reliable</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /panel-why -->
+
+    <!-- ══════════════════════════════════════════════
+         PANEL 5 — HOW IT WORKS (URL)
+    ══════════════════════════════════════════════ -->
+    <div class="h-panel" id="panel-steps">
+        <span class="panel-label">05 / PROCESS</span>
+        <span class="panel-index">05</span>
+
+        <div class="steps-inner">
+            <span class="ws-how-badge">Simple 3-Step Process</span>
+            <h2 class="ws-how-title">How does URL Checker Work?</h2>
+            <p class="ws-how-subtext">WebSafe analyzes URLs in real time to help you avoid malware, phishing attempts, counterfeit websites, and deceptive redirects.</p>
+            <p class="ws-how-small">Here's the process:</p>
+
+            <div class="ws-steps">
+                <div class="ws-step-card step-blue">
+                    <div class="ws-step-icon-num">01</div>
+                    <span class="ws-step-number">01</span>
+                    <span class="ws-step-label">STEP 01</span>
+                    <h3>Paste</h3>
+                    <p>Copy any link you want to check and paste it into the WebSafe input field. Supports full URLs, shortened links, and raw domains.</p>
+                </div>
+                <div class="ws-step-card step-purple">
+                    <div class="ws-step-icon-num">02</div>
+                    <span class="ws-step-number">02</span>
+                    <span class="ws-step-label">STEP 02</span>
+                    <h3>Click</h3>
+                    <p>Hit "Verify Security" to trigger a multi-point scan: HTTPS status, domain age, redirect chains, keyword analysis, and more.</p>
+                </div>
+                <div class="ws-step-card step-green">
+                    <div class="ws-step-icon-num">03</div>
+                    <span class="ws-step-number">03</span>
+                    <span class="ws-step-label">STEP 03</span>
+                    <h3>Check</h3>
+                    <p>Review your color-coded results with a full breakdown of each safety check and clear guidance on whether it's safe to proceed.</p>
+                </div>
+            </div>
+
+            <div class="ws-result-box">
+                <div class="ws-result-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                    <h4>Fast &amp; Accurate Results</h4>
+                    <p>Advanced scanning technology analyzes URLs in real time — results appear in under 3 seconds so you can browse without interruption. No account needed, no data stored.</p>
+                </div>
+            </div>
+        </div>
+    </div><!-- /panel-steps -->
+
+    <!-- ══════════════════════════════════════════════
+         PANEL 6 — QR SCAN HOW IT WORKS
+    ══════════════════════════════════════════════ -->
+    <div class="h-panel" id="panel-qr">
+        <span class="panel-label">06 / QR SCAN</span>
+        <span class="panel-index">06</span>
+
+        <div class="qr-steps-inner">
+            <span class="ws-qr-badge">QR Code Safety</span>
+            <h2 class="ws-qr-title">How does <span>QR Scan</span> Work?</h2>
+            <p class="ws-qr-subtext">QR codes can hide any URL inside them — including malicious ones. WebSafe decodes and inspects the embedded link before you ever open it.</p>
+            <p class="ws-qr-small">Two ways to scan:</p>
+
+            <div class="ws-qr-steps">
+                <div class="ws-qr-step-card">
+                    <div class="ws-qr-scan-line"></div>
+                    <div class="ws-qr-step-icon">
+                        <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    </div>
+                    <span class="ws-qr-step-number">01</span>
+                    <span class="ws-qr-step-label">STEP 01</span>
+                    <h3>Scan / Upload</h3>
+                    <p>Point your camera at a QR code or upload an image file. WebSafe extracts the hidden link without opening it — completely safe.</p>
+                </div>
+
+                <div class="ws-qr-step-card">
+                    <div class="ws-qr-scan-line"></div>
+                    <div class="ws-qr-step-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <span class="ws-qr-step-number">02</span>
+                    <span class="ws-qr-step-label">STEP 02</span>
+                    <h3>Analyze</h3>
+                    <p>The extracted URL is run through the same safety engine as manual checks — suspicious domains, unsafe protocols, known phishing patterns.</p>
+                </div>
+
+                <div class="ws-qr-step-card">
+                    <div class="ws-qr-scan-line"></div>
+                    <div class="ws-qr-step-icon">
+                        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                    <span class="ws-qr-step-number">03</span>
+                    <span class="ws-qr-step-label">STEP 03</span>
+                    <h3>Review</h3>
+                    <p>Get a full safety report with risk level, detailed check results, and a recommendation — then decide whether to proceed or avoid.</p>
+                </div>
+            </div>
+
+            <div class="qr-explainer">
+                <div class="qr-explainer-item">
+                    <span class="qr-explainer-icon">📷</span>
+                    <div class="qr-explainer-text"><strong>Camera Scan</strong>Point your device's camera at any QR code and let WebSafe decode it live — no app install required.</div>
+                </div>
+                <div class="qr-explainer-item">
+                    <span class="qr-explainer-icon">🖼️</span>
+                    <div class="qr-explainer-text"><strong>Image Upload</strong>Already have a screenshot? Upload PNG, JPG, or WEBP and WebSafe will find and decode the QR automatically.</div>
+                </div>
+                <div class="qr-explainer-item">
+                    <span class="qr-explainer-icon">🔒</span>
+                    <div class="qr-explainer-text"><strong>No Link Opened</strong>The embedded URL is extracted and analyzed server-side — your browser never navigates to the risky destination.</div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /panel-qr -->
+
+    <!-- ══════════════════════════════════════════════
+         PANEL 7 — WHAT TO DO (Authorities)
+    ══════════════════════════════════════════════ -->
+    <div class="h-panel" id="panel-authorities">
+        <span class="panel-label">07 / RESPONSE</span>
+        <span class="panel-index">07</span>
+
+        <div class="authorities-inner">
+            <div class="authorities-header">
+                <h2>What To Do If You Encounter a Phishing Scam in the Philippines</h2>
+                <p>Spotted a threat? Don't panic — take these steps immediately to protect yourself and report the incident to the right authorities.</p>
+            </div>
+
+            <div class="ws-features-grid">
+                <div class="ws-feature-item">
+                    <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+                    <div class="ws-feature-text">
+                        <h3>Report To Your Service Provider</h3>
+                        <p>Contact your ISP or mobile network immediately. Globe: Call <a href="tel:211">211</a> or use GlobeOne app. Smart: Call <a href="tel:1511">1511</a> or use the Smart app.</p>
+                    </div>
+                </div>
+
+                <div class="ws-feature-item">
+                    <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                    <div class="ws-feature-text">
+                        <h3>Report To Local Authorities</h3>
+                        <p>PNP Cybercrime Division. Hotline: <a href="tel:+6327243660">(+632) 724-3660</a>. Email: <a href="mailto:onlinecims.ocs@gmail.com">onlinecims.ocs@gmail.com</a></p>
+                    </div>
+                </div>
+
+                <div class="ws-feature-item">
+                    <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></div>
+                    <div class="ws-feature-text">
+                        <h3>Notify Affected Institutions</h3>
+                        <p>If bank details or financial info were exposed, contact your bank immediately to freeze accounts, change credentials, and request a fraud investigation.</p>
+                    </div>
+                </div>
+
+                <div class="ws-feature-item">
+                    <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+                    <div class="ws-feature-text">
+                        <h3>Do Not Interact Further</h3>
+                        <p>Stop clicking links, downloading files, or responding to messages from the suspected source. Disconnect from the site and close the browser tab immediately.</p>
+                    </div>
+                </div>
+
+                <div class="ws-feature-item">
+                    <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                    <div class="ws-feature-text">
+                        <h3>Report to DICT / Anti-Cybercrime</h3>
+                        <p>Department of Information and Communications Technology. Email: <a href="mailto:onlinecims.ocs@gmail.com">onlinecims.ocs@gmail.com</a>. Or visit the DICT website to file an online complaint.</p>
+                    </div>
+                </div>
+
+                <div class="ws-feature-item">
+                    <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <div class="ws-feature-text">
+                        <h3>Preserve Evidence</h3>
+                        <p>Screenshot every relevant communication — the original message, the suspicious URL, and any site you visited — before deleting anything. Evidence strengthens reports.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="emergency-banner">
+                <span class="emergency-icon">🚨</span>
+                <div class="emergency-text">
+                    <h4>Emergency Cybercrime Contacts</h4>
+                    <p>If you believe you are an active victim of cybercrime, contact authorities immediately — don't wait.</p>
+                </div>
+                <div class="emergency-contacts">
+                    <a href="tel:+6327243660" class="emergency-contact-btn">
+                        (+632) 724-3660
+                        <span>PNP Cybercrime</span>
+                    </a>
+                    <a href="mailto:onlinecims.ocs@gmail.com" class="emergency-contact-btn">
+                        onlinecims.ocs@gmail.com
+                        <span>DICT / Report</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div><!-- /panel-authorities -->
+
+    <!-- ══════════════════════════════════════════════
+         PANEL 8 — FOOTER
+    ══════════════════════════════════════════════ -->
+    <div class="h-panel" id="panel-footer">
+        <span class="panel-label">08 / ABOUT US</span>
+        <span class="panel-index">08</span>
+
+        <div class="footer-inner">
+            <div class="footer-top">
+                <!-- Brand -->
+                <div class="footer-brand">
+                    <img src="images/logo_circle.png" alt="WebSafe logo" class="footer-brand-logo">
+                    <span class="footer-brand-name">Web<span>Safe</span></span>
+                    <span class="footer-brand-tagline">Your link safety companion</span>
+                </div>
+
+                <!-- Nav Links -->
+                <div class="footer-links-col">
+                    <h4>Navigate</h4>
+                    <a href="#" data-nav-panel="0">Scan a Link</a>
+                    <a href="#" data-nav-panel="1">Online Threats</a>
+                    <a href="#" data-nav-panel="2">What We Do</a>
+                    <a href="#" data-nav-panel="4">How It Works</a>
+                    <a href="#" data-nav-panel="5">QR Scan</a>
+                    <a href="#" data-nav-panel="6">Stay Safe</a>
+                </div>
+
+                <!-- Legal / Info -->
+                <div class="footer-links-col">
+                    <h4>Information</h4>
+                    <a href="about_us.html">About Us</a>
+                    <a href="contact_local.html">Contact Authorities</a>
+                    <a href="https://dict.gov.ph" target="_blank" rel="noopener">DICT Philippines</a>
+                    <a href="https://www.pnp.gov.ph/index.php/pnp-act-cybercrime-group/" target="_blank" rel="noopener">PNP Cybercrime</a>
+                </div>
+
+                <!-- Socials -->
+                <div class="footer-socials">
+                    <h4>Connect</h4>
+                    <div class="footer-social-row">
+                        <a href="https://mail.google.com/mail/u/0/#search/websafe.protects%40gmail.com" class="box box1">
+                            <div class="icon">
+                                <svg class="svg" viewBox="0 0 24 24">
+                                    <path d="M4 6h16v12H4z"/>
+                                    <path d="M4 7l8 6 8-6"/>
+                                </svg>
+                            </div>
+                        </a>
+                        <a href="https://www.facebook.com/profile.php?id=61588343251116" class="box box2">
+                            <div class="icon">
+                                <svg class="svg" viewBox="0 0 24 24">
+                                    <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.19 2.23.19v2.45h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 2.89h-2.33v6.99A10 10 0 0 0 22 12z"/>
+                                </svg>
+                            </div>
+                        </a>
+                        <a href="#" class="box box3">
+                            <div class="icon">
+                                <svg class="svg" viewBox="0 0 24 24">
+                                    <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.5 5.5 0 0 1 12 7.5zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5zm5.75-3.25a1.25 1.25 0 1 1-1.25 1.25 1.25 1.25 0 0 1 1.25-1.25z"/>
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-desc">
+                <p>WebSafe helps Filipinos stay in control of their online experience by letting them check links before clicking. Powered by real-time safety checks, it's your free, always-on shield against phishing, malware, and digital scams.</p>
+                <p class="footer-copy">&copy; 2026 WebSafe — STI College Fairview. All rights reserved.</p>
+            </div>
+        </div>
+    </div><!-- /panel-footer -->
+
+</div><!-- /#horizontal-track -->
+
+</div><!-- /#main_content -->
 
 
-<!-- CAMERA QR MODAL -->
+<!-- ══════════════════════════════════════════════
+     CAMERA QR MODAL
+══════════════════════════════════════════════ -->
 <div id="qr_modal" class="qr-modal hidden">
     <div class="qr-card">
         <div class="qr-header">
             <div class="qr-header-icon">
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="5"  y="5"  width="38" height="38" rx="6" ry="6" fill="none" stroke="#fff" stroke-width="7"/>
+                    <rect x="5" y="5" width="38" height="38" rx="6" ry="6" fill="none" stroke="#fff" stroke-width="7"/>
                     <rect x="16" y="16" width="16" height="16" rx="2" ry="2" fill="#fff"/>
-                    <rect x="57" y="5"  width="38" height="38" rx="6" ry="6" fill="none" stroke="#fff" stroke-width="7"/>
+                    <rect x="57" y="5" width="38" height="38" rx="6" ry="6" fill="none" stroke="#fff" stroke-width="7"/>
                     <rect x="68" y="16" width="16" height="16" rx="2" ry="2" fill="#fff"/>
-                    <rect x="5"  y="57" width="38" height="38" rx="6" ry="6" fill="none" stroke="#fff" stroke-width="7"/>
+                    <rect x="5" y="57" width="38" height="38" rx="6" ry="6" fill="none" stroke="#fff" stroke-width="7"/>
                     <rect x="16" y="68" width="16" height="16" rx="2" ry="2" fill="#fff"/>
                     <rect x="57" y="57" width="16" height="16" rx="2" ry="2" fill="#fff"/>
                     <rect x="79" y="57" width="16" height="16" rx="2" ry="2" fill="#fff"/>
@@ -220,18 +754,19 @@
     </div>
 </div>
 
-
-<!-- UPLOAD QR IMAGE MODAL -->
+<!-- ══════════════════════════════════════════════
+     UPLOAD QR IMAGE MODAL
+══════════════════════════════════════════════ -->
 <div id="qr_upload_modal" class="qr-upload-modal hidden">
     <div class="qr-upload-card">
         <div class="qr-upload-header">
             <div class="qr-upload-header-icon">
                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="5"  y="5"  width="38" height="38" rx="6" ry="6" fill="none" stroke="#fff" stroke-width="7"/>
+                    <rect x="5" y="5" width="38" height="38" rx="6" ry="6" fill="none" stroke="#fff" stroke-width="7"/>
                     <rect x="16" y="16" width="16" height="16" rx="2" ry="2" fill="#fff"/>
-                    <rect x="57" y="5"  width="38" height="38" rx="6" ry="6" fill="none" stroke="#fff" stroke-width="7"/>
+                    <rect x="57" y="5" width="38" height="38" rx="6" ry="6" fill="none" stroke="#fff" stroke-width="7"/>
                     <rect x="68" y="16" width="16" height="16" rx="2" ry="2" fill="#fff"/>
-                    <rect x="5"  y="57" width="38" height="38" rx="6" ry="6" fill="none" stroke="#fff" stroke-width="7"/>
+                    <rect x="5" y="57" width="38" height="38" rx="6" ry="6" fill="none" stroke="#fff" stroke-width="7"/>
                     <rect x="16" y="68" width="16" height="16" rx="2" ry="2" fill="#fff"/>
                     <rect x="57" y="57" width="16" height="16" rx="2" ry="2" fill="rgba(255,255,255,0.55)"/>
                     <rect x="79" y="57" width="16" height="16" rx="2" ry="2" fill="rgba(255,255,255,0.55)"/>
@@ -245,7 +780,6 @@
             <p class="qr-upload-header-sub">Upload a QR image to check if its link is safe</p>
             <button id="close_qr_upload" aria-label="Close">✕</button>
         </div>
-
         <div class="qr-upload-body">
             <div class="qr-drop-zone" id="qr_drop_zone">
                 <input type="file" id="qr_file_input" accept="image/*">
@@ -272,7 +806,6 @@
                     <p class="qr-image-name" id="qr_image_name"></p>
                 </div>
             </div>
-
             <div class="qr-upload-result" id="qr_upload_result">
                 <span class="qr-result-icon" id="qr_result_icon"></span>
                 <div class="qr-result-text">
@@ -281,7 +814,6 @@
                 </div>
             </div>
         </div>
-
         <div class="qr-upload-footer">
             <button id="qr_upload_scan_btn" disabled>
                 <span id="qr_scan_btn_label">Scan &amp; Check Safety</span>
@@ -293,378 +825,6 @@
 </div>
 
 
-<!-- UNDERSTANDING ONLINE THREATS -->
-<section class="threats-section">
-    <div class="threats-container">
-        <div class="threats-label reveal reveal-d1">Awareness</div>
-        <h2 class="threats-title reveal reveal-d2">Understanding<br><span>Online Threats</span></h2>
-        <p class="threats-subtitle reveal reveal-d3">Cyber threats are designed to look convincing. Here's how you can stay protected.</p>
-
-        <div class="threats-cards">
-            <div class="threat-card reveal reveal-d2">
-                <div class="threat-card-scan"></div>
-                <div class="threat-num">01</div>
-                <div class="threat-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                    </svg>
-                </div>
-                <h3>Phishing Links</h3>
-                <p>Mimic real websites to steal passwords and personal information.</p>
-            </div>
-
-            <div class="threat-card reveal reveal-d3">
-                <div class="threat-card-scan"></div>
-                <div class="threat-num">02</div>
-                <div class="threat-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-                        <rect x="3" y="14" width="7" height="7" rx="1"/>
-                        <rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/>
-                        <rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>
-                    </svg>
-                </div>
-                <h3>QR Code Scams</h3>
-                <p>Hide malicious links that redirect to fake login pages or malware.</p>
-            </div>
-
-            <div class="threat-card active reveal reveal-d4">
-                <div class="threat-card-scan"></div>
-                <div class="threat-num">03</div>
-                <div class="threat-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
-                        <polyline points="13 2 13 9 20 9"/>
-                        <line x1="9" y1="13" x2="15" y2="13"/>
-                        <line x1="9" y1="17" x2="13" y2="17"/>
-                    </svg>
-                </div>
-                <h3>Malicious Files</h3>
-                <p>Contain hidden scripts that install spyware or steal your data.</p>
-            </div>
-        </div>
-
-        <div class="threats-info-rows">
-            <div class="threats-info-row reveal reveal-d2">
-                <div class="threats-info-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                </div>
-                <div class="threats-info-text">
-                    <h4>Why Verification Matters</h4>
-                    <p>WebSafe gives you visibility before interaction. Identify suspicious links, detect non-secure domains, avoid harmful QR codes, and prevent downloading dangerous files.</p>
-                </div>
-            </div>
-
-            <div class="threats-info-row reveal reveal-d3">
-                <div class="threats-info-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
-                </div>
-                <div class="threats-info-text">
-                    <h4>Browse With Confidence</h4>
-                    <p>Cybersecurity isn't about avoiding the internet — it's about using it with awareness. By making verification a habit, you reduce the risk of scams and stay ahead of evolving threats.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<!-- WHAT WEBSAFE DOES -->
-<section class="websafe-info" id="websafe-info-anchor">
-    <div class="info-container">
-        <div class="info-text reveal reveal-left">
-            <span class="badge">Link Verification Tool</span>
-            <h1>What WebSafe<br>Does</h1>
-            <div class="underline"></div>
-            <p>WebSafe is a user-friendly online tool designed to help you verify links before visiting them. Just paste any URL into the platform to get an instant preview of the website, including its title and description.</p>
-            <p>WebSafe also performs safety checks to determine if a link is potentially risky or harmful, giving you the information you need to browse confidently and avoid phishing scams or other online threats.</p>
-            <div class="features">
-                <div class="feature-box">Preview Links</div>
-                <div class="feature-box">Safety Checks</div>
-                <div class="feature-box">Instant Results</div>
-            </div>
-        </div>
-        <div class="info-image reveal reveal-right">
-            <div class="image-circle">
-                <img src="images/logo_circle.png" alt="WebSafe logo">
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<!-- WHY WEBSAFE -->
-<section class="ws-why-section">
-    <div class="ws-why-container">
-        <div class="ws-why-visual reveal reveal-left">
-            <div class="ws-device">
-                <div class="ws-screen">
-                    <div class="ws-alert"></div>
-                </div>
-            </div>
-        </div>
-        <div class="ws-why-content reveal reveal-right">
-            <span class="ws-badge">Trusted Protection</span>
-            <h2>Why Users Should Choose WebSafe</h2>
-            <p class="ws-subtext">WebSafe is a tool for verifying whether any given URL is harboring known phishing threats.</p>
-            <div class="ws-card">
-                WebSafe makes online browsing safer and simpler. With phishing scams on the rise, it offers a straightforward way to verify link safety — no technical skills required. Protect yourself from identity theft and financial loss with one quick check.
-            </div>
-            <div class="ws-features">
-                <div class="ws-feature-box">
-                    <div class="ws-feature-icon">
-                        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    </div>
-                    <p>Secure</p>
-                </div>
-                <div class="ws-feature-box">
-                    <div class="ws-feature-icon">
-                        <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    </div>
-                    <p>Fast</p>
-                </div>
-                <div class="ws-feature-box">
-                    <div class="ws-feature-icon">
-                        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    </div>
-                    <p>Preview</p>
-                </div>
-                <div class="ws-feature-box">
-                    <div class="ws-feature-icon">
-                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                    </div>
-                    <p>Reliable</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<!-- HOW IT WORKS — URL Checker -->
-<section class="ws-how-section" id="how-it-works-anchor">
-    <div class="ws-how-container">
-        <span class="ws-how-badge reveal reveal-d1">Simple 3-Step Process</span>
-        <h2 class="ws-how-title reveal reveal-d2">How does URL Checker Work?</h2>
-        <p class="ws-how-subtext reveal reveal-d3">WebSafe is a free tool designed to verify URLs, helping users avoid malware, phishing attempts, and counterfeit websites.</p>
-        <p class="ws-how-small reveal reveal-d4">Here's how it works:</p>
-        <div class="ws-steps">
-            <div class="ws-step-card step-blue reveal reveal-d2">
-                <div class="ws-step-icon-num">01</div>
-                <span class="ws-step-number">01</span>
-                <span class="ws-step-label">STEP 01</span>
-                <h3>Paste</h3>
-                <p>Paste the URL or link you want to check to quickly scan it and find out if it's safe to visit before clicking.</p>
-            </div>
-            <div class="ws-step-card step-purple reveal reveal-d3">
-                <div class="ws-step-icon-num">02</div>
-                <span class="ws-step-number">02</span>
-                <span class="ws-step-label">STEP 02</span>
-                <h3>Click</h3>
-                <p>Click the Verify Security button to run a fast security scan and find out if a link is safe before visiting it.</p>
-            </div>
-            <div class="ws-step-card step-green reveal reveal-d4">
-                <div class="ws-step-icon-num">03</div>
-                <span class="ws-step-number">03</span>
-                <span class="ws-step-label">STEP 03</span>
-                <h3>Check</h3>
-                <p>Review the results to see if the link is safe, noting any warnings before proceeding to stay protected online.</p>
-            </div>
-        </div>
-        <div class="ws-result-box reveal">
-            <div class="ws-result-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div>
-                <h4>Fast &amp; Accurate Results</h4>
-                <p>Our advanced scanning technology analyzes URLs in real-time, providing you with instant security assessments so you can browse with confidence.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<!-- HOW QR SCAN WORKS -->
-<section class="ws-qr-section" id="qr-scan-anchor">
-    <div class="ws-qr-container">
-        <span class="ws-qr-badge reveal reveal-d1">QR Code Safety</span>
-        <h2 class="ws-qr-title reveal reveal-d2">How does <span>QR Scan</span> Work?</h2>
-        <p class="ws-qr-subtext reveal reveal-d3">WebSafe also protects you from hidden threats inside QR codes. Instead of blindly opening links, you can scan or upload a QR code and verify its contents before interacting with it.</p>
-        <p class="ws-qr-small reveal reveal-d4">Here's how it works:</p>
-
-        <div class="ws-qr-steps">
-            <div class="ws-qr-step-card reveal reveal-d2">
-                <div class="ws-qr-scan-line"></div>
-                <div class="ws-qr-step-icon">
-                    <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                </div>
-                <span class="ws-qr-step-number">01</span>
-                <span class="ws-qr-step-label">STEP 01</span>
-                <h3>Scan / Upload</h3>
-                <p>Scan a QR code using your camera or upload an image. WebSafe extracts the hidden data instantly without opening the link.</p>
-            </div>
-
-            <div class="ws-qr-step-card reveal reveal-d3">
-                <div class="ws-qr-scan-line"></div>
-                <div class="ws-qr-step-icon">
-                    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                </div>
-                <span class="ws-qr-step-number">02</span>
-                <span class="ws-qr-step-label">STEP 02</span>
-                <h3>Analyze</h3>
-                <p>The system inspects the extracted content, checking for suspicious domains, unsafe protocols, redirects, or known phishing patterns.</p>
-            </div>
-
-            <div class="ws-qr-step-card reveal reveal-d4">
-                <div class="ws-qr-scan-line"></div>
-                <div class="ws-qr-step-icon">
-                    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                </div>
-                <span class="ws-qr-step-number">03</span>
-                <span class="ws-qr-step-label">STEP 03</span>
-                <h3>Review</h3>
-                <p>Get a clear safety result with warnings and risk indicators so you can decide whether to proceed or avoid the QR code.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<!-- WHAT TO DO -->
-<section class="ws-grid-section" id="authorities-anchor">
-    <div class="ws-grid-container">
-        <h2 class="ws-grid-title reveal">What to Do if You Encounter a Phishing Scam in the Philippines</h2>
-        <div class="ws-features-grid">
-            <div class="ws-feature-item reveal reveal-d1">
-                <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
-                <div class="ws-feature-text">
-                    <h3>Report To Your Service Provider</h3>
-                    <p>Contact your Internet Service Provider or mobile network to report the phishing attempt. Globe: Call 211 or use the GlobeOne app. Smart: Call 1511 or use the Smart app.</p>
-                </div>
-            </div>
-
-            <div class="ws-feature-item reveal reveal-d2">
-                <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-                <div class="ws-feature-text">
-                    <h3>Report To Local Authorities</h3>
-                    <p>Philippine National Police (PNP) Cybercrime Division. Hotline: <a href="tel:+6327243660">(+632) 724-3660</a>. Email: <a href="mailto:onlinecims.ocs@gmail.com">onlinecims.ocs@gmail.com</a>.</p>
-                </div>
-            </div>
-
-            <div class="ws-feature-item reveal reveal-d3">
-                <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></div>
-                <div class="ws-feature-text">
-                    <h3>Notify Affected Entities</h3>
-                    <p>If sensitive information such as bank details has been shared, contact your bank or relevant financial institution immediately.</p>
-                </div>
-            </div>
-
-            <div class="ws-feature-item reveal reveal-d4">
-                <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-                <div class="ws-feature-text">
-                    <h3>Do Not Interact</h3>
-                    <p>Do not click on any links or respond to messages from the suspected phishing source.</p>
-                </div>
-            </div>
-
-            <div class="ws-feature-item reveal reveal-d3">
-                <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-                <div class="ws-feature-text">
-                    <h3>Report to Anti-Cybercrime Organizations</h3>
-                    <p>Department of Information and Communications Technology (DICT). Email phishing scams to <a href="mailto:onlinecims.ocs@gmail.com">onlinecims.ocs@gmail.com</a> or visit the DICT website.</p>
-                </div>
-            </div>
-
-            <div class="ws-feature-item reveal reveal-d4">
-                <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
-                <div class="ws-feature-text">
-                    <h3>Save Evidence</h3>
-                    <p>Take screenshots of the email, message, or website involved in the phishing attempt to use as evidence when reporting.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-</div><!-- /#main_content -->
-
-
-<footer class="footer-section">
-
-    <!-- SOCIAL CARD -->
-    <div class="footer-left">
-        <div class="card">
-
-            <div class="background"></div>
-
-            <div class="logo">
-                SOCIALS
-            </div>
-
-            <!-- HORIZONTAL ICON ROW -->
-            <div class="footer-social-row">
-
-                <!-- EMAIL -->
-                <a href="https://mail.google.com/mail/u/0/#search/websafe.protects%40gmail.com" class="box box1">
-                    <div class="icon">
-                        <svg class="svg" viewBox="0 0 24 24">
-                            <path d="M4 6h16v12H4z"></path>
-                            <path d="M4 7l8 6 8-6"></path>
-                        </svg>
-                    </div>
-                </a>
-
-                <!-- FACEBOOK -->
-                <a href="https://www.facebook.com/profile.php?id=61588343251116&rdid=a5Mtp9Ps8etStWA5&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1CwYwcpj5n%2F#" class="box box2">
-                    <div class="icon">
-                        <svg class="svg" viewBox="0 0 24 24">
-                            <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.19 2.23.19v2.45h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 2.89h-2.33v6.99A10 10 0 0 0 22 12z"/>
-                        </svg>
-                    </div>
-                </a>
-
-                <!-- INSTAGRAM -->
-                <a href="#" class="box box3">
-                    <div class="icon">
-                        <svg class="svg" viewBox="0 0 24 24">
-                            <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.5 5.5 0 0 1 12 7.5zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5zm5.75-3.25a1.25 1.25 0 1 1-1.25 1.25 1.25 1.25 0 0 1 1.25-1.25z"/>
-                        </svg>
-                    </div>
-                </a>
-
-            </div>
-
-        </div>
-    </div>
-
-    <!-- FOOTER TEXT -->
-    <div class="footer-center">
-
-        <p>
-            WebSafe helps people stay in control of online browsing by allowing
-            links to be checked before opening them. Simply enter a URL to preview
-            important details and understand what to expect before visiting a page.
-            The platform also scans links for potential risks, helping detect
-            suspicious or unsafe content early.
-        </p>
-
-        <p class="footer-copy">
-            © 2026 WebSafe. STI College Fairview.
-        </p>
-
-    </div>
-
-</footer>
-
-
-
 <!-- SCRIPTS -->
 <script src="jsQR.min.js"></script>
 <script src="html5-qrcode.min.js"></script>
@@ -672,7 +832,9 @@
 <script src="check_link.js"></script>
 
 <script>
-/* PARTICLE CANVAS */
+/* =============================================
+   PARTICLE CANVAS
+============================================= */
 (function () {
     const canvas = document.getElementById("bg-canvas");
     const ctx = canvas.getContext("2d");
@@ -682,8 +844,12 @@
     window.addEventListener("resize", resize);
     const COLORS = ["rgba(29,106,255,","rgba(77,143,255,","rgba(0,212,255,","rgba(10,79,212,","rgba(0,150,220,"];
     function rand(a, b) { return a + Math.random() * (b - a); }
-    for (let i = 0; i < 55; i++) {
-        particles.push({ x: rand(0, window.innerWidth), y: rand(0, window.innerHeight), r: rand(1, 2.8), dx: rand(-0.2, 0.2), dy: rand(-0.15, 0.15), color: COLORS[Math.floor(Math.random() * COLORS.length)], alpha: rand(0.2, 0.55) });
+    for (let i = 0; i < 50; i++) {
+        particles.push({
+            x: rand(0, window.innerWidth), y: rand(0, window.innerHeight),
+            r: rand(1, 2.5), dx: rand(-0.18, 0.18), dy: rand(-0.12, 0.12),
+            color: COLORS[Math.floor(Math.random() * COLORS.length)], alpha: rand(0.15, 0.45)
+        });
     }
     function draw() {
         ctx.clearRect(0, 0, W, H);
@@ -699,15 +865,9 @@
     draw();
 })();
 
-/* SCROLL REVEAL */
-(function () {
-    const obs = new IntersectionObserver((entries) => {
-        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); } });
-    }, { threshold: 0.1 });
-    document.querySelectorAll(".reveal, .reveal-left, .reveal-right").forEach(el => obs.observe(el));
-})();
-
-/* LOADER */
+/* =============================================
+   LOADER
+============================================= */
 window.addEventListener("load", () => {
     setTimeout(() => {
         document.getElementById("loader").classList.add("hide");
@@ -715,11 +875,133 @@ window.addEventListener("load", () => {
     }, 2000);
 });
 
-/* RANDOM GREETING */
-const greetings = ["Hello there! Are you ready?","Welcome to WebSafe!","Good to see you again!","Let's get started, Shall we?","Are you ready for another scan?","Let's keep you safe now."];
+/* =============================================
+   RANDOM GREETING
+============================================= */
+const greetings = [
+    "Let's get started, shall we?",
+    "Hello! Ready to browse safely?",
+    "Welcome to WebSafe.",
+    "Your link safety starts here.",
+    "Don't click blind — scan first.",
+    "Stay protected. Scan your links."
+];
 document.getElementById("dynamic_greeting").textContent = greetings[Math.floor(Math.random() * greetings.length)];
 
-/* THREAT CARD CYCLE */
+/* =============================================
+   HORIZONTAL SCROLL ENGINE
+============================================= */
+(function() {
+    const track       = document.getElementById("horizontal-track");
+    const dots        = document.querySelectorAll(".panel-dot");
+    const panels      = document.querySelectorAll(".h-panel");
+    const progressBar = document.getElementById("scroll-progress-bar");
+    const btnPrev     = document.getElementById("nav-prev");
+    const btnNext     = document.getElementById("nav-next");
+    const totalPanels = panels.length;
+    let current = 0;
+    let isAnimating = false;
+
+    function goTo(index) {
+        if (index < 0 || index >= totalPanels || isAnimating) return;
+        isAnimating = true;
+
+        panels[current].classList.remove("panel-active");
+        current = index;
+        panels[current].classList.add("panel-active");
+
+        // Slide the track
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            track.style.transform = `translateY(-${current * 100}vh)`;
+        } else {
+            track.style.transform = `translateX(-${current * 100}vw)`;
+        }
+
+        // Update dots
+        dots.forEach((d, i) => d.classList.toggle("active", i === current));
+
+        // Update progress bar
+        const pct = totalPanels > 1 ? (current / (totalPanels - 1)) * 100 : 0;
+        progressBar.style.width = pct + "vw";
+
+        // Update arrows
+        btnPrev.classList.toggle("hidden-btn", current === 0);
+        btnNext.classList.toggle("hidden-btn", current === totalPanels - 1);
+
+        setTimeout(() => { isAnimating = false; }, 750);
+    }
+
+    // Dot clicks
+    dots.forEach(dot => {
+        dot.addEventListener("click", () => goTo(parseInt(dot.dataset.panel)));
+    });
+
+    // Arrow buttons
+    btnPrev.addEventListener("click", () => goTo(current - 1));
+    btnNext.addEventListener("click", () => goTo(current + 1));
+
+    // Keyboard arrows
+    document.addEventListener("keydown", e => {
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); goTo(current + 1); }
+        if (e.key === "ArrowLeft"  || e.key === "ArrowUp")   { e.preventDefault(); goTo(current - 1); }
+    });
+
+    // Mouse wheel / trackpad
+    let wheelTimeout;
+    window.addEventListener("wheel", e => {
+        clearTimeout(wheelTimeout);
+        wheelTimeout = setTimeout(() => {
+            if (e.deltaY > 30 || e.deltaX > 30)  goTo(current + 1);
+            if (e.deltaY < -30 || e.deltaX < -30) goTo(current - 1);
+        }, 50);
+    }, { passive: true });
+
+    // Touch swipe
+    let touchStartX = 0, touchStartY = 0;
+    window.addEventListener("touchstart", e => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    window.addEventListener("touchend", e => {
+        const dx = touchStartX - e.changedTouches[0].clientX;
+        const dy = touchStartY - e.changedTouches[0].clientY;
+        if (Math.abs(dx) > Math.abs(dy)) {
+            if (dx > 50)  goTo(current + 1);
+            if (dx < -50) goTo(current - 1);
+        } else {
+            if (dy > 50)  goTo(current + 1);
+            if (dy < -50) goTo(current - 1);
+        }
+    }, { passive: true });
+
+    // Footer nav links
+    document.querySelectorAll("[data-nav-panel]").forEach(el => {
+        el.addEventListener("click", e => {
+            e.preventDefault();
+            goTo(parseInt(el.dataset.navPanel));
+        });
+    });
+
+    // Sidebar panel navigation
+    document.querySelectorAll(".sidebar-link[data-panel]").forEach(link => {
+        link.addEventListener("click", e => {
+            const p = parseInt(link.dataset.panel);
+            if (!isNaN(p)) {
+                e.preventDefault();
+                closeSidebar();
+                setTimeout(() => goTo(p), 320);
+            }
+        });
+    });
+
+    // Initial state
+    goTo(0);
+})();
+
+/* =============================================
+   THREAT CARD CYCLE
+============================================= */
 (function () {
     const cards = document.querySelectorAll(".threat-card");
     let current = 2;
@@ -730,35 +1012,68 @@ document.getElementById("dynamic_greeting").textContent = greetings[Math.floor(M
     }, 3000);
 })();
 
-/* SIDEBAR */
+/* =============================================
+   SIDEBAR
+============================================= */
 const menuToggle   = document.getElementById("menu_toggle");
 const sidebarEl    = document.getElementById("sidebar_menu");
 const overlayEl    = document.getElementById("sidebar_overlay");
 const sidebarClose = document.getElementById("sidebar_close");
-function openSidebar()  { sidebarEl.classList.add("active"); overlayEl.classList.add("active"); menuToggle.setAttribute("aria-expanded","true"); menuToggle.style.opacity="0"; menuToggle.style.pointerEvents="none"; if (typeof renderHistory === 'function') renderHistory(); }
-function closeSidebar() { sidebarEl.classList.remove("active"); overlayEl.classList.remove("active"); menuToggle.setAttribute("aria-expanded","false"); menuToggle.style.opacity="1"; menuToggle.style.pointerEvents=""; }
+
+function openSidebar()  {
+    sidebarEl.classList.add("active"); overlayEl.classList.add("active");
+    menuToggle.setAttribute("aria-expanded","true");
+    menuToggle.style.opacity="0"; menuToggle.style.pointerEvents="none";
+    syncSidebarHistory();
+}
+function closeSidebar() {
+    sidebarEl.classList.remove("active"); overlayEl.classList.remove("active");
+    menuToggle.setAttribute("aria-expanded","false");
+    menuToggle.style.opacity="1"; menuToggle.style.pointerEvents="";
+}
 menuToggle.addEventListener("click", openSidebar);
 sidebarClose.addEventListener("click", closeSidebar);
 overlayEl.addEventListener("click", closeSidebar);
-document.querySelectorAll("#sidebar_menu .sidebar-link").forEach(link => {
-    link.addEventListener("click", e => {
-        const href = link.getAttribute("href");
-        if (href && href !== "#") { e.preventDefault(); closeSidebar(); const target = document.querySelector(href); if (target) target.scrollIntoView({ behavior: "smooth", block: "start" }); }
-        else { closeSidebar(); }
-    });
-});
 document.getElementById("aboutLink").addEventListener("click", e => { e.preventDefault(); closeSidebar(); window.location.href = "about_us.html"; });
 document.getElementById("contactLocalLink").addEventListener("click", e => { e.preventDefault(); closeSidebar(); window.location.href = "contact_local.html"; });
 
+function syncSidebarHistory() {
+    const panel = document.getElementById("sidebar_history_list");
+    if (!panel) return;
+    if (typeof scanHistory === "undefined" || scanHistory.length === 0) {
+        panel.innerHTML = '<p class="sidebar-empty">No scans yet this session</p>'; return;
+    }
+    const colors = { safe:"#34d399", hazard:"#fbbf24", danger:"#f87171" };
+    const labels = { safe:"Safe", hazard:"Warning", danger:"Danger" };
+    panel.innerHTML = "";
+    scanHistory.slice(0,5).forEach(h => {
+        const row = document.createElement("div"); row.className = "sidebar-scan-row";
+        row.innerHTML = `<span class="sidebar-scan-dot" style="background:${colors[h.level]||"#9ca3af"}"></span><span class="sidebar-scan-host"></span><span class="sidebar-scan-badge" style="color:${colors[h.level]||"#9ca3af"}">${labels[h.level]||"?"}</span>`;
+        row.querySelector(".sidebar-scan-host").textContent = h.hostname;
+        row.addEventListener("click", () => {
+            const inp = document.getElementById("link_input");
+            if (inp) inp.value = h.url;
+            closeSidebar();
+            // Go to panel 0 then trigger check
+            setTimeout(() => {
+                document.querySelector("[data-panel='0']").click();
+                setTimeout(() => checkBtn.click(), 400);
+            }, 320);
+        });
+        panel.appendChild(row);
+    });
+}
+setInterval(syncSidebarHistory, 2000);
 
-/* ELEMENT REFERENCES */
+/* =============================================
+   ELEMENT REFERENCES
+============================================= */
 const input       = document.getElementById("link_input");
 const checkBtn    = document.getElementById("check_btn");
 const previewBtn  = document.getElementById("preview_btn");
 const scanBtn     = document.getElementById("scan_qr_btn");
 const uploadQrBtn = document.getElementById("upload_qr_btn");
 const spinner     = document.getElementById("loading_spinner");
-const status      = document.getElementById("link_status");
 const resultBox   = document.getElementById("link_status");
 const previewArea    = document.getElementById("preview_area");
 const previewTitle   = document.getElementById("preview_title");
@@ -789,25 +1104,50 @@ const qrResultUrl      = document.getElementById("qr_result_url");
 const qrScanBtnLabel   = document.getElementById("qr_scan_btn_label");
 const qrUploadSpinner  = document.getElementById("qr_upload_spinner");
 let html5QrCode; let isScanning = false; let uploadedImageData = null;
-// check_btn and preview_btn listeners are registered by check_link.js
 
-/* CAMERA QR MODAL */
-scanBtn.onclick = () => { qrModal.classList.remove("hidden"); setTimeout(() => qrModal.classList.add("show"), 10); document.body.style.overflow = "hidden"; };
-closeQR.onclick = () => { qrModal.classList.remove("show"); viewfinder.classList.remove("scanning"); setTimeout(() => qrModal.classList.add("hidden"), 300); document.body.style.overflow = ""; if (html5QrCode && isScanning) { html5QrCode.stop().catch(() => {}); isScanning = false; } };
+input.addEventListener("keydown", e => { if (e.key === "Enter") checkBtn.click(); });
+
+/* =============================================
+   CAMERA QR MODAL
+============================================= */
+scanBtn.onclick = () => {
+    qrModal.classList.remove("hidden");
+    setTimeout(() => qrModal.classList.add("show"), 10);
+    document.body.style.overflow = "hidden";
+};
+closeQR.onclick = () => {
+    qrModal.classList.remove("show"); viewfinder.classList.remove("scanning");
+    setTimeout(() => qrModal.classList.add("hidden"), 300);
+    document.body.style.overflow = "";
+    if (html5QrCode && isScanning) { html5QrCode.stop().catch(() => {}); isScanning = false; }
+};
 startScan.onclick = async () => {
     if (isScanning) return;
-    const ripple = document.createElement("span"); ripple.classList.add("qr-ripple");
-    const rect = startScan.getBoundingClientRect(); const size = Math.max(rect.width, rect.height);
-    ripple.style.cssText = `width:${size}px;height:${size}px;left:${rect.width/2-size/2}px;top:${rect.height/2-size/2}px`;
-    startScan.appendChild(ripple); setTimeout(() => ripple.remove(), 600);
-    viewfinder.classList.add("scanning"); html5QrCode = new Html5Qrcode("qr-reader");
+    viewfinder.classList.add("scanning");
+    html5QrCode = new Html5Qrcode("qr-reader");
     try {
-        await html5QrCode.start({ facingMode:"environment" }, { fps:10, qrbox:220 }, (decodedText) => { html5QrCode.stop().catch(() => {}); isScanning = false; viewfinder.classList.remove("scanning"); input.value = decodedText; closeQR.onclick(); checkBtn.click(); });
+        await html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 200 },
+            (decodedText) => {
+                html5QrCode.stop().catch(() => {});
+                isScanning = false;
+                viewfinder.classList.remove("scanning");
+                input.value = decodedText;
+                closeQR.onclick();
+                checkBtn.click();
+            }
+        );
         isScanning = true;
-    } catch { viewfinder.classList.remove("scanning"); alert("Camera error — please allow camera access and try again."); }
+    } catch {
+        viewfinder.classList.remove("scanning");
+        alert("Camera error — please allow camera access and try again.");
+    }
 };
 
-/* UPLOAD QR MODAL */
+/* =============================================
+   UPLOAD QR MODAL
+============================================= */
 uploadQrBtn.onclick = () => { resetUploadModal(); qrUploadModal.classList.remove("hidden"); setTimeout(() => qrUploadModal.classList.add("show"), 10); document.body.style.overflow = "hidden"; };
 closeQrUpload.onclick = closeUploadModal;
 qrUploadModal.addEventListener("click", e => { if (e.target === qrUploadModal) closeUploadModal(); });
@@ -821,8 +1161,18 @@ qrFileInput.addEventListener("change", () => { const file = qrFileInput.files[0]
 function loadQrFile(file) {
     const reader = new FileReader();
     reader.onload = e => {
-        const dataUrl = e.target.result; qrPreviewImg.src = dataUrl; qrImageName.textContent = file.name; qrDropDefault.style.display = "none"; qrPreviewWrap.classList.add("visible"); qrUploadScanBtn.disabled = false; qrUploadResult.className = "qr-upload-result";
-        const img = new Image(); img.onload = () => { const canvas = document.createElement("canvas"); canvas.width = img.naturalWidth; canvas.height = img.naturalHeight; const ctx = canvas.getContext("2d"); ctx.drawImage(img, 0, 0); uploadedImageData = ctx.getImageData(0, 0, canvas.width, canvas.height); }; img.src = dataUrl;
+        const dataUrl = e.target.result;
+        qrPreviewImg.src = dataUrl; qrImageName.textContent = file.name;
+        qrDropDefault.style.display = "none"; qrPreviewWrap.classList.add("visible");
+        qrUploadScanBtn.disabled = false; qrUploadResult.className = "qr-upload-result";
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+            const ctx2 = canvas.getContext("2d"); ctx2.drawImage(img, 0, 0);
+            uploadedImageData = ctx2.getImageData(0, 0, canvas.width, canvas.height);
+        };
+        img.src = dataUrl;
     };
     reader.readAsDataURL(file);
 }
@@ -830,54 +1180,23 @@ qrUploadClearBtn.addEventListener("click", resetUploadModal);
 qrUploadScanBtn.addEventListener("click", () => {
     if (!uploadedImageData) return;
     qrScanBtnLabel.textContent = "Scanning…"; qrUploadSpinner.classList.add("active"); qrUploadScanBtn.disabled = true; qrUploadResult.className = "qr-upload-result";
-
-    // Multi-attempt QR decode pipeline:
-    // 1. Normal  2. Inverted  3. Both orientations
-    // 4. Greyscale + contrast at 600px  5. Large rescale at 1000px
     setTimeout(() => {
-        function tryJsQR(imageData, inversion) {
-            return jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: inversion });
-        }
-        function getEnhancedImageData(src, targetSize) {
-            const canvas = document.createElement("canvas");
-            const scale = targetSize / Math.max(src.width, src.height);
-            canvas.width  = Math.round(src.width  * scale);
-            canvas.height = Math.round(src.height * scale);
-            const ctx = canvas.getContext("2d");
-            const tmp = document.createElement("canvas");
-            tmp.width = src.width; tmp.height = src.height;
-            tmp.getContext("2d").putImageData(src, 0, 0);
-            ctx.drawImage(tmp, 0, 0, canvas.width, canvas.height);
-            const scaled = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            for (let i = 0; i < scaled.data.length; i += 4) {
-                const grey = Math.round(0.299 * scaled.data[i] + 0.587 * scaled.data[i+1] + 0.114 * scaled.data[i+2]);
-                const boosted = grey < 128 ? Math.max(0, grey - 30) : Math.min(255, grey + 30);
-                scaled.data[i] = scaled.data[i+1] = scaled.data[i+2] = boosted;
-            }
-            return scaled;
-        }
-
-        let code = null;
-        code = tryJsQR(uploadedImageData, "dontInvert");
-        if (!code) code = tryJsQR(uploadedImageData, "onlyInvert");
-        if (!code) code = tryJsQR(uploadedImageData, "attemptBoth");
-        if (!code) code = tryJsQR(getEnhancedImageData(uploadedImageData, 600), "attemptBoth");
-        if (!code) code = tryJsQR(getEnhancedImageData(uploadedImageData, 1000), "attemptBoth");
-
+        const code = jsQR(uploadedImageData.data, uploadedImageData.width, uploadedImageData.height, { inversionAttempts: "dontInvert" });
         qrUploadSpinner.classList.remove("active"); qrScanBtnLabel.textContent = "Scan & Check Safety"; qrUploadScanBtn.disabled = false;
-        if (!code) { showUploadResult("error","⚠️","No QR code detected in this image.","Please try a clearer or higher-resolution image. Make sure the QR code fills most of the frame.",""); return; }
+        if (!code) { showUploadResult("error","⚠️","No QR code detected in this image.","Please try a clearer or higher-resolution image.",""); return; }
         const decoded = code.data.trim(); let isUrl = false; try { new URL(decoded); isUrl = true; } catch (_) {}
         if (!isUrl) { showUploadResult("info","ℹ️","QR code decoded (not a URL):",decoded,""); return; }
         showUploadResult("info","🔍","Link found — scanning…","",decoded);
         input.value = decoded;
-        setTimeout(() => { closeUploadModal(); document.getElementById("link_checker").scrollIntoView({ behavior:"smooth" }); checkBtn.click(); }, 1800);
+        setTimeout(() => { closeUploadModal(); checkBtn.click(); }, 1800);
     }, 600);
 });
-function showUploadResult(type, icon, label, detail, url) { qrResultIcon.textContent = icon; qrResultLabel.innerHTML = `<strong>${label}</strong>${detail?` <br><small style="font-weight:400;opacity:0.8">${detail}</small>`:""}`; qrResultUrl.textContent = url || ""; qrUploadResult.className = `qr-upload-result visible ${type}`; }
-
+function showUploadResult(type, icon, label, detail, url) {
+    qrResultIcon.textContent = icon;
+    qrResultLabel.innerHTML = `<strong>${label}</strong>${detail?` <br><small style="font-weight:400;opacity:0.8">${detail}</small>`:""}`;
+    qrResultUrl.textContent = url || "";
+    qrUploadResult.className = `qr-upload-result visible ${type}`;
+}
 </script>
 </body>
 </html>
-
-
-
