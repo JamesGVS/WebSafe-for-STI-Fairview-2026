@@ -12,7 +12,11 @@
 
 <!-- TOP NAV -->
 <nav class="topnav">
-  
+  <div class="nav-left">
+    <a href="main.html" class="back-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      <span>Back to WebSafe</span>
+    </a>
     <div class="logo-wrap">
       <div class="logo-icon">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -20,11 +24,28 @@
       <div class="logo-text">Web<span>Safe</span></div>
     </div>
   </div>
-  <div class="nav-center">WebSafe Cybersecurity Manual</div>
-  <div class="status-badge">
-    <div class="status-dot"></div>
-    SYSTEM ONLINE
-  </div>
+
+  <div class="nav-center" data-en="WebSafe Cybersecurity Manual" data-fil="Manwal sa Cybersecurity ng WebSafe">WebSafe Cybersecurity Manual</div>
+
+  <!-- NAV RIGHT: theme + language -->
+  <div class="nav-right">
+
+    <!-- Dark/Light Mode Toggle (matches screenshot pill style) -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <div class="toggle-track">
+        <div class="toggle-thumb"></div>
+      </div>
+      <span class="toggle-label" id="themeLabel">DARK</span>
+    </button>
+
+    <!-- Language Toggle (matches screenshot "Filipino | EN" pill) -->
+    <div class="lang-toggle">
+      <button class="lang-btn" id="btnFil" onclick="setLang('fil')">Filipino</button>
+      <span class="lang-sep">|</span>
+      <button class="lang-btn active" id="btnEn" onclick="setLang('en')">EN</button>
+    </div>
+
+    <div class="status-badge">
 </nav>
 
 <!-- MAIN LAYOUT -->
@@ -37,12 +58,12 @@
         <div class="book-icon">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
         </div>
-        <div class="book-title">Cyber Defense<br>Field Manual</div>
+        <div class="book-title" data-en="Web Protection Handbook" data-fil="Handbook sa Proteksyon sa Web">Web Protection<br>Handbook</div>
       </div>
-      <div class="book-subtitle">6 CHAPTERS · READ AT YOUR PACE</div>
+      <div class="book-subtitle" data-en="6 CHAPTERS · LEARN MORE" data-fil="6 KABANATA · MATUTO PA">6 CHAPTERS · LEARN MORE</div>
     </div>
 
-    <div class="chapters-label">CHAPTERS</div>
+    <div class="chapters-label" data-en="CHAPTERS" data-fil="MGA KABANATA">CHAPTERS</div>
 
     <div class="chapter-list">
 
@@ -51,10 +72,10 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 3a3 3 0 1 0 6 0 3 3 0 0 0-6 0z"/></svg>
         </div>
         <div class="chap-text">
-          <div class="chap-num">CHAPTER 01</div>
-          <div class="chap-name">Phishing & Social Eng.</div>
+          <div class="chap-num" data-en="CHAPTER 01" data-fil="KABANATA 01">CHAPTER 01</div>
+          <div class="chap-name" data-en="Phishing &amp; Social Eng." data-fil="Phishing at Social Eng.">Phishing &amp; Social Eng.</div>
         </div>
-        <div class="chap-check done">✓</div>
+        <div class="chap-check done" id="check-1">✓</div>
       </div>
 
       <div class="chapter-item" data-chapter="2">
@@ -62,10 +83,10 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         </div>
         <div class="chap-text">
-          <div class="chap-num">CHAPTER 02</div>
-          <div class="chap-name">Online Scams</div>
+          <div class="chap-num" data-en="CHAPTER 02" data-fil="KABANATA 02">CHAPTER 02</div>
+          <div class="chap-name" data-en="Online Scams" data-fil="Mga Online na Scam">Online Scams</div>
         </div>
-        <div class="chap-check"></div>
+        <div class="chap-check" id="check-2"></div>
       </div>
 
       <div class="chapter-item" data-chapter="3">
@@ -73,10 +94,10 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         </div>
         <div class="chap-text">
-          <div class="chap-num">CHAPTER 03</div>
-          <div class="chap-name">Malware & Ransomware</div>
+          <div class="chap-num" data-en="CHAPTER 03" data-fil="KABANATA 03">CHAPTER 03</div>
+          <div class="chap-name" data-en="Malware &amp; Ransomware" data-fil="Malware at Ransomware">Malware &amp; Ransomware</div>
         </div>
-        <div class="chap-check"></div>
+        <div class="chap-check" id="check-3"></div>
       </div>
 
       <div class="chapter-item" data-chapter="4">
@@ -84,10 +105,10 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         </div>
         <div class="chap-text">
-          <div class="chap-num">CHAPTER 04</div>
-          <div class="chap-name">How Hackers Get You</div>
+          <div class="chap-num" data-en="CHAPTER 04" data-fil="KABANATA 04">CHAPTER 04</div>
+          <div class="chap-name" data-en="How Hackers Get You" data-fil="Paano Ka Atakihin">How Hackers Get You</div>
         </div>
-        <div class="chap-check"></div>
+        <div class="chap-check" id="check-4"></div>
       </div>
 
       <div class="chapter-item" data-chapter="5">
@@ -95,10 +116,10 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <div class="chap-text">
-          <div class="chap-num">CHAPTER 05</div>
-          <div class="chap-name">Password Security</div>
+          <div class="chap-num" data-en="CHAPTER 05" data-fil="KABANATA 05">CHAPTER 05</div>
+          <div class="chap-name" data-en="Password Security" data-fil="Seguridad ng Password">Password Security</div>
         </div>
-        <div class="chap-check"></div>
+        <div class="chap-check" id="check-5"></div>
       </div>
 
       <div class="chapter-item" data-chapter="6">
@@ -106,17 +127,18 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         </div>
         <div class="chap-text">
-          <div class="chap-num">CHAPTER 06</div>
-          <div class="chap-name">Your Safety Checklist</div>
+          <div class="chap-num" data-en="CHAPTER 06" data-fil="KABANATA 06">CHAPTER 06</div>
+          <div class="chap-name" data-en="Your Safety Checklist" data-fil="Iyong Checklist sa Kaligtasan">Your Safety Checklist</div>
         </div>
-        <div class="chap-check"></div>
+        <div class="chap-check" id="check-6"></div>
       </div>
 
     </div>
 
     <div class="progress-section">
       <div class="progress-label">
-        READING PROGRESS <span id="progressPct">17% complete</span>
+        <span data-en="READING PROGRESS" data-fil="PROGRESO SA PAGBABASA">READING PROGRESS</span>
+        <span id="progressPct">17% complete</span>
       </div>
       <div class="progress-bar">
         <div class="progress-fill" id="progressFill" style="width:17%"></div>
@@ -131,26 +153,26 @@
     <!-- Content sub-header -->
     <div class="content-header">
       <div class="content-breadcrumb">
-        <span>FIELD MANUAL</span>
+        <span data-en="WEBSAFE HANDBOOK" data-fil="HANDBOOK NG WEBSAFE">WEBSAFE HANDBOOK</span>
         <span class="breadcrumb-sep">/</span>
         <span class="breadcrumb-active" id="breadcrumbChap">CHAPTER 01</span>
         <span class="breadcrumb-sep">/</span>
-        <span id="breadcrumbTopic">PHISHING & SOCIAL ENGINEERING</span>
+        <span id="breadcrumbTopic">PHISHING &amp; SOCIAL ENGINEERING</span>
       </div>
-      <div class="chapter-counter">Chapter <em id="chapNum">01</em> of 06</div>
+      <div class="chapter-counter"><span data-en="Chapter" data-fil="Kabanata">Chapter</span> <em id="chapNum">01</em> <span data-en="of" data-fil="ng">of</span> 06</div>
     </div>
 
     <!-- ===================== CHAPTER 1 ===================== -->
     <div class="content-scroll chapter-content active" id="chapter-1">
 
-      <div class="section-tag awareness">AWARENESS</div>
-      <h1 class="page-title">Phishing &amp; <span class="accent">Social Engineering</span></h1>
-      <p class="intro-text">
+      <div class="section-tag awareness" data-en="AWARENESS" data-fil="KAMALAYAN">AWARENESS</div>
+      <h1 class="page-title"><span data-en="Phishing &amp;" data-fil="Phishing at">Phishing &amp;</span> <span class="accent" data-en="Social Engineering" data-fil="Social Engineering">Social Engineering</span></h1>
+      <p class="intro-text" data-en="Cybercriminals don't always break through walls — they often walk right through the front door because you held it open. Phishing and social engineering exploit human psychology rather than technical vulnerabilities. Understanding the tactics is your first line of defence." data-fil="Hindi palaging pinipigilan ng mga cybercriminal ang mga pader — madalas silang tumatahak sa pintuan dahil ikaw mismo ang nagbukas nito. Ginagamit ng phishing at social engineering ang sikolohiya ng tao kaysa sa mga teknikal na kahinaan. Ang pag-unawa sa mga taktika ay ang iyong unang linya ng depensa.">
         Cybercriminals don't always break through walls — they often walk right through the front door because you held it open. Phishing and social engineering exploit human psychology rather than technical vulnerabilities. Understanding the tactics is your first line of defence.
       </p>
 
       <div class="threat-meter">
-        <div class="threat-label">THREAT LEVEL</div>
+        <div class="threat-label" data-en="THREAT LEVEL" data-fil="ANTAS NG BANTA">THREAT LEVEL</div>
         <div class="threat-blocks">
           <div class="threat-block active l1"></div>
           <div class="threat-block active l1"></div>
@@ -163,20 +185,19 @@
           <div class="threat-block"></div>
           <div class="threat-block"></div>
         </div>
-        <div class="threat-value">HIGH RISK</div>
+        <div class="threat-value" data-en="HIGH RISK" data-fil="MATAAS NA PANGANIB">HIGH RISK</div>
       </div>
 
       <div class="callout">
         <div class="callout-icon">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         </div>
-        <div class="callout-text">
+        <div class="callout-text" data-en="&lt;strong&gt;By the numbers:&lt;/strong&gt; Over &lt;strong&gt;3.4 billion&lt;/strong&gt; phishing emails are sent every day. In the Philippines, phishing is the #1 reported cybercrime — commonly targeting GCash, BPI, Metrobank, and Shopee users. The FBI's IC3 reports phishing as the most common attack type for 5 consecutive years." data-fil="&lt;strong&gt;Sa mga numero:&lt;/strong&gt; Mahigit &lt;strong&gt;3.4 bilyon&lt;/strong&gt; na phishing na email ang ipinapadala araw-araw. Sa Pilipinas, ang phishing ang pinaka-ulat na cybercrime — kadalasang nagta-target ng mga gumagamit ng GCash, BPI, Metrobank, at Shopee. Ang IC3 ng FBI ay nag-uulat na ang phishing ang pinakakaraniwang uri ng pag-atake sa loob ng 5 magkakasunod na taon.">
           <strong>By the numbers:</strong> Over <strong>3.4 billion</strong> phishing emails are sent every day. In the Philippines, phishing is the #1 reported cybercrime — commonly targeting GCash, BPI, Metrobank, and Shopee users. The FBI's IC3 reports phishing as the most common attack type for 5 consecutive years.
         </div>
       </div>
 
-      <!-- Phishing Types -->
-      <div class="sub-heading">Types of Phishing Attacks</div>
+      <div class="sub-heading" data-en="Types of Phishing Attacks" data-fil="Mga Uri ng Phishing Attack">Types of Phishing Attacks</div>
       <div class="card-grid three-col">
 
         <div class="info-card card-cyan">
@@ -184,8 +205,8 @@
           <div class="card-icon-wrap">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           </div>
-          <div class="card-title">Email Phishing</div>
-          <div class="card-desc">Mass-sent emails impersonating banks, shipping companies, or government agencies. They include urgent calls to action and fake links to credential-harvesting sites.</div>
+          <div class="card-title" data-en="Email Phishing" data-fil="Email Phishing">Email Phishing</div>
+          <div class="card-desc" data-en="Mass-sent emails impersonating banks, shipping companies, or government agencies. They include urgent calls to action and fake links to credential-harvesting sites." data-fil="Mga email na ipinadala sa masa na nagpapanggap bilang mga bangko, kumpanya ng pagpapadala, o ahensya ng gobyerno. Naglalaman sila ng mga agarang call to action at mga pekeng link sa mga site na nangongolekta ng kredensyal.">Mass-sent emails impersonating banks, shipping companies, or government agencies. They include urgent calls to action and fake links to credential-harvesting sites.</div>
         </div>
 
         <div class="info-card card-orange">
@@ -193,8 +214,8 @@
           <div class="card-icon-wrap">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
           </div>
-          <div class="card-title">Smishing (SMS)</div>
-          <div class="card-desc">Text messages claiming your package is held, your account is locked, or you've won a prize. Often include shortened URLs that disguise the real destination.</div>
+          <div class="card-title" data-en="Smishing (SMS)" data-fil="Smishing (SMS)">Smishing (SMS)</div>
+          <div class="card-desc" data-en="Text messages claiming your package is held, your account is locked, or you've won a prize. Often include shortened URLs that disguise the real destination." data-fil="Mga text message na nagsasabing napanatili ang iyong pakete, naka-lock ang iyong account, o nanalo ka ng premyo. Kadalasang naglalaman ng mga pinaikling URL na nagtatago ng tunay na destinasyon.">Text messages claiming your package is held, your account is locked, or you've won a prize. Often include shortened URLs that disguise the real destination.</div>
         </div>
 
         <div class="info-card card-purple">
@@ -202,8 +223,8 @@
           <div class="card-icon-wrap">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.1 19.79 19.79 0 0 1 1.61 4.53 2 2 0 0 1 3.6 2.36h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 17c.01.31 0 .62-.04.92z"/></svg>
           </div>
-          <div class="card-title">Vishing (Voice)</div>
-          <div class="card-desc">Scammers call pretending to be tech support, bank agents, or government officials. They use urgency and authority to extract OTPs, PINs, or card numbers over the phone.</div>
+          <div class="card-title" data-en="Vishing (Voice)" data-fil="Vishing (Boses)">Vishing (Voice)</div>
+          <div class="card-desc" data-en="Scammers call pretending to be tech support, bank agents, or government officials. They use urgency and authority to extract OTPs, PINs, or card numbers over the phone." data-fil="Tumatawag ang mga manloloko na nagpapanggap na tech support, ahente ng bangko, o opisyal ng gobyerno. Gumagamit sila ng pagkamadalian at awtoridad upang makuha ang mga OTP, PIN, o numero ng card sa telepono.">Scammers call pretending to be tech support, bank agents, or government officials. They use urgency and authority to extract OTPs, PINs, or card numbers over the phone.</div>
         </div>
 
         <div class="info-card card-red">
@@ -211,8 +232,8 @@
           <div class="card-icon-wrap">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           </div>
-          <div class="card-title">Spear Phishing</div>
-          <div class="card-desc">Highly targeted attacks using personal details scraped from social media — your name, employer, colleagues — to craft a believable, personalized deception.</div>
+          <div class="card-title" data-en="Spear Phishing" data-fil="Spear Phishing">Spear Phishing</div>
+          <div class="card-desc" data-en="Highly targeted attacks using personal details scraped from social media — your name, employer, colleagues — to craft a believable, personalized deception." data-fil="Mga lubos na naka-target na pag-atake gamit ang personal na detalye mula sa social media — ang iyong pangalan, employer, mga kasamahan — upang lumikha ng kapani-paniwalang, personalisadong pandaraya.">Highly targeted attacks using personal details scraped from social media — your name, employer, colleagues — to craft a believable, personalized deception.</div>
         </div>
 
         <div class="info-card card-yellow">
@@ -220,8 +241,8 @@
           <div class="card-icon-wrap">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4v4H7zm6 0h4v4h-4zM7 13h4v4H7z"/></svg>
           </div>
-          <div class="card-title">QR Code Scams</div>
-          <div class="card-desc">Printed or digital QR codes placed on posters, menus, or fake payment terminals that redirect to phishing sites — bypassing URL-visibility checks entirely.</div>
+          <div class="card-title" data-en="QR Code Scams" data-fil="Mga Scam sa QR Code">QR Code Scams</div>
+          <div class="card-desc" data-en="Printed or digital QR codes placed on posters, menus, or fake payment terminals that redirect to phishing sites — bypassing URL-visibility checks entirely." data-fil="Mga nakalimbag o digital na QR code na inilagay sa mga poster, menu, o pekeng payment terminal na nagre-redirect sa mga phishing site — ganap na nilalampasan ang mga tseke sa visibility ng URL.">Printed or digital QR codes placed on posters, menus, or fake payment terminals that redirect to phishing sites — bypassing URL-visibility checks entirely.</div>
         </div>
 
         <div class="info-card card-green">
@@ -229,102 +250,99 @@
           <div class="card-icon-wrap">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
           </div>
-          <div class="card-title">Malicious Files</div>
-          <div class="card-desc">PDFs, Excel sheets, and Word docs that look legitimate but contain hidden macros or scripts that silently install malware the moment you enable editing.</div>
+          <div class="card-title" data-en="Malicious Files" data-fil="Mga Mapanganib na File">Malicious Files</div>
+          <div class="card-desc" data-en="PDFs, Excel sheets, and Word docs that look legitimate but contain hidden macros or scripts that silently install malware the moment you enable editing." data-fil="Mga PDF, Excel sheet, at Word doc na mukhang lehitimo ngunit naglalaman ng mga nakatagong macro o script na tahimik na nag-i-install ng malware sa sandaling paganahin mo ang pag-edit.">PDFs, Excel sheets, and Word docs that look legitimate but contain hidden macros or scripts that silently install malware the moment you enable editing.</div>
         </div>
 
       </div>
 
-      <!-- How Phishing Works -->
-      <div class="sub-heading">The Phishing Attack Chain</div>
+      <div class="sub-heading" data-en="The Phishing Attack Chain" data-fil="Ang Phishing Attack Chain">The Phishing Attack Chain</div>
       <div class="steps">
 
         <div class="step">
           <div class="step-num">01</div>
           <div class="step-content">
-            <div class="step-title">Lure — Creating False Urgency</div>
-            <div class="step-desc">You receive an alarming message: "Your GCash account is suspended," "Suspicious login detected," or "You've won ₱50,000!" The goal is panic or excitement — both bypass rational thinking and trigger impulsive action.</div>
+            <div class="step-title" data-en="Lure — Creating False Urgency" data-fil="Lure — Paglikha ng Huwad na Pagkamadalian">Lure — Creating False Urgency</div>
+            <div class="step-desc" data-en='You receive an alarming message: "Your GCash account is suspended," "Suspicious login detected," or "You've won ₱50,000!" The goal is panic or excitement — both bypass rational thinking and trigger impulsive action.' data-fil='Nakatanggap ka ng isang nakakatakot na mensahe: "Nasuspinde ang iyong GCash account," "Natukoy ang kahina-hinalang login," o "Nanalo ka ng ₱50,000!" Ang layunin ay gulat o kasabikan — parehong nilalampasan ang makatwirang pag-iisip at nag-uudyok ng impulsibong pagkilos.'>You receive an alarming message: "Your GCash account is suspended," "Suspicious login detected," or "You've won ₱50,000!" The goal is panic or excitement — both bypass rational thinking and trigger impulsive action.</div>
           </div>
-          <div class="step-severity sev-med">INITIAL CONTACT</div>
+          <div class="step-severity sev-med" data-en="INITIAL CONTACT" data-fil="UNANG PAKIKIPAG-UGNAYAN">INITIAL CONTACT</div>
         </div>
 
         <div class="step">
           <div class="step-num">02</div>
           <div class="step-content">
-            <div class="step-title">Hook — The Fake Destination</div>
-            <div class="step-desc">A link leads to a pixel-perfect clone of a legitimate site. Attackers use typosquatted domains like "gcash-security.com" or "bpi-verify.net". The site may even have HTTPS to appear trustworthy.</div>
+            <div class="step-title" data-en="Hook — The Fake Destination" data-fil="Hook — Ang Pekeng Destinasyon">Hook — The Fake Destination</div>
+            <div class="step-desc" data-en='A link leads to a pixel-perfect clone of a legitimate site. Attackers use typosquatted domains like "gcash-security.com" or "bpi-verify.net". The site may even have HTTPS to appear trustworthy.' data-fil='Ang isang link ay nagdadala sa isang pixel-perfect na kopya ng isang lehitimong site. Gumagamit ang mga umaatake ng mga typosquatted na domain tulad ng "gcash-security.com" o "bpi-verify.net". Maaaring magkaroon pa ng HTTPS ang site upang mukhang mapagkakatiwalaan.'>A link leads to a pixel-perfect clone of a legitimate site. Attackers use typosquatted domains like "gcash-security.com" or "bpi-verify.net". The site may even have HTTPS to appear trustworthy.</div>
           </div>
-          <div class="step-severity sev-med">REDIRECT</div>
+          <div class="step-severity sev-med" data-en="REDIRECT" data-fil="REDIRECT">REDIRECT</div>
         </div>
 
         <div class="step">
           <div class="step-num">03</div>
           <div class="step-content">
-            <div class="step-title">Catch — Credential Harvest</div>
-            <div class="step-desc">You enter your username, password, or OTP on the fake site. This data is sent to the attacker in real time — sometimes while you're being redirected to the real site to mask suspicion.</div>
+            <div class="step-title" data-en="Catch — Credential Harvest" data-fil="Catch — Pag-ani ng Kredensyal">Catch — Credential Harvest</div>
+            <div class="step-desc" data-en="You enter your username, password, or OTP on the fake site. This data is sent to the attacker in real time — sometimes while you're being redirected to the real site to mask suspicion." data-fil="Ipinasok mo ang iyong username, password, o OTP sa pekeng site. Ang data na ito ay ipinapadala sa umaatake sa real time — kung minsan habang ire-redirect ka sa tunay na site upang itago ang hinala.">You enter your username, password, or OTP on the fake site. This data is sent to the attacker in real time — sometimes while you're being redirected to the real site to mask suspicion.</div>
           </div>
-          <div class="step-severity sev-high">CRITICAL</div>
+          <div class="step-severity sev-high" data-en="CRITICAL" data-fil="KRITIKAL">CRITICAL</div>
         </div>
 
         <div class="step">
           <div class="step-num">04</div>
           <div class="step-content">
-            <div class="step-title">Exploit — Immediate Account Takeover</div>
-            <div class="step-desc">Within minutes, funds are transferred, accounts are sold on dark web markets, or identities are used for further fraud. Stolen credentials are often bundled and resold to multiple threat actors simultaneously.</div>
+            <div class="step-title" data-en="Exploit — Immediate Account Takeover" data-fil="Exploit — Agarang Pag-agaw ng Account">Exploit — Immediate Account Takeover</div>
+            <div class="step-desc" data-en="Within minutes, funds are transferred, accounts are sold on dark web markets, or identities are used for further fraud. Stolen credentials are often bundled and resold to multiple threat actors simultaneously." data-fil="Sa loob ng ilang minuto, inilipat ang mga pondo, ibinebenta ang mga account sa mga dark web market, o ginagamit ang mga pagkakakilanlan para sa karagdagang panloloko. Ang mga ninakaw na kredensyal ay kadalasang binubuo at muling ibinebenta sa maraming threat actor nang sabay-sabay.">Within minutes, funds are transferred, accounts are sold on dark web markets, or identities are used for further fraud. Stolen credentials are often bundled and resold to multiple threat actors simultaneously.</div>
           </div>
-          <div class="step-severity sev-high">BREACH</div>
+          <div class="step-severity sev-high" data-en="BREACH" data-fil="PAGLABAG">BREACH</div>
         </div>
 
       </div>
 
-      <!-- Social Engineering Tactics -->
-      <div class="sub-heading">Social Engineering Mind Tricks</div>
+      <div class="sub-heading" data-en="Social Engineering Mind Tricks" data-fil="Mga Trick ng Social Engineering">Social Engineering Mind Tricks</div>
       <div class="tactic-grid">
 
         <div class="tactic-card">
-          <div class="tactic-label">AUTHORITY</div>
-          <div class="tactic-desc">Impersonating a bank official, government agent (BIR, SSS), or tech company executive to create pressure to comply without questioning.</div>
+          <div class="tactic-label" data-en="AUTHORITY" data-fil="AWTORIDAD">AUTHORITY</div>
+          <div class="tactic-desc" data-en="Impersonating a bank official, government agent (BIR, SSS), or tech company executive to create pressure to comply without questioning." data-fil="Pagpapanggap na isang opisyal ng bangko, ahente ng gobyerno (BIR, SSS), o ehekutibo ng kumpanya ng teknolohiya upang lumikha ng presyon na sumunod nang walang pagtatanong.">Impersonating a bank official, government agent (BIR, SSS), or tech company executive to create pressure to comply without questioning.</div>
         </div>
 
         <div class="tactic-card">
-          <div class="tactic-label">URGENCY</div>
-          <div class="tactic-desc">"Your account will be permanently deleted in 24 hours." Time pressure prevents careful thinking and verification, pushing victims to act before they can reason.</div>
+          <div class="tactic-label" data-en="URGENCY" data-fil="PAGKAMADALIAN">URGENCY</div>
+          <div class="tactic-desc" data-en='"Your account will be permanently deleted in 24 hours." Time pressure prevents careful thinking and verification, pushing victims to act before they can reason.' data-fil='"Ang iyong account ay permanenteng matatanggal sa loob ng 24 na oras." Pinipigilan ng presyon ng oras ang maingat na pag-iisip at pag-verify, na nagtutulak sa mga biktima na kumilos bago pa nila mapag-isipan.'>"Your account will be permanently deleted in 24 hours." Time pressure prevents careful thinking and verification, pushing victims to act before they can reason.</div>
         </div>
 
         <div class="tactic-card">
-          <div class="tactic-label">SCARCITY</div>
-          <div class="tactic-desc">"Only 3 prizes remaining!" or "Limited offer expires now." Exploits fear of missing out (FOMO) to drive clicks and form submissions.</div>
+          <div class="tactic-label" data-en="SCARCITY" data-fil="KAKULANGAN">SCARCITY</div>
+          <div class="tactic-desc" data-en='"Only 3 prizes remaining!" or "Limited offer expires now." Exploits fear of missing out (FOMO) to drive clicks and form submissions.' data-fil='"3 premyo na lang ang natitira!" o "Nag-e-expire na ang limitadong alok." Ginagamit ang takot na makaligtaan (FOMO) upang mag-udyok ng mga pag-click at pagsusumite ng form.'>"Only 3 prizes remaining!" or "Limited offer expires now." Exploits fear of missing out (FOMO) to drive clicks and form submissions.</div>
         </div>
 
         <div class="tactic-card">
-          <div class="tactic-label">SOCIAL PROOF</div>
-          <div class="tactic-desc">"10,000 people have already claimed theirs." Fake testimonials and inflated numbers make scams appear legitimate and safe to engage with.</div>
+          <div class="tactic-label" data-en="SOCIAL PROOF" data-fil="PATUNAY NG LIPUNAN">SOCIAL PROOF</div>
+          <div class="tactic-desc" data-en='"10,000 people have already claimed theirs." Fake testimonials and inflated numbers make scams appear legitimate and safe to engage with.' data-fil='"10,000 katao na ang nakakuning kani-kanila." Ang mga pekeng testimonya at mataas na numero ay nagpapakita ng mga scam na lehitimo at ligtas na makipag-ugnayan.'>"10,000 people have already claimed theirs." Fake testimonials and inflated numbers make scams appear legitimate and safe to engage with.</div>
         </div>
 
         <div class="tactic-card">
-          <div class="tactic-label">RECIPROCITY</div>
-          <div class="tactic-desc">Offering something free — a gift card, discount, or useful tool — to make victims feel obligated to provide personal information in return.</div>
+          <div class="tactic-label" data-en="RECIPROCITY" data-fil="KAGANDAHANG-LOOB">RECIPROCITY</div>
+          <div class="tactic-desc" data-en="Offering something free — a gift card, discount, or useful tool — to make victims feel obligated to provide personal information in return." data-fil="Nag-aalok ng libreng bagay — isang gift card, diskwento, o kapaki-pakinabang na tool — upang maramdaman ng mga biktima na obligado silang magbigay ng personal na impormasyon bilang kapalit.">Offering something free — a gift card, discount, or useful tool — to make victims feel obligated to provide personal information in return.</div>
         </div>
 
         <div class="tactic-card">
-          <div class="tactic-label">FAMILIARITY</div>
-          <div class="tactic-desc">Using your name, referencing a mutual friend, or mentioning recent purchases to create a false sense of trust and legitimacy before the ask.</div>
+          <div class="tactic-label" data-en="FAMILIARITY" data-fil="PAMILYARIDAD">FAMILIARITY</div>
+          <div class="tactic-desc" data-en="Using your name, referencing a mutual friend, or mentioning recent purchases to create a false sense of trust and legitimacy before the ask." data-fil="Paggamit ng iyong pangalan, pagtukoy sa isang kasamahang kaibigan, o pagbanggit ng mga kamakailang pagbili upang lumikha ng maling pakiramdam ng tiwala at pagiging lehitimo bago ang hiling.">Using your name, referencing a mutual friend, or mentioning recent purchases to create a false sense of trust and legitimacy before the ask.</div>
         </div>
 
       </div>
 
-      <!-- Red Flags -->
       <div class="tags-section">
-        <div class="sub-heading">Red Flags to Watch For</div>
+        <div class="sub-heading" data-en="Red Flags to Watch For" data-fil="Mga Red Flag na Dapat Bantayan">Red Flags to Watch For</div>
         <div class="tags">
-          <span class="tag tag-red"> Urgent or threatening language</span>
-          <span class="tag tag-orange"> Misspelled or unusual domain names</span>
-          <span class="tag tag-yellow"> Generic greetings ("Dear User")</span>
-          <span class="tag tag-red"> No HTTPS padlock on sensitive pages</span>
-          <span class="tag tag-purple"> Unexpected file attachments</span>
-          <span class="tag tag-cyan"> Any request for OTP, PIN, or password</span>
-          <span class="tag tag-orange"> Unsolicited calls asking for account info</span>
-          <span class="tag tag-green">Always verify links before clicking</span>
+          <span class="tag tag-red" data-en=" Urgent or threatening language" data-fil=" Agarang o nagbabantang wika"> Urgent or threatening language</span>
+          <span class="tag tag-orange" data-en=" Misspelled or unusual domain names" data-fil=" Maling spelling o hindi karaniwang domain name"> Misspelled or unusual domain names</span>
+          <span class="tag tag-yellow" data-en=' Generic greetings ("Dear User")' data-fil=' Generic na pagbati ("Mahal na Gumagamit")'> Generic greetings ("Dear User")</span>
+          <span class="tag tag-red" data-en=" No HTTPS padlock on sensitive pages" data-fil=" Walang HTTPS padlock sa mga sensitibong pahina"> No HTTPS padlock on sensitive pages</span>
+          <span class="tag tag-purple" data-en=" Unexpected file attachments" data-fil=" Mga hindi inaasahang file attachment"> Unexpected file attachments</span>
+          <span class="tag tag-cyan" data-en=" Any request for OTP, PIN, or password" data-fil=" Anumang kahilingan para sa OTP, PIN, o password"> Any request for OTP, PIN, or password</span>
+          <span class="tag tag-orange" data-en=" Unsolicited calls asking for account info" data-fil=" Mga hindi hiniling na tawag na humihingi ng impormasyon ng account"> Unsolicited calls asking for account info</span>
+          <span class="tag tag-green" data-en="Always verify links before clicking" data-fil="Palaging i-verify ang mga link bago mag-click">Always verify links before clicking</span>
         </div>
       </div>
 
@@ -332,7 +350,7 @@
         <div class="tip-icon">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
         </div>
-        <div class="tip-text">
+        <div class="tip-text" data-en="&lt;strong&gt;Golden Rule:&lt;/strong&gt; No legitimate bank, government agency, or company will ever ask for your OTP, full PIN, or password over phone, SMS, or email — ever. If someone requests it, it is a scam. Hang up, delete the message, and report it immediately." data-fil="&lt;strong&gt;Gintong Panuntunan:&lt;/strong&gt; Walang lehitimong bangko, ahensya ng gobyerno, o kumpanya ang magtatanong kailanman ng iyong OTP, buong PIN, o password sa pamamagitan ng telepono, SMS, o email — kailanman. Kung may humiling nito, ito ay isang scam. Ibaba ang telepono, tanggalin ang mensahe, at iulat ito agad.">
           <strong>Golden Rule:</strong> No legitimate bank, government agency, or company will ever ask for your OTP, full PIN, or password over phone, SMS, or email — ever. If someone requests it, it is a scam. Hang up, delete the message, and report it immediately.
         </div>
       </div>
@@ -342,14 +360,14 @@
     <!-- ===================== CHAPTER 2 ===================== -->
     <div class="content-scroll chapter-content" id="chapter-2">
 
-      <div class="section-tag scams">ONLINE SCAMS</div>
-      <h1 class="page-title">Online <span class="accent">Scams</span></h1>
-      <p class="intro-text">
+      <div class="section-tag scams" data-en="ONLINE SCAMS" data-fil="MGA ONLINE NA SCAM">ONLINE SCAMS</div>
+      <h1 class="page-title"><span data-en="Online" data-fil="Mga Online na">Online</span> <span class="accent" data-en="Scams" data-fil="Scam">Scams</span></h1>
+      <p class="intro-text" data-en="Digital scams evolve constantly, exploiting new platforms and timely events. From fake online shops to romance fraud, scammers invest time and creativity into making their traps feel real. Knowing the playbook makes you nearly immune." data-fil="Patuloy na nagbabago ang mga digital na scam, na ginagamit ang mga bagong platform at napapanahong kaganapan. Mula sa mga pekeng online na tindahan hanggang sa romance fraud, namumuhunan ang mga manloloko ng oras at pagkamalikhain upang maparamdam na tunay ang kanilang mga bitag. Ang kaalaman sa playbook ay halos nagpapaligtaya sa iyo.">
         Digital scams evolve constantly, exploiting new platforms and timely events. From fake online shops to romance fraud, scammers invest time and creativity into making their traps feel real. Knowing the playbook makes you nearly immune.
       </p>
 
       <div class="threat-meter">
-        <div class="threat-label">THREAT LEVEL</div>
+        <div class="threat-label" data-en="THREAT LEVEL" data-fil="ANTAS NG BANTA">THREAT LEVEL</div>
         <div class="threat-blocks">
           <div class="threat-block active l1"></div>
           <div class="threat-block active l1"></div>
@@ -362,106 +380,89 @@
           <div class="threat-block"></div>
           <div class="threat-block"></div>
         </div>
-        <div class="threat-value">HIGH RISK</div>
+        <div class="threat-value" data-en="HIGH RISK" data-fil="MATAAS NA PANGANIB">HIGH RISK</div>
       </div>
 
       <div class="callout">
         <div class="callout-icon">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         </div>
-        <div class="callout-text">
+        <div class="callout-text" data-en="&lt;strong&gt;Philippine Context:&lt;/strong&gt; The Philippine National Police Anti-Cybercrime Group (PNP-ACG) reported over &lt;strong&gt;₱1.2 billion&lt;/strong&gt; lost to online scams in 2023 alone. Investment scams, online shopping fraud, and romance scams top the list. Victims are increasingly targeted on Facebook, TikTok, and Telegram." data-fil="&lt;strong&gt;Konteksto sa Pilipinas:&lt;/strong&gt; Nag-ulat ang Philippine National Police Anti-Cybercrime Group (PNP-ACG) na mahigit &lt;strong&gt;₱1.2 bilyon&lt;/strong&gt; ang nawala sa mga online na scam noong 2023 lamang. Ang mga scam sa pamumuhunan, pandaraya sa online shopping, at romance scam ang nangunguna sa listahan. Ang mga biktima ay lalong tina-target sa Facebook, TikTok, at Telegram.">
           <strong>Philippine Context:</strong> The Philippine National Police Anti-Cybercrime Group (PNP-ACG) reported over <strong>₱1.2 billion</strong> lost to online scams in 2023 alone. Investment scams, online shopping fraud, and romance scams top the list. Victims are increasingly targeted on Facebook, TikTok, and Telegram.
         </div>
       </div>
 
-      <div class="sub-heading">Common Scam Types</div>
+      <div class="sub-heading" data-en="Common Scam Types" data-fil="Mga Karaniwang Uri ng Scam">Common Scam Types</div>
       <div class="steps">
 
         <div class="step">
           <div class="step-num">01</div>
           <div class="step-content">
-            <div class="step-title">Investment & " Negosyo" Scams</div>
-            <div class="step-desc">Promises of 20–100% weekly returns through crypto trading bots, forex signals, or online business "systems." These are Ponzi or pyramid schemes. Early participants get paid using money from new recruits — until it collapses. Red flag: guaranteed returns, recruitment bonuses, pressure to invest quickly.</div>
+            <div class="step-title" data-en='Investment &amp; "Negosyo" Scams' data-fil='Mga Scam sa Pamumuhunan at "Negosyo"'>Investment &amp; "Negosyo" Scams</div>
+            <div class="step-desc" data-en="Promises of 20–100% weekly returns through crypto trading bots, forex signals, or online business &quot;systems.&quot; These are Ponzi or pyramid schemes. Early participants get paid using money from new recruits — until it collapses. Red flag: guaranteed returns, recruitment bonuses, pressure to invest quickly." data-fil="Mga pangako ng 20–100% lingguhang kita sa pamamagitan ng mga crypto trading bot, forex signal, o online business na &quot;sistema.&quot; Ito ay mga Ponzi o pyramid scheme. Ang mga maagang kalahok ay binabayaran gamit ang pera mula sa mga bagong miyembro — hanggang sa bumagsak ito. Red flag: garantisadong kita, mga bonus sa recruitment, presyon na mamuhunan nang mabilis.">Promises of 20–100% weekly returns through crypto trading bots, forex signals, or online business "systems." These are Ponzi or pyramid schemes. Early participants get paid using money from new recruits — until it collapses. Red flag: guaranteed returns, recruitment bonuses, pressure to invest quickly.</div>
           </div>
-          <div class="step-severity sev-high">CRITICAL</div>
+          <div class="step-severity sev-high" data-en="CRITICAL" data-fil="KRITIKAL">CRITICAL</div>
         </div>
 
         <div class="step">
           <div class="step-num">02</div>
           <div class="step-content">
-            <div class="step-title">Fake Online Shops</div>
-            <div class="step-desc">Websites or social media stores that collect payment then never ship. They use stolen product photos, fabricated reviews, and unverifiable contact info. Always check for a physical address, business registration, and use payment methods with buyer protection like credit cards or PayPal — never direct GCash transfers to strangers.</div>
+            <div class="step-title" data-en="Fake Online Shops" data-fil="Mga Pekeng Online na Tindahan">Fake Online Shops</div>
+            <div class="step-desc" data-en="Websites or social media stores that collect payment then never ship. They use stolen product photos, fabricated reviews, and unverifiable contact info. Always check for a physical address, business registration, and use payment methods with buyer protection like credit cards or PayPal — never direct GCash transfers to strangers." data-fil="Mga website o tindahan sa social media na nangongolekta ng bayad at hindi nagpapadala. Gumagamit sila ng mga ninakaw na larawan ng produkto, mga gawa-gawang review, at hindi ma-verify na impormasyon sa pakikipag-ugnayan. Palaging suriin ang pisikal na address, pagpaparehistro ng negosyo, at gumamit ng mga paraan ng pagbabayad na may proteksyon sa mamimili tulad ng mga credit card o PayPal — hindi kailanman direktang paglipat ng GCash sa mga estranghero.">Websites or social media stores that collect payment then never ship. They use stolen product photos, fabricated reviews, and unverifiable contact info. Always check for a physical address, business registration, and use payment methods with buyer protection like credit cards or PayPal — never direct GCash transfers to strangers.</div>
           </div>
-          <div class="step-severity sev-high">BREACH</div>
+          <div class="step-severity sev-high" data-en="BREACH" data-fil="PAGLABAG">BREACH</div>
         </div>
 
         <div class="step">
           <div class="step-num">03</div>
           <div class="step-content">
-            <div class="step-title">Romance Scams (Love Scamming)</div>
-            <div class="step-desc">Scammers build fake emotional relationships over weeks or months on dating apps, Facebook, or Instagram — using stolen photos of attractive people. Once trust is established, they invent a crisis (medical emergency, plane ticket, visa fees) and request money. They will never meet in person.</div>
+            <div class="step-title" data-en="Romance Scams (Love Scamming)" data-fil="Mga Romance Scam (Love Scamming)">Romance Scams (Love Scamming)</div>
+            <div class="step-desc" data-en="Scammers build fake emotional relationships over weeks or months on dating apps, Facebook, or Instagram — using stolen photos of attractive people. Once trust is established, they invent a crisis (medical emergency, plane ticket, visa fees) and request money. They will never meet in person." data-fil="Nagtatayo ang mga manloloko ng mga pekeng emosyonal na relasyon sa loob ng mga linggo o buwan sa mga dating app, Facebook, o Instagram — gamit ang mga ninakaw na larawan ng mga kaakit-akit na tao. Kapag naitayo na ang tiwala, nag-imbento sila ng krisis (medikal na emerhensiya, tiket sa eroplano, bayad sa visa) at humihingi ng pera. Hindi sila kailanman magtatagpo nang personal.">Scammers build fake emotional relationships over weeks or months on dating apps, Facebook, or Instagram — using stolen photos of attractive people. Once trust is established, they invent a crisis (medical emergency, plane ticket, visa fees) and request money. They will never meet in person.</div>
           </div>
-          <div class="step-severity sev-high">BREACH</div>
+          <div class="step-severity sev-high" data-en="BREACH" data-fil="PAGLABAG">BREACH</div>
         </div>
 
         <div class="step">
           <div class="step-num">04</div>
           <div class="step-content">
-            <div class="step-title">Job & Work-From-Home Scams</div>
-            <div class="step-desc">"Earn ₱5,000/day liking posts!" — tasks that require an initial "activation fee" to unlock earnings. Victims pay but never receive payouts. Legitimate employers never charge fees to start working. Other variants include fake POEA job placements targeting OFW applicants.</div>
+            <div class="step-title" data-en="Job &amp; Work-From-Home Scams" data-fil="Mga Scam sa Trabaho at Work-From-Home">Job &amp; Work-From-Home Scams</div>
+            <div class="step-desc" data-en='"Earn ₱5,000/day liking posts!" — tasks that require an initial "activation fee" to unlock earnings. Victims pay but never receive payouts. Legitimate employers never charge fees to start working. Other variants include fake POEA job placements targeting OFW applicants.' data-fil='"Kumita ng ₱5,000/araw sa pag-like ng mga post!" — mga gawain na nangangailangan ng paunang "activation fee" upang ma-unlock ang mga kita. Nagbabayad ang mga biktima ngunit hindi kailanman nakatanggap ng mga kabayaran. Ang mga lehitimong employer ay hindi kailanman naniningil ng bayad upang magsimulang magtrabaho. Ang iba pang mga variant ay kinabibilangan ng mga pekeng placement ng trabaho ng POEA na nagta-target ng mga aplikante ng OFW.'>"Earn ₱5,000/day liking posts!" — tasks that require an initial "activation fee" to unlock earnings. Victims pay but never receive payouts. Legitimate employers never charge fees to start working. Other variants include fake POEA job placements targeting OFW applicants.</div>
           </div>
-          <div class="step-severity sev-med">HIGH</div>
+          <div class="step-severity sev-med" data-en="HIGH" data-fil="MATAAS">HIGH</div>
         </div>
 
         <div class="step">
           <div class="step-num">05</div>
           <div class="step-content">
-            <div class="step-title">Prize & Lottery Scams</div>
-            <div class="step-desc">"You've won an iPhone 15! Pay ₱500 shipping to claim." No legitimate lottery requires you to pay to receive winnings. These scams collect the fee and vanish, or use the payment info to steal more. If you didn't enter it, you can't win it.</div>
+            <div class="step-title" data-en="Prize &amp; Lottery Scams" data-fil="Mga Scam sa Premyo at Loteria">Prize &amp; Lottery Scams</div>
+            <div class="step-desc" data-en='"You've won an iPhone 15! Pay ₱500 shipping to claim." No legitimate lottery requires you to pay to receive winnings. These scams collect the fee and vanish, or use the payment info to steal more. If you didn't enter it, you can't win it.' data-fil='"Nanalo ka ng iPhone 15! Magbayad ng ₱500 na shipping upang makuha." Walang lehitimong loteria ang nangangailangan sa iyo na magbayad upang matanggap ang mga panalo. Kinokolekta ng mga scam na ito ang bayad at nawawala, o ginagamit ang impormasyon sa pagbabayad upang magnakaw ng higit pa. Kung hindi ka sumali, hindi ka mananalo.'>"You've won an iPhone 15! Pay ₱500 shipping to claim." No legitimate lottery requires you to pay to receive winnings. These scams collect the fee and vanish, or use the payment info to steal more. If you didn't enter it, you can't win it.</div>
           </div>
-          <div class="step-severity sev-med">MEDIUM</div>
+          <div class="step-severity sev-med" data-en="MEDIUM" data-fil="KATAMTAMAN">MEDIUM</div>
         </div>
 
         <div class="step">
           <div class="step-num">06</div>
           <div class="step-content">
-            <div class="step-title">Tech Support Scams</div>
-            <div class="step-desc">A browser pop-up warns your PC is infected and displays a hotline number. Calling connects you to scammers who ask for remote access to your computer and payment to "fix" a non-existent problem. Microsoft, Apple, and Google never initiate unsolicited support calls.</div>
+            <div class="step-title" data-en="Tech Support Scams" data-fil="Mga Scam sa Tech Support">Tech Support Scams</div>
+            <div class="step-desc" data-en="A browser pop-up warns your PC is infected and displays a hotline number. Calling connects you to scammers who ask for remote access to your computer and payment to &quot;fix&quot; a non-existent problem. Microsoft, Apple, and Google never initiate unsolicited support calls." data-fil="Ang isang pop-up ng browser ay nagbababala na ang iyong PC ay nahawaan at nagpapakita ng numero ng hotline. Ang pagtawag ay nagkokonekta sa iyo sa mga manloloko na humihingi ng remote na access sa iyong computer at bayad upang &quot;ayusin&quot; ang isang hindi umiiral na problema. Ang Microsoft, Apple, at Google ay hindi kailanman nagpapasimula ng mga hindi hiniling na tawag sa suporta.">A browser pop-up warns your PC is infected and displays a hotline number. Calling connects you to scammers who ask for remote access to your computer and payment to "fix" a non-existent problem. Microsoft, Apple, and Google never initiate unsolicited support calls.</div>
           </div>
-          <div class="step-severity sev-med">MEDIUM</div>
+          <div class="step-severity sev-med" data-en="MEDIUM" data-fil="KATAMTAMAN">MEDIUM</div>
         </div>
 
       </div>
 
-      <div class="sub-heading">The Scam Verification Checklist</div>
+      <div class="sub-heading" data-en="The Scam Verification Checklist" data-fil="Ang Checklist sa Pag-verify ng Scam">The Scam Verification Checklist</div>
       <div class="checklist">
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Search the seller/company name + "scam" or "legit" before transacting</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Never pay via direct bank/GCash transfer to personal accounts for unknown sellers</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Verify business registration with the SEC or DTI using their official websites</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Video call the person before sending money — scammers avoid live video</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Report suspected scams to PNP-ACG: <strong>ecomplaint.pnp.gov.ph</strong></div>
-        </div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en='Search the seller/company name + "scam" or "legit" before transacting' data-fil='Hanapin ang pangalan ng nagbebenta/kumpanya + "scam" o "legit" bago magtransact'>Search the seller/company name + "scam" or "legit" before transacting</div></div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en="Never pay via direct bank/GCash transfer to personal accounts for unknown sellers" data-fil="Huwag kailanman magbayad sa pamamagitan ng direktang paglipat ng bangko/GCash sa mga personal na account para sa mga hindi kilalang nagbebenta">Never pay via direct bank/GCash transfer to personal accounts for unknown sellers</div></div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en="Verify business registration with the SEC or DTI using their official websites" data-fil="I-verify ang pagpaparehistro ng negosyo sa SEC o DTI gamit ang kanilang mga opisyal na website">Verify business registration with the SEC or DTI using their official websites</div></div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en="Video call the person before sending money — scammers avoid live video" data-fil="Mag-video call sa tao bago magpadala ng pera — iniiwasan ng mga manloloko ang live na video">Video call the person before sending money — scammers avoid live video</div></div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en="Report suspected scams to PNP-ACG: ecomplaint.pnp.gov.ph" data-fil="Iulat ang mga pinaghihinalaang scam sa PNP-ACG: ecomplaint.pnp.gov.ph">Report suspected scams to PNP-ACG: <strong>ecomplaint.pnp.gov.ph</strong></div></div>
       </div>
 
       <div class="tip-box">
-        <div class="tip-icon">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        </div>
-        <div class="tip-text">
+        <div class="tip-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+        <div class="tip-text" data-en="&lt;strong&gt;If it sounds too good to be true, it is.&lt;/strong&gt; This is the single most reliable filter for scams. Extraordinary claims — massive returns, free prizes, dream jobs — require extraordinary evidence. When pressured to decide quickly, the correct answer is always to walk away and verify first." data-fil="&lt;strong&gt;Kung mukhang masyadong maganda para maging totoo, oo nga.&lt;/strong&gt; Ito ang pinakamaasahang filter para sa mga scam. Ang mga pambihirang pahayag — malaking kita, libreng premyo, mga pangarap na trabaho — ay nangangailangan ng pambihirang katibayan. Kapag pinipigilan kang magpasya nang mabilis, ang tamang sagot ay palaging umalis at i-verify muna.">
           <strong>If it sounds too good to be true, it is.</strong> This is the single most reliable filter for scams. Extraordinary claims — massive returns, free prizes, dream jobs — require extraordinary evidence. When pressured to decide quickly, the correct answer is always to walk away and verify first.
         </div>
       </div>
@@ -471,108 +472,53 @@
     <!-- ===================== CHAPTER 3 ===================== -->
     <div class="content-scroll chapter-content" id="chapter-3">
 
-      <div class="section-tag malware">MALWARE</div>
-      <h1 class="page-title">Malware &amp; <span class="accent">Ransomware</span></h1>
-      <p class="intro-text">
+      <div class="section-tag malware" data-en="MALWARE" data-fil="MALWARE">MALWARE</div>
+      <h1 class="page-title"><span data-en="Malware &amp;" data-fil="Malware at">Malware &amp;</span> <span class="accent" data-en="Ransomware" data-fil="Ransomware">Ransomware</span></h1>
+      <p class="intro-text" data-en="Malware is malicious software designed to infiltrate, damage, or gain unauthorized access to devices. Once installed, it can spy on you, encrypt your files for ransom, steal banking credentials, or turn your device into a robot soldier in a criminal botnet." data-fil="Ang malware ay mapaminsalang software na idinisenyo upang makapasok, makapinsala, o makakuha ng hindi awtorisadong access sa mga device. Kapag na-install na, maaari itong maniktik sa iyo, i-encrypt ang iyong mga file para sa ransom, magnakaw ng mga kredensyal sa pagbabangko, o gawing robot soldier ang iyong device sa isang kriminal na botnet.">
         Malware is malicious software designed to infiltrate, damage, or gain unauthorized access to devices. Once installed, it can spy on you, encrypt your files for ransom, steal banking credentials, or turn your device into a robot soldier in a criminal botnet.
       </p>
 
       <div class="threat-meter">
-        <div class="threat-label">THREAT LEVEL</div>
+        <div class="threat-label" data-en="THREAT LEVEL" data-fil="ANTAS NG BANTA">THREAT LEVEL</div>
         <div class="threat-blocks">
-          <div class="threat-block active l1"></div>
-          <div class="threat-block active l1"></div>
-          <div class="threat-block active l2"></div>
-          <div class="threat-block active l2"></div>
-          <div class="threat-block active l3"></div>
-          <div class="threat-block active l3"></div>
-          <div class="threat-block active l4"></div>
-          <div class="threat-block active l4"></div>
-          <div class="threat-block active l4"></div>
-          <div class="threat-block"></div>
+          <div class="threat-block active l1"></div><div class="threat-block active l1"></div>
+          <div class="threat-block active l2"></div><div class="threat-block active l2"></div>
+          <div class="threat-block active l3"></div><div class="threat-block active l3"></div>
+          <div class="threat-block active l4"></div><div class="threat-block active l4"></div>
+          <div class="threat-block active l4"></div><div class="threat-block"></div>
         </div>
-        <div class="threat-value">CRITICAL</div>
+        <div class="threat-value" data-en="CRITICAL" data-fil="KRITIKAL">CRITICAL</div>
       </div>
 
       <div class="callout">
-        <div class="callout-icon">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        </div>
-        <div class="callout-text">
+        <div class="callout-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div class="callout-text" data-en="&lt;strong&gt;Scale of the threat:&lt;/strong&gt; Ransomware attacks cost businesses globally &lt;strong&gt;$20 billion&lt;/strong&gt; in 2023. A ransomware attack occurs every &lt;strong&gt;11 seconds&lt;/strong&gt;. Hospitals, schools, and government agencies are prime targets — including several in the Philippines that have suffered significant data breaches." data-fil="&lt;strong&gt;Sukat ng banta:&lt;/strong&gt; Ang mga pag-atake ng ransomware ay nagastos sa mga negosyo sa buong mundo ng &lt;strong&gt;$20 bilyon&lt;/strong&gt; noong 2023. Nagaganap ang isang pag-atake ng ransomware bawat &lt;strong&gt;11 segundo&lt;/strong&gt;. Ang mga ospital, paaralan, at ahensya ng gobyerno ay pangunahing target — kabilang ang ilan sa Pilipinas na nagdusa ng malalaking paglabag sa data.">
           <strong>Scale of the threat:</strong> Ransomware attacks cost businesses globally <strong>$20 billion</strong> in 2023. A ransomware attack occurs every <strong>11 seconds</strong>. Hospitals, schools, and government agencies are prime targets — including several in the Philippines that have suffered significant data breaches.
         </div>
       </div>
 
-      <div class="sub-heading">Malware Types Explained</div>
+      <div class="sub-heading" data-en="Malware Types Explained" data-fil="Mga Uri ng Malware na Ipinaliwanag">Malware Types Explained</div>
       <div class="card-grid two-col">
-
-        <div class="info-card card-red">
-          <div class="card-num">01</div>
-          <div class="card-title">Ransomware</div>
-          <div class="card-desc">Encrypts all your files and demands payment (usually in cryptocurrency) for the decryption key. Even after paying, files are often not recovered. Spreads via email attachments, malicious downloads, and unpatched software vulnerabilities.</div>
-        </div>
-
-        <div class="info-card card-orange">
-          <div class="card-num">02</div>
-          <div class="card-title">Trojans</div>
-          <div class="card-desc">Software that appears legitimate — a game mod, a free app, a "crack" for paid software — but contains hidden malicious code. Once installed, it silently grants attackers access to your system or installs additional malware.</div>
-        </div>
-
-        <div class="info-card card-yellow">
-          <div class="card-num">03</div>
-          <div class="card-title">Spyware & Keyloggers</div>
-          <div class="card-desc">Secretly records everything you type — passwords, messages, credit card numbers — and sends it to the attacker. Some variants take periodic screenshots or activate webcams without your knowledge.</div>
-        </div>
-
-        <div class="info-card card-purple">
-          <div class="card-num">04</div>
-          <div class="card-title">Adware & Browser Hijackers</div>
-          <div class="card-desc">Floods your browser with ads, redirects searches to fake engines, and installs extensions without permission. While less dangerous, it slows your device and can be a gateway for worse malware.</div>
-        </div>
-
-        <div class="info-card card-cyan">
-          <div class="card-num">05</div>
-          <div class="card-title">Rootkits</div>
-          <div class="card-desc">Designed to hide deep within the operating system, making them nearly invisible to standard antivirus tools. They give attackers persistent, privileged access to your system over long periods.</div>
-        </div>
-
-        <div class="info-card card-green">
-          <div class="card-num">06</div>
-          <div class="card-title">Worms</div>
-          <div class="card-desc">Self-replicating programs that spread across networks without user interaction. A single infected device on a network can compromise all connected machines within hours.</div>
-        </div>
-
+        <div class="info-card card-red"><div class="card-num">01</div><div class="card-title" data-en="Ransomware" data-fil="Ransomware">Ransomware</div><div class="card-desc" data-en="Encrypts all your files and demands payment (usually in cryptocurrency) for the decryption key. Even after paying, files are often not recovered. Spreads via email attachments, malicious downloads, and unpatched software vulnerabilities." data-fil="Ine-encrypt ang lahat ng iyong mga file at humihingi ng bayad (karaniwang sa cryptocurrency) para sa decryption key. Kahit pagkatapos magbayad, ang mga file ay madalas na hindi na naibabalik. Kumakalat sa pamamagitan ng mga email attachment, mga mapanganib na download, at mga hindi na-patch na kahinaan ng software.">Encrypts all your files and demands payment (usually in cryptocurrency) for the decryption key. Even after paying, files are often not recovered. Spreads via email attachments, malicious downloads, and unpatched software vulnerabilities.</div></div>
+        <div class="info-card card-orange"><div class="card-num">02</div><div class="card-title" data-en="Trojans" data-fil="Mga Trojan">Trojans</div><div class="card-desc" data-en="Software that appears legitimate — a game mod, a free app, a &quot;crack&quot; for paid software — but contains hidden malicious code. Once installed, it silently grants attackers access to your system or installs additional malware." data-fil="Software na mukhang lehitimo — isang game mod, isang libreng app, isang &quot;crack&quot; para sa bayad na software — ngunit naglalaman ng mga nakatagong mapanganib na code. Kapag na-install na, tahimik nitong ibinibigay sa mga umaatake ang access sa iyong sistema o nag-i-install ng karagdagang malware.">Software that appears legitimate — a game mod, a free app, a "crack" for paid software — but contains hidden malicious code. Once installed, it silently grants attackers access to your system or installs additional malware.</div></div>
+        <div class="info-card card-yellow"><div class="card-num">03</div><div class="card-title" data-en="Spyware &amp; Keyloggers" data-fil="Spyware at Mga Keylogger">Spyware &amp; Keyloggers</div><div class="card-desc" data-en="Secretly records everything you type — passwords, messages, credit card numbers — and sends it to the attacker. Some variants take periodic screenshots or activate webcams without your knowledge." data-fil="Lihim na nire-record ang lahat ng iyong tina-type — mga password, mensahe, numero ng credit card — at ipinapadala ito sa umaatake. Ang ilang variant ay kumukuha ng pana-panahong mga screenshot o nagpapagana ng mga webcam nang walang iyong kaalaman.">Secretly records everything you type — passwords, messages, credit card numbers — and sends it to the attacker. Some variants take periodic screenshots or activate webcams without your knowledge.</div></div>
+        <div class="info-card card-purple"><div class="card-num">04</div><div class="card-title" data-en="Adware &amp; Browser Hijackers" data-fil="Adware at Mga Browser Hijacker">Adware &amp; Browser Hijackers</div><div class="card-desc" data-en="Floods your browser with ads, redirects searches to fake engines, and installs extensions without permission. While less dangerous, it slows your device and can be a gateway for worse malware." data-fil="Binubuo ng mga ad ang iyong browser, nire-redirect ang mga paghahanap sa mga pekeng makina, at nag-i-install ng mga extension nang walang pahintulot. Bagama't mas hindi mapanganib, pinapabagal nito ang iyong device at maaaring maging gateway para sa mas masamang malware.">Floods your browser with ads, redirects searches to fake engines, and installs extensions without permission. While less dangerous, it slows your device and can be a gateway for worse malware.</div></div>
+        <div class="info-card card-cyan"><div class="card-num">05</div><div class="card-title" data-en="Rootkits" data-fil="Mga Rootkit">Rootkits</div><div class="card-desc" data-en="Designed to hide deep within the operating system, making them nearly invisible to standard antivirus tools. They give attackers persistent, privileged access to your system over long periods." data-fil="Idinisenyo upang magtago nang malalim sa loob ng operating system, na ginagawa silang halos hindi makita ng mga karaniwang tool ng antivirus. Nagbibigay sila sa mga umaatake ng patuloy, pribilehiyong access sa iyong sistema sa mahabang panahon.">Designed to hide deep within the operating system, making them nearly invisible to standard antivirus tools. They give attackers persistent, privileged access to your system over long periods.</div></div>
+        <div class="info-card card-green"><div class="card-num">06</div><div class="card-title" data-en="Worms" data-fil="Mga Worm">Worms</div><div class="card-desc" data-en="Self-replicating programs that spread across networks without user interaction. A single infected device on a network can compromise all connected machines within hours." data-fil="Mga self-replicating na programa na kumakalat sa mga network nang walang pakikipag-ugnayan ng gumagamit. Ang isang nahawaang device sa isang network ay maaaring ikompromiso ang lahat ng konektadong makina sa loob ng ilang oras.">Self-replicating programs that spread across networks without user interaction. A single infected device on a network can compromise all connected machines within hours.</div></div>
       </div>
 
-      <div class="sub-heading">How to Stay Protected</div>
+      <div class="sub-heading" data-en="How to Stay Protected" data-fil="Paano Manatiling Protektado">How to Stay Protected</div>
       <div class="checklist">
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Keep your OS, browser, and apps updated — patches close the vulnerabilities malware exploits</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Only download software from official sources (App Store, Google Play, official websites)</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Never install pirated software or game cracks — they are the #1 malware delivery vector</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Use a reputable antivirus and run regular scans (Windows Defender is sufficient for most users)</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Back up important files to an external drive or cloud storage — the ultimate ransomware protection</div>
-        </div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en="Keep your OS, browser, and apps updated — patches close the vulnerabilities malware exploits" data-fil="Panatilihing updated ang iyong OS, browser, at mga app — isinasara ng mga patch ang mga kahinaan na ginagamit ng malware">Keep your OS, browser, and apps updated — patches close the vulnerabilities malware exploits</div></div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en="Only download software from official sources (App Store, Google Play, official websites)" data-fil="Mag-download lamang ng software mula sa mga opisyal na pinagkukunan (App Store, Google Play, mga opisyal na website)">Only download software from official sources (App Store, Google Play, official websites)</div></div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en="Never install pirated software or game cracks — they are the #1 malware delivery vector" data-fil="Huwag kailanman mag-install ng pirated na software o mga game crack — sila ang #1 na vector ng paghahatid ng malware">Never install pirated software or game cracks — they are the #1 malware delivery vector</div></div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en="Use a reputable antivirus and run regular scans (Windows Defender is sufficient for most users)" data-fil="Gumamit ng isang kagalang-galang na antivirus at magpatakbo ng mga regular na scan (Sapat ang Windows Defender para sa karamihan ng mga gumagamit)">Use a reputable antivirus and run regular scans (Windows Defender is sufficient for most users)</div></div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en="Back up important files to an external drive or cloud storage — the ultimate ransomware protection" data-fil="I-back up ang mga mahahalagang file sa isang panlabas na drive o cloud storage — ang pinakamataas na proteksyon laban sa ransomware">Back up important files to an external drive or cloud storage — the ultimate ransomware protection</div></div>
       </div>
 
       <div class="tip-box">
-        <div class="tip-icon">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        </div>
-        <div class="tip-text">
+        <div class="tip-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+        <div class="tip-text" data-en="&lt;strong&gt;The 3-2-1 Backup Rule:&lt;/strong&gt; Keep &lt;strong&gt;3&lt;/strong&gt; copies of your data, on &lt;strong&gt;2&lt;/strong&gt; different storage types, with &lt;strong&gt;1&lt;/strong&gt; copy offsite or in the cloud. This ensures ransomware can never permanently destroy your files — you simply restore from a clean backup." data-fil="&lt;strong&gt;Ang 3-2-1 na Panuntunan sa Backup:&lt;/strong&gt; Panatilihin ang &lt;strong&gt;3&lt;/strong&gt; kopya ng iyong data, sa &lt;strong&gt;2&lt;/strong&gt; magkaibang uri ng storage, na may &lt;strong&gt;1&lt;/strong&gt; kopya sa labas ng site o sa cloud. Tinitiyak nito na hindi kailanman permanenteng masisira ng ransomware ang iyong mga file — i-restore mo lamang mula sa isang malinis na backup.">
           <strong>The 3-2-1 Backup Rule:</strong> Keep <strong>3</strong> copies of your data, on <strong>2</strong> different storage types, with <strong>1</strong> copy offsite or in the cloud. This ensures ransomware can never permanently destroy your files — you simply restore from a clean backup.
         </div>
       </div>
@@ -582,120 +528,47 @@
     <!-- ===================== CHAPTER 4 ===================== -->
     <div class="content-scroll chapter-content" id="chapter-4">
 
-      <div class="section-tag hacker">HOW HACKERS OPERATE</div>
-      <h1 class="page-title">How Hackers <span class="accent">Get You</span></h1>
-      <p class="intro-text">
+      <div class="section-tag hacker" data-en="HOW HACKERS OPERATE" data-fil="PAANO GUMAGANA ANG MGA HACKER">HOW HACKERS OPERATE</div>
+      <h1 class="page-title"><span data-en="How Hackers" data-fil="Paano Ka">How Hackers</span> <span class="accent" data-en="Get You" data-fil="Atakihin ng mga Hacker">Get You</span></h1>
+      <p class="intro-text" data-en="Understanding the attacker's perspective is one of the most powerful defensive tools available. Hackers follow predictable patterns — a kill chain of reconnaissance, intrusion, and exploitation. Know the chain, and you can break it." data-fil="Ang pag-unawa sa pananaw ng umaatake ay isa sa mga pinaka-malakas na tool sa pagtatanggol na available. Sumusunod ang mga hacker sa mga predictable na pattern — isang kill chain ng reconnaissance, intrusion, at exploitation. Alamin ang chain, at maaari mo itong sirain.">
         Understanding the attacker's perspective is one of the most powerful defensive tools available. Hackers follow predictable patterns — a kill chain of reconnaissance, intrusion, and exploitation. Know the chain, and you can break it.
       </p>
 
       <div class="threat-meter">
-        <div class="threat-label">THREAT LEVEL</div>
+        <div class="threat-label" data-en="THREAT LEVEL" data-fil="ANTAS NG BANTA">THREAT LEVEL</div>
         <div class="threat-blocks">
-          <div class="threat-block active l1"></div>
-          <div class="threat-block active l1"></div>
-          <div class="threat-block active l2"></div>
-          <div class="threat-block active l2"></div>
-          <div class="threat-block active l3"></div>
-          <div class="threat-block active l3"></div>
-          <div class="threat-block active l4"></div>
-          <div class="threat-block active l4"></div>
-          <div class="threat-block active l4"></div>
-          <div class="threat-block active l4"></div>
+          <div class="threat-block active l1"></div><div class="threat-block active l1"></div>
+          <div class="threat-block active l2"></div><div class="threat-block active l2"></div>
+          <div class="threat-block active l3"></div><div class="threat-block active l3"></div>
+          <div class="threat-block active l4"></div><div class="threat-block active l4"></div>
+          <div class="threat-block active l4"></div><div class="threat-block active l4"></div>
         </div>
-        <div class="threat-value">EXTREME</div>
+        <div class="threat-value" data-en="EXTREME" data-fil="SUKDULAN">EXTREME</div>
       </div>
 
-      <div class="sub-heading">The Hacker's Kill Chain</div>
+      <div class="sub-heading" data-en="The Hacker's Kill Chain" data-fil="Ang Kill Chain ng Hacker">The Hacker's Kill Chain</div>
       <div class="steps">
-        <div class="step">
-          <div class="step-num">01</div>
-          <div class="step-content">
-            <div class="step-title">Reconnaissance — They Research You First</div>
-            <div class="step-desc">Before attacking, hackers gather intelligence: your name, employer, email, phone number, social media posts, check-ins, and personal connections — all publicly available on Facebook, LinkedIn, and Instagram. This is called OSINT (Open Source Intelligence). Your public profile is a hacker's research report.</div>
-          </div>
-          <div class="step-severity sev-low">PASSIVE</div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">02</div>
-          <div class="step-content">
-            <div class="step-title">Credential Stuffing — Reusing Breached Passwords</div>
-            <div class="step-desc">Billions of username/password combinations from past data breaches are available on the dark web. Hackers use automated tools to try these credentials on banking, email, and shopping sites. If you reuse passwords, one breach exposes every account. Check haveibeenpwned.com to see if your email has been leaked.</div>
-          </div>
-          <div class="step-severity sev-high">AUTOMATED</div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">03</div>
-          <div class="step-content">
-            <div class="step-title">Man-in-the-Middle (MitM) Attacks</div>
-            <div class="step-desc">On public WiFi (cafés, malls, airports), hackers can position themselves between you and the network — intercepting all traffic. They can read unencrypted data, steal session cookies, and redirect you to fake login pages. Always use a VPN on public networks, and avoid sensitive transactions on public WiFi.</div>
-          </div>
-          <div class="step-severity sev-high">NETWORK</div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">04</div>
-          <div class="step-content">
-            <div class="step-title">Zero-Day & Software Exploits</div>
-            <div class="step-desc">Unpatched vulnerabilities in browsers, operating systems, or apps can be exploited to run code on your device without any action on your part — just visiting a malicious webpage can be enough. This is called a "drive-by download." Keeping software updated closes these holes before hackers can use them.</div>
-          </div>
-          <div class="step-severity sev-high">TECHNICAL</div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">05</div>
-          <div class="step-content">
-            <div class="step-title">SIM Swapping</div>
-            <div class="step-desc">Hackers call your mobile carrier, impersonate you using personal details (birthday, address), and convince the agent to transfer your phone number to their SIM. Once they control your number, they receive all your OTPs and 2FA codes — giving them access to every account linked to your phone number.</div>
-          </div>
-          <div class="step-severity sev-high">CRITICAL</div>
-        </div>
-
-        <div class="step">
-          <div class="step-num">06</div>
-          <div class="step-content">
-            <div class="step-title">Account Takeover & Lateral Movement</div>
-            <div class="step-desc">Once inside one account, hackers use it to pivot to others — accessing stored payment methods, sending phishing messages to your contacts, and resetting passwords using email recovery. A single compromised email account can cascade into total loss of your digital identity.</div>
-          </div>
-          <div class="step-severity sev-high">BREACH</div>
-        </div>
-
+        <div class="step"><div class="step-num">01</div><div class="step-content"><div class="step-title" data-en="Reconnaissance — They Research You First" data-fil="Reconnaissance — Una Kang Inaaral">Reconnaissance — They Research You First</div><div class="step-desc" data-en="Before attacking, hackers gather intelligence: your name, employer, email, phone number, social media posts, check-ins, and personal connections — all publicly available on Facebook, LinkedIn, and Instagram. This is called OSINT (Open Source Intelligence). Your public profile is a hacker's research report." data-fil="Bago umатаke, nangongolekta ng impormasyon ang mga hacker: ang iyong pangalan, employer, email, numero ng telepono, mga post sa social media, mga check-in, at mga personal na koneksyon — lahat ay publiko sa Facebook, LinkedIn, at Instagram. Ito ay tinatawag na OSINT (Open Source Intelligence). Ang iyong pampublikong profile ay ang ulat ng pananaliksik ng isang hacker.">Before attacking, hackers gather intelligence: your name, employer, email, phone number, social media posts, check-ins, and personal connections — all publicly available on Facebook, LinkedIn, and Instagram. This is called OSINT (Open Source Intelligence). Your public profile is a hacker's research report.</div></div><div class="step-severity sev-low" data-en="PASSIVE" data-fil="PASIBO">PASSIVE</div></div>
+        <div class="step"><div class="step-num">02</div><div class="step-content"><div class="step-title" data-en="Credential Stuffing — Reusing Breached Passwords" data-fil="Credential Stuffing — Muling Paggamit ng mga Na-breach na Password">Credential Stuffing — Reusing Breached Passwords</div><div class="step-desc" data-en="Billions of username/password combinations from past data breaches are available on the dark web. Hackers use automated tools to try these credentials on banking, email, and shopping sites. If you reuse passwords, one breach exposes every account. Check haveibeenpwned.com to see if your email has been leaked." data-fil="Bilyun-bilyong kumbinasyon ng username/password mula sa mga nakaraang paglabag sa data ay available sa dark web. Gumagamit ang mga hacker ng mga automated na tool upang subukan ang mga kredensyal na ito sa mga site ng pagbabangko, email, at pamimili. Kung gagamitin mong muli ang mga password, ang isang paglabag ay naglalantad ng bawat account. Suriin ang haveibeenpwned.com upang makita kung na-leak ang iyong email.">Billions of username/password combinations from past data breaches are available on the dark web. Hackers use automated tools to try these credentials on banking, email, and shopping sites. If you reuse passwords, one breach exposes every account. Check haveibeenpwned.com to see if your email has been leaked.</div></div><div class="step-severity sev-high" data-en="AUTOMATED" data-fil="AUTOMATED">AUTOMATED</div></div>
+        <div class="step"><div class="step-num">03</div><div class="step-content"><div class="step-title" data-en="Man-in-the-Middle (MitM) Attacks" data-fil="Mga Pag-atake ng Man-in-the-Middle (MitM)">Man-in-the-Middle (MitM) Attacks</div><div class="step-desc" data-en="On public WiFi (cafés, malls, airports), hackers can position themselves between you and the network — intercepting all traffic. They can read unencrypted data, steal session cookies, and redirect you to fake login pages. Always use a VPN on public networks, and avoid sensitive transactions on public WiFi." data-fil="Sa pampublikong WiFi (mga café, mall, paliparan), maaaring iposisyon ng mga hacker ang kanilang sarili sa pagitan mo at ng network — sinasagap ang lahat ng trapiko. Maaari nilang basahin ang hindi naka-encrypt na data, magnakaw ng mga session cookie, at i-redirect ka sa mga pekeng pahina ng pag-login. Palaging gumamit ng VPN sa mga pampublikong network, at iwasan ang mga sensitibong transaksyon sa pampublikong WiFi.">On public WiFi (cafés, malls, airports), hackers can position themselves between you and the network — intercepting all traffic. They can read unencrypted data, steal session cookies, and redirect you to fake login pages. Always use a VPN on public networks, and avoid sensitive transactions on public WiFi.</div></div><div class="step-severity sev-high" data-en="NETWORK" data-fil="NETWORK">NETWORK</div></div>
+        <div class="step"><div class="step-num">04</div><div class="step-content"><div class="step-title" data-en="Zero-Day &amp; Software Exploits" data-fil="Zero-Day at Mga Software Exploit">Zero-Day &amp; Software Exploits</div><div class="step-desc" data-en="Unpatched vulnerabilities in browsers, operating systems, or apps can be exploited to run code on your device without any action on your part — just visiting a malicious webpage can be enough. This is called a &quot;drive-by download.&quot; Keeping software updated closes these holes before hackers can use them." data-fil="Ang mga hindi na-patch na kahinaan sa mga browser, operating system, o app ay maaaring pagsamantalahan upang magpatakbo ng code sa iyong device nang walang anumang aksyon sa iyong bahagi — ang pagbisita lamang sa isang mapanganib na webpage ay maaaring sapat na. Ito ay tinatawag na &quot;drive-by download.&quot; Ang pagpapanatiling updated ng software ay nagsasara ng mga butas na ito bago pa gamitin ng mga hacker.">Unpatched vulnerabilities in browsers, operating systems, or apps can be exploited to run code on your device without any action on your part — just visiting a malicious webpage can be enough. This is called a "drive-by download." Keeping software updated closes these holes before hackers can use them.</div></div><div class="step-severity sev-high" data-en="TECHNICAL" data-fil="TEKNIKAL">TECHNICAL</div></div>
+        <div class="step"><div class="step-num">05</div><div class="step-content"><div class="step-title" data-en="SIM Swapping" data-fil="SIM Swapping">SIM Swapping</div><div class="step-desc" data-en="Hackers call your mobile carrier, impersonate you using personal details (birthday, address), and convince the agent to transfer your phone number to their SIM. Once they control your number, they receive all your OTPs and 2FA codes — giving them access to every account linked to your phone number." data-fil="Tinatawagan ng mga hacker ang iyong mobile carrier, nagpapanggap sa iyo gamit ang personal na detalye (kaarawan, address), at kinikinuha ang ahente na ilipat ang iyong numero ng telepono sa kanilang SIM. Kapag nakontrol na nila ang iyong numero, natatanggap nila ang lahat ng iyong mga OTP at 2FA code — na nagbibigay sa kanila ng access sa bawat account na naka-link sa iyong numero ng telepono.">Hackers call your mobile carrier, impersonate you using personal details (birthday, address), and convince the agent to transfer your phone number to their SIM. Once they control your number, they receive all your OTPs and 2FA codes — giving them access to every account linked to your phone number.</div></div><div class="step-severity sev-high" data-en="CRITICAL" data-fil="KRITIKAL">CRITICAL</div></div>
+        <div class="step"><div class="step-num">06</div><div class="step-content"><div class="step-title" data-en="Account Takeover &amp; Lateral Movement" data-fil="Pag-agaw ng Account at Lateral Movement">Account Takeover &amp; Lateral Movement</div><div class="step-desc" data-en="Once inside one account, hackers use it to pivot to others — accessing stored payment methods, sending phishing messages to your contacts, and resetting passwords using email recovery. A single compromised email account can cascade into total loss of your digital identity." data-fil="Kapag nasa loob na ng isang account, ginagamit ng mga hacker ito upang lumipat sa iba — pag-access ng mga nakaimbak na paraan ng pagbabayad, pagpapadala ng mga phishing message sa iyong mga contact, at pag-reset ng mga password gamit ang email recovery. Ang isang nakompromisong email account ay maaaring humantong sa ganap na pagkawala ng iyong digital na pagkakakilanlan.">Once inside one account, hackers use it to pivot to others — accessing stored payment methods, sending phishing messages to your contacts, and resetting passwords using email recovery. A single compromised email account can cascade into total loss of your digital identity.</div></div><div class="step-severity sev-high" data-en="BREACH" data-fil="PAGLABAG">BREACH</div></div>
       </div>
 
-      <div class="sub-heading">How to Break the Kill Chain</div>
+      <div class="sub-heading" data-en="How to Break the Kill Chain" data-fil="Paano Sirain ang Kill Chain">How to Break the Kill Chain</div>
       <div class="tactic-grid">
-        <div class="tactic-card">
-          <div class="tactic-label">USE 2FA</div>
-          <div class="tactic-desc">Enable two-factor authentication on every account. Use an authenticator app (Google Authenticator, Aegis) rather than SMS-based OTPs which are vulnerable to SIM swap.</div>
-        </div>
-        <div class="tactic-card">
-          <div class="tactic-label">UNIQUE PASSWORDS</div>
-          <div class="tactic-desc">Use a different password for every site. A password manager (Bitwarden, 1Password) generates and stores them securely so you only remember one master password.</div>
-        </div>
-        <div class="tactic-card">
-          <div class="tactic-label">LOCK YOUR SIM</div>
-          <div class="tactic-desc">Contact Globe, Smart, or DITO to add a PIN or verbal password to your account — preventing anyone from swapping your SIM without that code.</div>
-        </div>
-        <div class="tactic-card">
-          <div class="tactic-label">AUDIT YOUR PRIVACY</div>
-          <div class="tactic-desc">Review Facebook, Instagram, and LinkedIn privacy settings. Remove public birthdate, hometown, and phone number — the data hackers use in OSINT and social engineering.</div>
-        </div>
-        <div class="tactic-card">
-          <div class="tactic-label">USE A VPN</div>
-          <div class="tactic-desc">On public WiFi, a VPN encrypts your traffic, preventing man-in-the-middle interception. Choose reputable providers like ProtonVPN or Mullvad — avoid free VPNs which may sell your data.</div>
-        </div>
-        <div class="tactic-card">
-          <div class="tactic-label">PATCH EVERYTHING</div>
-          <div class="tactic-desc">Enable automatic updates on your phone, computer, and browser. The majority of successful exploits target known vulnerabilities that had patches available but weren't installed.</div>
-        </div>
+        <div class="tactic-card"><div class="tactic-label" data-en="USE 2FA" data-fil="GUMAMIT NG 2FA">USE 2FA</div><div class="tactic-desc" data-en="Enable two-factor authentication on every account. Use an authenticator app (Google Authenticator, Aegis) rather than SMS-based OTPs which are vulnerable to SIM swap." data-fil="Paganahin ang two-factor authentication sa bawat account. Gumamit ng authenticator app (Google Authenticator, Aegis) kaysa sa mga SMS-based na OTP na mahina laban sa SIM swap.">Enable two-factor authentication on every account. Use an authenticator app (Google Authenticator, Aegis) rather than SMS-based OTPs which are vulnerable to SIM swap.</div></div>
+        <div class="tactic-card"><div class="tactic-label" data-en="UNIQUE PASSWORDS" data-fil="NATATANGING MGA PASSWORD">UNIQUE PASSWORDS</div><div class="tactic-desc" data-en="Use a different password for every site. A password manager (Bitwarden, 1Password) generates and stores them securely so you only remember one master password." data-fil="Gumamit ng iba't ibang password para sa bawat site. Ang isang password manager (Bitwarden, 1Password) ay bumubuo at nagtatago ng mga ito nang secure upang isang master password lamang ang matandaan mo.">Use a different password for every site. A password manager (Bitwarden, 1Password) generates and stores them securely so you only remember one master password.</div></div>
+        <div class="tactic-card"><div class="tactic-label" data-en="LOCK YOUR SIM" data-fil="I-LOCK ANG IYONG SIM">LOCK YOUR SIM</div><div class="tactic-desc" data-en="Contact Globe, Smart, or DITO to add a PIN or verbal password to your account — preventing anyone from swapping your SIM without that code." data-fil="Makipag-ugnayan sa Globe, Smart, o DITO upang magdagdag ng PIN o verbal na password sa iyong account — pinipigilan ang sinuman na mag-swap ng iyong SIM nang walang code na iyon.">Contact Globe, Smart, or DITO to add a PIN or verbal password to your account — preventing anyone from swapping your SIM without that code.</div></div>
+        <div class="tactic-card"><div class="tactic-label" data-en="AUDIT YOUR PRIVACY" data-fil="I-AUDIT ANG IYONG PRIVACY">AUDIT YOUR PRIVACY</div><div class="tactic-desc" data-en="Review Facebook, Instagram, and LinkedIn privacy settings. Remove public birthdate, hometown, and phone number — the data hackers use in OSINT and social engineering." data-fil="Suriin ang mga setting ng privacy ng Facebook, Instagram, at LinkedIn. Alisin ang pampublikong kaarawan, bayan, at numero ng telepono — ang data na ginagamit ng mga hacker sa OSINT at social engineering.">Review Facebook, Instagram, and LinkedIn privacy settings. Remove public birthdate, hometown, and phone number — the data hackers use in OSINT and social engineering.</div></div>
+        <div class="tactic-card"><div class="tactic-label" data-en="USE A VPN" data-fil="GUMAMIT NG VPN">USE A VPN</div><div class="tactic-desc" data-en="On public WiFi, a VPN encrypts your traffic, preventing man-in-the-middle interception. Choose reputable providers like ProtonVPN or Mullvad — avoid free VPNs which may sell your data." data-fil="Sa pampublikong WiFi, ini-encrypt ng isang VPN ang iyong trapiko, pinipigilan ang man-in-the-middle interception. Pumili ng mga kagalang-galang na provider tulad ng ProtonVPN o Mullvad — iwasan ang mga libreng VPN na maaaring ibenta ang iyong data.">On public WiFi, a VPN encrypts your traffic, preventing man-in-the-middle interception. Choose reputable providers like ProtonVPN or Mullvad — avoid free VPNs which may sell your data.</div></div>
+        <div class="tactic-card"><div class="tactic-label" data-en="PATCH EVERYTHING" data-fil="I-PATCH ANG LAHAT">PATCH EVERYTHING</div><div class="tactic-desc" data-en="Enable automatic updates on your phone, computer, and browser. The majority of successful exploits target known vulnerabilities that had patches available but weren't installed." data-fil="Paganahin ang mga awtomatikong update sa iyong telepono, computer, at browser. Ang karamihan ng matagumpay na exploit ay nagta-target ng mga kilalang kahinaan na may mga available na patch ngunit hindi na-install.">Enable automatic updates on your phone, computer, and browser. The majority of successful exploits target known vulnerabilities that had patches available but weren't installed.</div></div>
       </div>
 
       <div class="tip-box">
-        <div class="tip-icon">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        </div>
-        <div class="tip-text">
+        <div class="tip-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+        <div class="tip-text" data-en="&lt;strong&gt;Minimum viable security:&lt;/strong&gt; Unique passwords + 2FA authenticator app + automatic updates covers over 90% of attack vectors that successfully compromise everyday users. You don't need to be a security expert — just consistent." data-fil="&lt;strong&gt;Minimum na viable na seguridad:&lt;/strong&gt; Mga natatanging password + 2FA authenticator app + mga awtomatikong update ang sumasaklaw ng mahigit 90% ng mga attack vector na matagumpay na nakikompromiso ang mga pang-araw-araw na gumagamit. Hindi mo kailangang maging eksperto sa seguridad — maging consistent lamang.">
           <strong>Minimum viable security:</strong> Unique passwords + 2FA authenticator app + automatic updates covers over 90% of attack vectors that successfully compromise everyday users. You don't need to be a security expert — just consistent.
         </div>
       </div>
@@ -705,70 +578,36 @@
     <!-- ===================== CHAPTER 5 ===================== -->
     <div class="content-scroll chapter-content" id="chapter-5">
 
-      <div class="section-tag awareness">PASSWORD SECURITY</div>
-      <h1 class="page-title">Password <span class="accent">Security</span></h1>
-      <p class="intro-text">
+      <div class="section-tag awareness" data-en="PASSWORD SECURITY" data-fil="SEGURIDAD NG PASSWORD">PASSWORD SECURITY</div>
+      <h1 class="page-title"><span data-en="Password" data-fil="Seguridad ng">Password</span> <span class="accent" data-en="Security" data-fil="Password">Security</span></h1>
+      <p class="intro-text" data-en='Passwords are the keys to your digital life. Yet "123456" remains the world\'s most common password. Strong, unique passwords combined with a password manager form an impenetrable defence against the majority of account compromises.' data-fil='Ang mga password ay ang mga susi sa iyong digital na buhay. Gayunpaman, ang "123456" ay nananatiling pinakakaraniwang password sa mundo. Ang mga malakas, natatanging password na sinamahan ng isang password manager ay bumubuo ng isang hindi mapapasokang depensa laban sa karamihan ng mga kompromiso ng account.'>
         Passwords are the keys to your digital life. Yet "123456" remains the world's most common password. Strong, unique passwords combined with a password manager form an impenetrable defence against the majority of account compromises.
       </p>
 
       <div class="callout">
-        <div class="callout-icon">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        </div>
-        <div class="callout-text">
+        <div class="callout-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div class="callout-text" data-en="&lt;strong&gt;Cracking speeds:&lt;/strong&gt; A modern GPU can crack an 8-character password using brute force in under &lt;strong&gt;8 hours&lt;/strong&gt;. A 12-character password with mixed characters would take &lt;strong&gt;3,000 years&lt;/strong&gt;. Length is your biggest ally." data-fil="&lt;strong&gt;Bilis ng pag-crack:&lt;/strong&gt; Ang isang modernong GPU ay maaaring mag-crack ng 8-character na password gamit ang brute force sa loob ng wala pang &lt;strong&gt;8 oras&lt;/strong&gt;. Ang isang 12-character na password na may mixed na mga character ay maaaring tumagal ng &lt;strong&gt;3,000 taon&lt;/strong&gt;. Ang haba ay ang iyong pinakamalaking kakampi.">
           <strong>Cracking speeds:</strong> A modern GPU can crack an 8-character password using brute force in under <strong>8 hours</strong>. A 12-character password with mixed characters would take <strong>3,000 years</strong>. Length is your biggest ally.
         </div>
       </div>
 
-      <div class="sub-heading">Password Strength Guide</div>
+      <div class="sub-heading" data-en="Password Strength Guide" data-fil="Gabay sa Lakas ng Password">Password Strength Guide</div>
       <div class="steps">
-        <div class="step">
-          <div class="step-num">❌</div>
-          <div class="step-content">
-            <div class="step-title">Weak: Common Words & Numbers</div>
-            <div class="step-desc">Passwords like "password123", "abc123", "iloveyou", or "manila2024" are in every hacker's dictionary file and cracked instantly. Never use personal info: birthdays, pet names, or your street address.</div>
-          </div>
-          <div class="step-severity sev-high">CRITICAL RISK</div>
-        </div>
-        <div class="step">
-          <div class="step-num">⚠️</div>
-          <div class="step-content">
-            <div class="step-title">Better: Random Characters</div>
-            <div class="step-desc">Something like "Tr0ub4dor&3" is stronger, but still memorable patterns are vulnerable. The real issue is that most people reuse the same strong password across multiple sites — negating the strength entirely.</div>
-          </div>
-          <div class="step-severity sev-med">MODERATE</div>
-        </div>
-        <div class="step">
-          <div class="step-num">✓</div>
-          <div class="step-content">
-            <div class="step-title">Best: Passphrases + Unique Per Site</div>
-            <div class="step-desc">A passphrase like "correct-horse-battery-staple" is long, memorable, and exponentially harder to crack. Better yet: use a password manager to generate a unique 20+ character random string for every site — and remember only one master password.</div>
-          </div>
-          <div class="step-severity sev-low">RECOMMENDED</div>
-        </div>
+        <div class="step"><div class="step-num step-num--danger"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><div class="step-content"><div class="step-title" data-en="Weak: Common Words &amp; Numbers" data-fil="Mahina: Mga Karaniwang Salita at Numero">Weak: Common Words &amp; Numbers</div><div class="step-desc" data-en='Passwords like "password123", "abc123", "iloveyou", or "manila2024" are in every hacker\'s dictionary file and cracked instantly. Never use personal info: birthdays, pet names, or your street address.' data-fil='Ang mga password tulad ng "password123", "abc123", "iloveyou", o "manila2024" ay nasa bawat dictionary file ng hacker at biglang na-crack. Huwag kailanman gumamit ng personal na impormasyon: mga kaarawan, mga pangalan ng alagang hayop, o ang iyong address sa kalye.'>Passwords like "password123", "abc123", "iloveyou", or "manila2024" are in every hacker's dictionary file and cracked instantly. Never use personal info: birthdays, pet names, or your street address.</div></div><div class="step-severity sev-high" data-en="CRITICAL RISK" data-fil="KRITIKAL NA PANGANIB">CRITICAL RISK</div></div>
+        <div class="step"><div class="step-num step-num--warn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="step-content"><div class="step-title" data-en="Better: Random Characters" data-fil="Mas Mabuti: Mga Random na Character">Better: Random Characters</div><div class="step-desc" data-en='Something like "Tr0ub4dor&amp;3" is stronger, but still memorable patterns are vulnerable. The real issue is that most people reuse the same strong password across multiple sites — negating the strength entirely.' data-fil='Ang isang bagay tulad ng "Tr0ub4dor&amp;3" ay mas malakas, ngunit ang mga pattern na maaaring matandaan ay mahina pa rin. Ang tunay na isyu ay ang karamihan ng mga tao ay muling gumagamit ng parehong malakas na password sa maraming site — ganap na pinapawi ang lakas.'>Something like "Tr0ub4dor&amp;3" is stronger, but still memorable patterns are vulnerable. The real issue is that most people reuse the same strong password across multiple sites — negating the strength entirely.</div></div><div class="step-severity sev-med" data-en="MODERATE" data-fil="KATAMTAMAN">MODERATE</div></div>
+        <div class="step"><div class="step-num step-num--ok"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="step-content"><div class="step-title" data-en="Best: Passphrases + Unique Per Site" data-fil="Pinakamahusay: Mga Passphrase + Natatangi sa Bawat Site">Best: Passphrases + Unique Per Site</div><div class="step-desc" data-en='A passphrase like "correct-horse-battery-staple" is long, memorable, and exponentially harder to crack. Better yet: use a password manager to generate a unique 20+ character random string for every site — and remember only one master password.' data-fil='Ang isang passphrase tulad ng "correct-horse-battery-staple" ay mahaba, hindi malilimutan, at exponentially na mas mahirap na i-crack. Mas mahusay pa: gumamit ng password manager upang bumuo ng natatanging 20+ character na random string para sa bawat site — at tandaan lamang ang isang master password.'>A passphrase like "correct-horse-battery-staple" is long, memorable, and exponentially harder to crack. Better yet: use a password manager to generate a unique 20+ character random string for every site — and remember only one master password.</div></div><div class="step-severity sev-low" data-en="RECOMMENDED" data-fil="INIREKOMENDA">RECOMMENDED</div></div>
       </div>
 
-      <div class="sub-heading">Recommended Password Managers</div>
+      <div class="sub-heading" data-en="Recommended Password Managers" data-fil="Mga Inirekomendang Password Manager">Recommended Password Managers</div>
       <div class="card-grid three-col">
-        <div class="info-card card-cyan">
-          <div class="card-title">Bitwarden</div>
-          <div class="card-desc">Free, open-source, and audited. Available on all platforms. Stores passwords encrypted in the cloud. The best free option for most users.</div>
-        </div>
-        <div class="info-card card-orange">
-          <div class="card-title">1Password</div>
-          <div class="card-desc">Premium but polished. Excellent family sharing features. Includes travel mode to hide sensitive vaults at border crossings.</div>
-        </div>
-        <div class="info-card card-purple">
-          <div class="card-title">KeePassXC</div>
-          <div class="card-desc">Fully offline and open-source. Your password database never touches the internet. Ideal for maximum privacy-conscious users.</div>
-        </div>
+        <div class="info-card card-cyan"><div class="card-title" data-en="Bitwarden" data-fil="Bitwarden">Bitwarden</div><div class="card-desc" data-en="Free, open-source, and audited. Available on all platforms. Stores passwords encrypted in the cloud. The best free option for most users." data-fil="Libre, open-source, at na-audit. Available sa lahat ng platform. Nag-iimbak ng mga password na naka-encrypt sa cloud. Ang pinakamahusay na libreng opsyon para sa karamihan ng mga gumagamit.">Free, open-source, and audited. Available on all platforms. Stores passwords encrypted in the cloud. The best free option for most users.</div></div>
+        <div class="info-card card-orange"><div class="card-title" data-en="1Password" data-fil="1Password">1Password</div><div class="card-desc" data-en="Premium but polished. Excellent family sharing features. Includes travel mode to hide sensitive vaults at border crossings." data-fil="Premium ngunit makinis. Mahusay na mga feature ng pagbabahagi sa pamilya. Kasama ang travel mode upang itago ang mga sensitibong vault sa mga border crossing.">Premium but polished. Excellent family sharing features. Includes travel mode to hide sensitive vaults at border crossings.</div></div>
+        <div class="info-card card-purple"><div class="card-title" data-en="KeePassXC" data-fil="KeePassXC">KeePassXC</div><div class="card-desc" data-en="Fully offline and open-source. Your password database never touches the internet. Ideal for maximum privacy-conscious users." data-fil="Ganap na offline at open-source. Ang iyong database ng password ay hindi kailanman nakaabot sa internet. Perpekto para sa mga gumagamit na pinaka-mulat sa privacy.">Fully offline and open-source. Your password database never touches the internet. Ideal for maximum privacy-conscious users.</div></div>
       </div>
 
       <div class="tip-box">
-        <div class="tip-icon">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        </div>
-        <div class="tip-text">
+        <div class="tip-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+        <div class="tip-text" data-en="&lt;strong&gt;Enable 2FA everywhere:&lt;/strong&gt; Even with a perfect password, enable two-factor authentication. Use an authenticator app like Google Authenticator or Aegis (Android) — not SMS, which can be intercepted. This single step stops 99.9% of automated account takeover attacks." data-fil="&lt;strong&gt;Paganahin ang 2FA kahit saan:&lt;/strong&gt; Kahit may perpektong password, paganahin ang two-factor authentication. Gumamit ng authenticator app tulad ng Google Authenticator o Aegis (Android) — hindi SMS, na maaaring ma-intercept. Ang isang hakbang na ito ay humihinto ng 99.9% ng mga automated na pag-atake ng account takeover.">
           <strong>Enable 2FA everywhere:</strong> Even with a perfect password, enable two-factor authentication. Use an authenticator app like Google Authenticator or Aegis (Android) — not SMS, which can be intercepted. This single step stops 99.9% of automated account takeover attacks.
         </div>
       </div>
@@ -778,85 +617,41 @@
     <!-- ===================== CHAPTER 6 ===================== -->
     <div class="content-scroll chapter-content" id="chapter-6">
 
-      <div class="section-tag scams">SAFETY CHECKLIST</div>
-      <h1 class="page-title">Your <span class="accent">Safety Checklist</span></h1>
-      <p class="intro-text">
+      <div class="section-tag scams" data-en="SAFETY CHECKLIST" data-fil="CHECKLIST SA KALIGTASAN">SAFETY CHECKLIST</div>
+      <h1 class="page-title"><span data-en="Your" data-fil="Iyong">Your</span> <span class="accent" data-en="Safety Checklist" data-fil="Checklist sa Kaligtasan">Safety Checklist</span></h1>
+      <p class="intro-text" data-en="Cybersecurity doesn't require a degree — just consistent habits. This checklist covers the essential actions every Filipino internet user should take to dramatically reduce their risk of falling victim to cybercrime." data-fil="Ang cybersecurity ay hindi nangangailangan ng degree — mga consistent na gawi lamang. Ang checklist na ito ay sumasaklaw sa mga mahahalagang aksyon na dapat gawin ng bawat Filipino na gumagamit ng internet upang lubos na mabawasan ang kanilang panganib na maging biktima ng cybercrime.">
         Cybersecurity doesn't require a degree — just consistent habits. This checklist covers the essential actions every Filipino internet user should take to dramatically reduce their risk of falling victim to cybercrime.
       </p>
 
-      <div class="sub-heading">Immediate Actions (Do These Today)</div>
+      <div class="sub-heading" data-en="Immediate Actions (Do These Today)" data-fil="Agarang Mga Aksyon (Gawin Ngayon)">Immediate Actions (Do These Today)</div>
       <div class="checklist">
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Enable two-factor authentication on email, GCash, banking apps, and social media</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Check if your email has been in a data breach at <strong>haveibeenpwned.com</strong></div>
-        </div>
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Change any reused or weak passwords — especially for email and banking</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Review your Facebook privacy settings — set birthdate and phone number to "Only Me"</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box green">✓</div>
-          <div class="check-text">Update your phone, computer OS, and all installed apps to the latest versions</div>
-        </div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en="Enable two-factor authentication on email, GCash, banking apps, and social media" data-fil="Paganahin ang two-factor authentication sa email, GCash, mga banking app, at social media">Enable two-factor authentication on email, GCash, banking apps, and social media</div></div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en="Check if your email has been in a data breach at haveibeenpwned.com" data-fil="Suriin kung ang iyong email ay nasangkot sa isang paglabag sa data sa haveibeenpwned.com">Check if your email has been in a data breach at <strong>haveibeenpwned.com</strong></div></div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en="Change any reused or weak passwords — especially for email and banking" data-fil="Baguhin ang anumang muling ginamit o mahinang password — lalo na para sa email at pagbabangko">Change any reused or weak passwords — especially for email and banking</div></div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en='Review your Facebook privacy settings — set birthdate and phone number to "Only Me"' data-fil='Suriin ang iyong mga setting ng privacy ng Facebook — itakda ang kaarawan at numero ng telepono sa "Only Me"'>Review your Facebook privacy settings — set birthdate and phone number to "Only Me"</div></div>
+        <div class="check-item"><div class="check-box green">✓</div><div class="check-text" data-en="Update your phone, computer OS, and all installed apps to the latest versions" data-fil="I-update ang iyong telepono, computer OS, at lahat ng naka-install na app sa pinakabagong bersyon">Update your phone, computer OS, and all installed apps to the latest versions</div></div>
       </div>
 
-      <div class="sub-heading">Ongoing Habits (Build These)</div>
+      <div class="sub-heading" data-en="Ongoing Habits (Build These)" data-fil="Mga Patuloy na Gawi (Buuin Ang Mga Ito)">Ongoing Habits (Build These)</div>
       <div class="checklist">
-        <div class="check-item">
-          <div class="check-box cyan">→</div>
-          <div class="check-text">Never share OTPs with anyone — not even people claiming to be bank agents</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box cyan">→</div>
-          <div class="check-text">Verify links before clicking — hover to preview, or paste into CipherGuard</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box cyan">→</div>
-          <div class="check-text">Download apps only from official stores; avoid APK files from random websites</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box cyan">→</div>
-          <div class="check-text">Use a VPN when connecting to public WiFi in cafés, malls, or airports</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box cyan">→</div>
-          <div class="check-text">Back up important files regularly using the 3-2-1 rule</div>
-        </div>
-        <div class="check-item">
-          <div class="check-box cyan">→</div>
-          <div class="check-text">Be skeptical of any message creating urgency, offering prizes, or requesting money</div>
-        </div>
+        <div class="check-item"><div class="check-box cyan">→</div><div class="check-text" data-en="Never share OTPs with anyone — not even people claiming to be bank agents" data-fil="Huwag kailanman ibahagi ang mga OTP sa sinuman — kahit sa mga taong nagpapanggap na mga ahente ng bangko">Never share OTPs with anyone — not even people claiming to be bank agents</div></div>
+        <div class="check-item"><div class="check-box cyan">→</div><div class="check-text" data-en="Verify links before clicking — hover to preview, or paste into CipherGuard" data-fil="I-verify ang mga link bago mag-click — mag-hover upang i-preview, o i-paste sa CipherGuard">Verify links before clicking — hover to preview, or paste into CipherGuard</div></div>
+        <div class="check-item"><div class="check-box cyan">→</div><div class="check-text" data-en="Download apps only from official stores; avoid APK files from random websites" data-fil="Mag-download ng mga app mula sa mga opisyal na tindahan lamang; iwasan ang mga APK file mula sa mga random na website">Download apps only from official stores; avoid APK files from random websites</div></div>
+        <div class="check-item"><div class="check-box cyan">→</div><div class="check-text" data-en="Use a VPN when connecting to public WiFi in cafés, malls, or airports" data-fil="Gumamit ng VPN kapag kumonekta sa pampublikong WiFi sa mga café, mall, o paliparan">Use a VPN when connecting to public WiFi in cafés, malls, or airports</div></div>
+        <div class="check-item"><div class="check-box cyan">→</div><div class="check-text" data-en="Back up important files regularly using the 3-2-1 rule" data-fil="Regular na i-back up ang mga mahahalagang file gamit ang 3-2-1 na panuntunan">Back up important files regularly using the 3-2-1 rule</div></div>
+        <div class="check-item"><div class="check-box cyan">→</div><div class="check-text" data-en="Be skeptical of any message creating urgency, offering prizes, or requesting money" data-fil="Maging maingat sa anumang mensaheng lumilikha ng pagkamadalian, nag-aalok ng mga premyo, o humihingi ng pera">Be skeptical of any message creating urgency, offering prizes, or requesting money</div></div>
       </div>
 
-      <div class="sub-heading">Emergency Contacts (Philippines)</div>
+      <div class="sub-heading" data-en="Emergency Contacts (Philippines)" data-fil="Mga Emergency na Kontak (Pilipinas)">Emergency Contacts (Philippines)</div>
       <div class="card-grid three-col">
-        <div class="info-card card-red">
-          <div class="card-title">PNP Anti-Cybercrime Group</div>
-          <div class="card-desc">Report cybercrime: ecomplaint.pnp.gov.ph<br>Hotline: 0919-820-4483</div>
-        </div>
-        <div class="info-card card-orange">
-          <div class="card-title">NBI Cybercrime Division</div>
-          <div class="card-desc">File complaints at nbi.gov.ph or visit NBI headquarters. Handles serious cybercrime and identity theft cases.</div>
-        </div>
-        <div class="info-card card-cyan">
-          <div class="card-title">BSP Financial Consumer</div>
-          <div class="card-desc">Report banking fraud: consumeraffairs@bsp.gov.ph<br>Hotline: 8708-7087</div>
-        </div>
+        <div class="info-card card-red"><div class="card-title" data-en="PNP Anti-Cybercrime Group" data-fil="PNP Anti-Cybercrime Group">PNP Anti-Cybercrime Group</div><div class="card-desc" data-en="Report cybercrime: ecomplaint.pnp.gov.ph Hotline: 0919-820-4483" data-fil="Iulat ang cybercrime: ecomplaint.pnp.gov.ph Hotline: 0919-820-4483">Report cybercrime: ecomplaint.pnp.gov.ph<br>Hotline: 0919-820-4483</div></div>
+        <div class="info-card card-orange"><div class="card-title" data-en="NBI Cybercrime Division" data-fil="NBI Cybercrime Division">NBI Cybercrime Division</div><div class="card-desc" data-en="File complaints at nbi.gov.ph or visit NBI headquarters. Handles serious cybercrime and identity theft cases." data-fil="Mag-file ng mga reklamo sa nbi.gov.ph o bisitahin ang NBI headquarters. Humahawak ng mga seryosong kaso ng cybercrime at pagnanakaw ng pagkakakilanlan.">File complaints at nbi.gov.ph or visit NBI headquarters. Handles serious cybercrime and identity theft cases.</div></div>
+        <div class="info-card card-cyan"><div class="card-title" data-en="BSP Financial Consumer" data-fil="BSP Financial Consumer">BSP Financial Consumer</div><div class="card-desc" data-en="Report banking fraud: consumeraffairs@bsp.gov.ph Hotline: 8708-7087" data-fil="Iulat ang pandaraya sa pagbabangko: consumeraffairs@bsp.gov.ph Hotline: 8708-7087">Report banking fraud: consumeraffairs@bsp.gov.ph<br>Hotline: 8708-7087</div></div>
       </div>
 
       <div class="tip-box">
-        <div class="tip-icon">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        </div>
-        <div class="tip-text">
+        <div class="tip-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></div>
+        <div class="tip-text" data-en="&lt;strong&gt;Share what you know.&lt;/strong&gt; Cybersecurity awareness is a community defence. Teach your family — especially parents and grandparents — about phishing, scams, and OTP protection. A single informed person in a household can protect everyone in it." data-fil="&lt;strong&gt;Ibahagi ang iyong nalalaman.&lt;/strong&gt; Ang kamalayan sa cybersecurity ay isang pagtatanggol ng komunidad. Turuan ang iyong pamilya — lalo na ang mga magulang at lolo't lola — tungkol sa phishing, mga scam, at proteksyon ng OTP. Ang isang may kaalamang tao sa isang sambahayan ay maaaring protektahan ang lahat ng nasa loob nito.">
           <strong>Share what you know.</strong> Cybersecurity awareness is a community defence. Teach your family — especially parents and grandparents — about phishing, scams, and OTP protection. A single informed person in a household can protect everyone in it.
         </div>
       </div>
@@ -874,15 +669,16 @@
 
     <!-- Footer Nav -->
     <div class="footer-nav">
-      <button class="nav-btn" id="prevBtn">← Previous</button>
-      <div class="footer-info">Chapter <em id="footerChapNum">1</em> of <em>6</em></div>
-      <button class="nav-btn primary" id="nextBtn">Next Chapter →</button>
+      <button class="nav-btn" id="prevBtn">← <span data-en="Previous" data-fil="Nakaraan">Previous</span></button>
+      <div class="footer-info"><span data-en="Chapter" data-fil="Kabanata">Chapter</span> <em id="footerChapNum">1</em> <span data-en="of" data-fil="ng">of</span> <em>6</em></div>
+      <button class="nav-btn primary" id="nextBtn"><span data-en="Next Chapter →" data-fil="Susunod na Kabanata →">Next Chapter →</span></button>
     </div>
 
   </div><!-- end content-wrap -->
 </div><!-- end layout -->
 
 <script>
+  /* ── CHAPTER NAVIGATION ── */
   const chapters = document.querySelectorAll('.chapter-item');
   const contents = document.querySelectorAll('.chapter-content');
   const chapNum = document.getElementById('chapNum');
@@ -894,7 +690,7 @@
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
 
-  const topics = [
+  const topicsEN = [
     'PHISHING & SOCIAL ENGINEERING',
     'ONLINE SCAMS',
     'MALWARE & RANSOMWARE',
@@ -902,8 +698,26 @@
     'PASSWORD SECURITY',
     'YOUR SAFETY CHECKLIST'
   ];
+  const topicsFIL = [
+    'PHISHING AT SOCIAL ENGINEERING',
+    'MGA ONLINE NA SCAM',
+    'MALWARE AT RANSOMWARE',
+    'PAANO KA ATAKIHIN NG MGA HACKER',
+    'SEGURIDAD NG PASSWORD',
+    'IYONG CHECKLIST SA KALIGTASAN'
+  ];
+  const chapPrefixEN  = 'CHAPTER 0';
+  const chapPrefixFIL = 'KABANATA 0';
 
+  const visited = new Set([1]);
   let current = 1;
+  let currentLang = 'en';
+
+  function markVisited(n) {
+    visited.add(n);
+    const checkEl = document.getElementById('check-' + n);
+    if (checkEl) { checkEl.textContent = '✓'; checkEl.classList.add('done'); }
+  }
 
   function switchChapter(n) {
     current = n;
@@ -911,29 +725,28 @@
     contents.forEach((c, i) => c.classList.toggle('active', i === n - 1));
     chapNum.textContent = String(n).padStart(2, '0');
     footerChapNum.textContent = n;
-    breadcrumbChap.textContent = 'CHAPTER 0' + n;
-    breadcrumbTopic.textContent = topics[n - 1];
-    const pct = Math.round((n / 6) * 100);
+    const prefix = currentLang === 'fil' ? chapPrefixFIL : chapPrefixEN;
+    breadcrumbChap.textContent = prefix + n;
+    breadcrumbTopic.textContent = currentLang === 'fil' ? topicsFIL[n-1] : topicsEN[n-1];
+    markVisited(n);
+    const pct = Math.round((visited.size / 6) * 100);
     progressFill.style.width = pct + '%';
-    progressPct.textContent = pct + '% complete';
+    const completeWord = currentLang === 'fil' ? '% kumpleto' : '% complete';
+    progressPct.textContent = pct + completeWord;
     prevBtn.disabled = n === 1;
-    nextBtn.textContent = n === 6 ? 'Finish ✓' : 'Next Chapter →';
-
-    // scroll active content to top
+    const nextLabel = n === 6
+      ? (currentLang === 'fil' ? 'Tapusin ✓' : 'Finish ✓')
+      : (currentLang === 'fil' ? 'Susunod na Kabanata →' : 'Next Chapter →');
+    nextBtn.querySelector('[data-en]').textContent = nextLabel;
     const activeContent = document.getElementById('chapter-' + n);
     if (activeContent) activeContent.scrollTop = 0;
   }
 
-  chapters.forEach((item, i) => {
-    item.addEventListener('click', () => switchChapter(i + 1));
-  });
-
+  chapters.forEach((item, i) => item.addEventListener('click', () => switchChapter(i + 1)));
   prevBtn.addEventListener('click', () => { if (current > 1) switchChapter(current - 1); });
   nextBtn.addEventListener('click', () => { if (current < 6) switchChapter(current + 1); });
-  document.getElementById('prevJump').addEventListener('click', () => { if (current > 1) switchChapter(current - 1); });
-  document.getElementById('nextJump').addEventListener('click', () => { if (current < 6) switchChapter(current + 1); });
 
-  // Scroll dots sync
+  /* ── SCROLL DOTS ── */
   document.querySelectorAll('.chapter-content').forEach(section => {
     section.addEventListener('scroll', () => {
       const ratio = section.scrollTop / (section.scrollHeight - section.clientHeight);
@@ -942,7 +755,6 @@
       dots.forEach((d, i) => d.classList.toggle('active', i === (isNaN(idx) ? 0 : idx)));
     });
   });
-
   document.querySelectorAll('.scroll-dot').forEach((dot, i) => {
     dot.addEventListener('click', () => {
       document.querySelectorAll('.scroll-dot').forEach(d => d.classList.remove('active'));
@@ -950,6 +762,46 @@
     });
   });
 
+  /* ── DARK / LIGHT THEME TOGGLE ── */
+  const themeToggle = document.getElementById('themeToggle');
+  const themeLabel  = document.getElementById('themeLabel');
+  let isDark = true;
+
+  themeToggle.addEventListener('click', () => {
+    isDark = !isDark;
+    document.body.classList.toggle('light', !isDark);
+    themeLabel.textContent = isDark
+      ? (currentLang === 'fil' ? 'MADILIM' : 'DARK')
+      : (currentLang === 'fil' ? 'LIWANAG' : 'LIGHT');
+  });
+
+  /* ── LANGUAGE TOGGLE ── */
+  function setLang(lang) {
+    currentLang = lang;
+    document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+    document.getElementById('btnFil').classList.toggle('active', lang === 'fil');
+
+    // Translate all elements with data-en / data-fil
+    document.querySelectorAll('[data-en][data-fil]').forEach(el => {
+      const val = lang === 'fil' ? el.getAttribute('data-fil') : el.getAttribute('data-en');
+      // Check if content has HTML tags
+      if (val && (val.includes('<') || val.includes('&lt;'))) {
+        el.innerHTML = val.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+      } else if (val) {
+        el.textContent = val;
+      }
+    });
+
+    // Update theme label text for current language
+    themeLabel.textContent = isDark
+      ? (lang === 'fil' ? 'MADILIM' : 'DARK')
+      : (lang === 'fil' ? 'LIWANAG' : 'LIGHT');
+
+    // Re-run switchChapter to update breadcrumb/topic/progress text
+    switchChapter(current);
+  }
+
+  // Init
   switchChapter(1);
 </script>
 
