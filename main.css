@@ -1542,13 +1542,12 @@ PANEL 1 — HERO
 .divider { display:flex; align-items:center; text-align:center; color:var(--white-faint); font-size:9px; font-weight:700; letter-spacing:2px; margin:14px 0; gap:12px; font-family:'JetBrains Mono',monospace; flex-shrink: 0; }
 .divider::before,.divider::after { content:""; flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--border-glass),transparent); }
 
-#scan_qr_btn { padding:13px; border-radius:12px; background:var(--btn-qr-bg); border:1px solid var(--btn-qr-border); backdrop-filter:blur(8px); animation:fadeUp 0.8s ease forwards; animation-delay:0.8s; opacity:0; display:flex; align-items:center; justify-content:center; gap:8px; color:var(--accent-bright); font-size:12px; }
+#scan_qr_btn { width:100%; padding:13px; border-radius:12px; background:var(--btn-qr-bg); border:1px solid var(--btn-qr-border); backdrop-filter:blur(8px); animation:fadeUp 0.8s ease forwards; animation-delay:0.8s; opacity:0; display:flex; align-items:center; justify-content:center; gap:10px; color:var(--accent-bright); font-size:13px; }
 #scan_qr_btn:hover { border-color:var(--accent-bright); box-shadow:0 0 26px rgba(0,180,216,0.22); transform:translateY(-2px); }
-#upload_qr_btn { padding:13px; border-radius:12px; background:var(--btn-qr-bg); border:1px solid var(--btn-qr-border); backdrop-filter:blur(8px); animation:fadeUp 0.8s ease forwards; animation-delay:0.85s; opacity:0; display:flex; align-items:center; justify-content:center; gap:8px; color:var(--accent-light); font-size:12px; }
+#upload_qr_btn { width:100%; padding:13px; border-radius:12px; background:var(--btn-qr-bg); border:1px solid var(--btn-qr-border); backdrop-filter:blur(8px); animation:fadeUp 0.8s ease forwards; animation-delay:0.85s; opacity:0; display:flex; align-items:center; justify-content:center; gap:10px; color:var(--accent-light); font-size:13px; }
 #upload_qr_btn:hover { border-color:var(--accent-light); box-shadow:0 0 26px var(--accent-glow); transform:translateY(-2px); }
 
-.qr-btn-group { display:flex; flex-direction:row; gap:9px; flex-shrink: 0; }
-#scan_qr_btn, #upload_qr_btn { flex: 1; }
+.qr-btn-group { display:flex; flex-direction:column; gap:9px; flex-shrink: 0; }
 
 #loading_spinner { display:none; width:30px; height:30px; margin:16px auto 0; border:2px solid var(--border-glass); border-top-color:var(--accent-bright); border-radius:50%; animation:spin 0.85s linear infinite; flex-shrink: 0; }
 
@@ -1575,17 +1574,17 @@ PANEL 1 — HERO
 .results-cols {
     display: flex;
     flex-direction: row;
-    gap: 12px;
+    gap: 16px;
     align-items: flex-start;
     width: 100%;
 }
 .results-cols #link_status {
-    flex: 1;
+    flex: 1.5;
     min-width: 0;
 }
 .results-cols #preview_area {
     flex: 1;
-    min-width: 0;
+    min-width: 220px;
 }
 
 #link_status { min-height: 0; text-align: left; }
