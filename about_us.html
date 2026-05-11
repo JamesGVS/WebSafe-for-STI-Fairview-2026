@@ -16,29 +16,29 @@
 
 <!-- HEADER -->
 <header>
-        <span class="header-logo-name">Web<span>Safe</span></span>
-    </a>
+    <span class="header-logo-name">Web<span>Safe</span></span>
     <span class="header-badge" data-en="About Us" data-fil="Tungkol Sa Amin">About Us</span>
 
     <nav class="header-nav">
+
         <!-- Language Toggle -->
         <div class="lang-toggle" id="langToggle" title="Switch language">
-            <span class="lang-opt" id="langEN">EN</span>
-            <span class="lang-divider">|</span>
-            <span class="lang-opt" id="langFIL">Filipino</span>
+            <button class="lang-btn lang-active" id="langEN">EN</button>
+            <button class="lang-btn" id="langFIL">Filipino</button>
         </div>
 
         <!-- Dark / Light Toggle -->
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
             <div class="theme-toggle-track">
                 <div class="theme-toggle-thumb"></div>
-                <span class="theme-icon theme-icon-dark"></span>
-                <span class="theme-icon theme-icon-light"></span>
             </div>
             <span class="theme-label" id="themeLabel">DARK</span>
         </button>
 
-        <a href="main.html" data-en="Back to Home" data-fil="Bumalik sa Home">Back to Home</a>
+        <!-- Back to Home pill button — arrow injected via CSS ::before -->
+        <a href="main.html"
+           data-en="Back to Home"
+           data-fil="Bumalik sa Home">Back to Home</a>
     </nav>
 </header>
 
@@ -105,7 +105,7 @@
                         <svg viewBox="0 0 200 200" width="190" height="190" xmlns="http://www.w3.org/2000/svg">
                             <defs>
                                 <radialGradient id="globeBg" cx="40%" cy="40%" r="60%">
-                                    <stop offset="0%" style="stop-color:rgba(29,106,255,0.22)"/>
+                                    <stop offset="0%" style="stop-color:rgba(0,212,255,0.18)"/>
                                     <stop offset="100%" style="stop-color:rgba(0,0,0,0)"/>
                                 </radialGradient>
                                 <filter id="glow-lg">
@@ -114,30 +114,30 @@
                                 </filter>
                             </defs>
                             <circle cx="100" cy="100" r="88" fill="url(#globeBg)"/>
-                            <circle cx="100" cy="100" r="72" fill="none" stroke="#1d6aff" stroke-width="2" filter="url(#glow-lg)"/>
-                            <ellipse cx="100" cy="100" rx="36" ry="72" fill="none" stroke="#1d6aff" stroke-width="1.5" filter="url(#glow-lg)"/>
-                            <line x1="28" y1="100" x2="172" y2="100" stroke="#1d6aff" stroke-width="1.5" filter="url(#glow-lg)"/>
-                            <ellipse cx="100" cy="100" rx="72" ry="26" fill="none" stroke="#1d6aff" stroke-width="1" opacity="0.55"/>
-                            <ellipse cx="100" cy="72"  rx="60" ry="13" fill="none" stroke="#1d6aff" stroke-width="0.8" opacity="0.35"/>
-                            <ellipse cx="100" cy="128" rx="60" ry="13" fill="none" stroke="#1d6aff" stroke-width="0.8" opacity="0.35"/>
-                            <line x1="28"  y1="100" x2="14"  y2="86"  stroke="#00d4ff" stroke-width="1" opacity="0.65"/>
-                            <line x1="14"  y1="86"  x2="14"  y2="70"  stroke="#00d4ff" stroke-width="1" opacity="0.45"/>
-                            <line x1="172" y1="100" x2="186" y2="114" stroke="#00d4ff" stroke-width="1" opacity="0.65"/>
-                            <line x1="186" y1="114" x2="186" y2="130" stroke="#00d4ff" stroke-width="1" opacity="0.45"/>
-                            <line x1="100" y1="28"  x2="100" y2="14"  stroke="#4d8fff" stroke-width="1" opacity="0.55"/>
-                            <line x1="100" y1="172" x2="100" y2="186" stroke="#4d8fff" stroke-width="1" opacity="0.55"/>
-                            <circle cx="14"  cy="70"  r="3"   fill="#00d4ff" opacity="0.9" filter="url(#glow-lg)"/>
-                            <circle cx="186" cy="130" r="3"   fill="#00d4ff" opacity="0.9" filter="url(#glow-lg)"/>
-                            <circle cx="100" cy="14"  r="2.5" fill="#4d8fff" opacity="0.8" filter="url(#glow-lg)"/>
-                            <circle cx="100" cy="186" r="2.5" fill="#4d8fff" opacity="0.8" filter="url(#glow-lg)"/>
-                            <circle cx="28"  cy="100" r="3.5" fill="#1d6aff" filter="url(#glow-lg)"/>
-                            <circle cx="172" cy="100" r="3.5" fill="#1d6aff" filter="url(#glow-lg)"/>
-                            <rect x="44" y="83" width="112" height="34" rx="17" fill="#0a0e1a" stroke="#1d6aff" stroke-width="2" filter="url(#glow-lg)"/>
+                            <circle cx="100" cy="100" r="72" fill="none" stroke="#00d4ff" stroke-width="2" filter="url(#glow-lg)"/>
+                            <ellipse cx="100" cy="100" rx="36" ry="72" fill="none" stroke="#00d4ff" stroke-width="1.5" filter="url(#glow-lg)"/>
+                            <line x1="28" y1="100" x2="172" y2="100" stroke="#00d4ff" stroke-width="1.5" filter="url(#glow-lg)"/>
+                            <ellipse cx="100" cy="100" rx="72" ry="26" fill="none" stroke="#00d4ff" stroke-width="1" opacity="0.45"/>
+                            <ellipse cx="100" cy="72"  rx="60" ry="13" fill="none" stroke="#00d4ff" stroke-width="0.8" opacity="0.28"/>
+                            <ellipse cx="100" cy="128" rx="60" ry="13" fill="none" stroke="#00d4ff" stroke-width="0.8" opacity="0.28"/>
+                            <line x1="28"  y1="100" x2="14"  y2="86"  stroke="#33ddff" stroke-width="1" opacity="0.65"/>
+                            <line x1="14"  y1="86"  x2="14"  y2="70"  stroke="#33ddff" stroke-width="1" opacity="0.45"/>
+                            <line x1="172" y1="100" x2="186" y2="114" stroke="#33ddff" stroke-width="1" opacity="0.65"/>
+                            <line x1="186" y1="114" x2="186" y2="130" stroke="#33ddff" stroke-width="1" opacity="0.45"/>
+                            <line x1="100" y1="28"  x2="100" y2="14"  stroke="#00d4ff" stroke-width="1" opacity="0.55"/>
+                            <line x1="100" y1="172" x2="100" y2="186" stroke="#00d4ff" stroke-width="1" opacity="0.55"/>
+                            <circle cx="14"  cy="70"  r="3"   fill="#33ddff" opacity="0.9" filter="url(#glow-lg)"/>
+                            <circle cx="186" cy="130" r="3"   fill="#33ddff" opacity="0.9" filter="url(#glow-lg)"/>
+                            <circle cx="100" cy="14"  r="2.5" fill="#00d4ff" opacity="0.8" filter="url(#glow-lg)"/>
+                            <circle cx="100" cy="186" r="2.5" fill="#00d4ff" opacity="0.8" filter="url(#glow-lg)"/>
+                            <circle cx="28"  cy="100" r="3.5" fill="#00d4ff" filter="url(#glow-lg)"/>
+                            <circle cx="172" cy="100" r="3.5" fill="#00d4ff" filter="url(#glow-lg)"/>
+                            <rect x="44" y="83" width="112" height="34" rx="17" fill="#060c18" stroke="#00d4ff" stroke-width="2" filter="url(#glow-lg)"/>
                             <text x="58" y="106" font-family="'Outfit',sans-serif" font-size="17" font-weight="900" fill="#ffffff" letter-spacing="1.5">WEBSAFE</text>
                             <circle cx="140" cy="100" r="7.5" fill="none" stroke="#00d4ff" stroke-width="2" filter="url(#glow-lg)"/>
                             <line x1="145.3" y1="105.3" x2="150" y2="110" stroke="#00d4ff" stroke-width="2.2" stroke-linecap="round" filter="url(#glow-lg)"/>
                             <path id="curveArc" d="M 30,100 A 70,70 0 0,1 170,100" fill="none"/>
-                            <text font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(0,212,255,0.5)" letter-spacing="3" font-weight="600">
+                            <text font-family="'JetBrains Mono',monospace" font-size="9" fill="rgba(0,212,255,0.45)" letter-spacing="3" font-weight="600">
                                 <textPath href="#curveArc" startOffset="5%">Secure every click</textPath>
                             </text>
                         </svg>
@@ -322,8 +322,8 @@
                                 <svg width="120" height="120" viewBox="0 0 120 120">
                                     <defs>
                                         <linearGradient id="scoreGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
-                                            <stop offset="0%" style="stop-color:#1d6aff"/>
-                                            <stop offset="100%" style="stop-color:#00d4ff"/>
+                                            <stop offset="0%" style="stop-color:#00d4ff"/>
+                                            <stop offset="100%" style="stop-color:#33ddff"/>
                                         </linearGradient>
                                     </defs>
                                     <circle class="score-ring-bg" cx="60" cy="60" r="54" fill="none" stroke-width="8"/>
@@ -525,7 +525,6 @@
     <section class="team-section sr">
         <div class="team-container">
             <div class="team-badge" data-en="Built With Purpose" data-fil="Binuo nang may Layunin">Built With Purpose</div>
-            </div>
             <h2 data-en="Developed at STI College Fairview" data-fil="Binuo sa STI College Fairview">Developed at STI College Fairview</h2>
             <p data-en='WebSafe was created by students from <a href="#">STI College Fairview</a> as a practical cybersecurity tool for Filipino internet users. Inspired by the rising number of phishing scams targeting local communities, the team integrated VirusTotal, WHOIS API, CheckPhish API, Google Safe Browsing, and URLSCAN.IO into a free, accessible, no-login-required tool — making professional-grade URL verification simple for everyone.'
                data-fil='Ang WebSafe ay nilikha ng mga estudyante mula sa <a href="#">STI College Fairview</a> bilang isang praktikal na tool sa cybersecurity para sa mga Filipino na gumagamit ng internet. Inspirado ng dumaraming phishing scam na nagta-target sa mga lokal na komunidad, pinagsama ng koponan ang VirusTotal, WHOIS API, CheckPhish API, Google Safe Browsing, at URLSCAN.IO sa isang libreng, naa-access, at hindi nangangailangan ng pag-login na tool — ginagawang simple ang propesyonal na pag-verify ng URL para sa lahat.'>
@@ -570,6 +569,12 @@
         langFIL.classList.toggle('lang-active', lang === 'fil');
 
         document.querySelectorAll('[data-en]').forEach(el => {
+            // Skip the back-to-home link so the arrow from CSS ::before still works cleanly
+            if (el.tagName === 'A' && el.closest('.header-nav')) {
+                const val = el.getAttribute('data-' + lang);
+                if (val !== null) el.textContent = val;
+                return;
+            }
             const val = el.getAttribute('data-' + lang);
             if (val !== null) el.innerHTML = val;
         });
@@ -578,12 +583,11 @@
     langEN.addEventListener('click', () => applyLang('en'));
     langFIL.addEventListener('click', () => applyLang('fil'));
 
-    // Init
     applyLang('en');
 })();
 
 /* =============================================
-   PARTICLE CANVAS
+   PARTICLE CANVAS — cyan palette
 ============================================= */
 (function () {
     const canvas = document.getElementById("bg-canvas");
@@ -597,19 +601,37 @@
     resize();
     window.addEventListener("resize", resize);
 
-    const COLORS = ["rgba(29,106,255,","rgba(77,143,255,","rgba(0,212,255,","rgba(10,79,212,","rgba(0,150,220,"];
+    const COLORS = [
+        "rgba(0,212,255,",
+        "rgba(51,221,255,",
+        "rgba(0,180,220,",
+        "rgba(0,150,200,",
+        "rgba(26,111,255,"
+    ];
     function rand(a, b) { return a + Math.random() * (b - a); }
-    for (let i = 0; i < 50; i++) {
-        particles.push({ x: rand(0, window.innerWidth), y: rand(0, window.innerHeight), r: rand(1, 2.6), dx: rand(-0.18, 0.18), dy: rand(-0.14, 0.14), color: COLORS[Math.floor(Math.random() * COLORS.length)], alpha: rand(0.15, 0.45) });
+    for (let i = 0; i < 55; i++) {
+        particles.push({
+            x: rand(0, window.innerWidth),
+            y: rand(0, window.innerHeight),
+            r: rand(1, 2.4),
+            dx: rand(-0.16, 0.16),
+            dy: rand(-0.12, 0.12),
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            alpha: rand(0.12, 0.40)
+        });
     }
     function draw() {
         ctx.clearRect(0, 0, W, H);
         particles.forEach(p => {
-            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = p.color + p.alpha + ")"; ctx.fill();
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = p.color + p.alpha + ")";
+            ctx.fill();
             p.x += p.dx; p.y += p.dy;
-            if (p.x < -5) p.x = W + 5; if (p.x > W + 5) p.x = -5;
-            if (p.y < -5) p.y = H + 5; if (p.y > H + 5) p.y = -5;
+            if (p.x < -5) p.x = W + 5;
+            if (p.x > W + 5) p.x = -5;
+            if (p.y < -5) p.y = H + 5;
+            if (p.y > H + 5) p.y = -5;
         });
         requestAnimationFrame(draw);
     }
@@ -621,7 +643,9 @@
 ============================================= */
 (function () {
     const obs = new IntersectionObserver((entries) => {
-        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); } });
+        entries.forEach(e => {
+            if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); }
+        });
     }, { threshold: 0.12 });
     document.querySelectorAll(".sr").forEach(el => obs.observe(el));
 })();
@@ -635,7 +659,10 @@
         entries.forEach(e => {
             if (e.isIntersecting) {
                 const index = Array.from(cards).indexOf(e.target);
-                setTimeout(() => { e.target.style.animationDelay = "0s"; e.target.classList.add("visible"); }, index * 120);
+                setTimeout(() => {
+                    e.target.style.animationDelay = "0s";
+                    e.target.classList.add("visible");
+                }, index * 120);
                 obs.unobserve(e.target);
             }
         });
@@ -654,7 +681,12 @@
     const obs = new IntersectionObserver((entries) => {
         entries.forEach(e => {
             if (e.isIntersecting) {
-                setTimeout(() => { bars.forEach((bar, i) => { const w = bar.getAttribute("data-width"); setTimeout(() => { bar.style.width = w + "%"; }, i * 150); }); }, 300);
+                setTimeout(() => {
+                    bars.forEach((bar, i) => {
+                        const w = bar.getAttribute("data-width");
+                        setTimeout(() => { bar.style.width = w + "%"; }, i * 150);
+                    });
+                }, 300);
                 obs.unobserve(e.target);
             }
         });
@@ -667,9 +699,14 @@
 ============================================= */
 (function () {
     const flash = document.createElement("div");
-    flash.style.cssText = "position:fixed;inset:0;background:#0a0e1a;z-index:9999;pointer-events:none;transition:opacity 0.6s ease";
+    flash.style.cssText = "position:fixed;inset:0;background:#060c18;z-index:9999;pointer-events:none;transition:opacity 0.6s ease";
     document.body.appendChild(flash);
-    requestAnimationFrame(() => { setTimeout(() => { flash.style.opacity = "0"; setTimeout(() => flash.remove(), 700); }, 80); });
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            flash.style.opacity = "0";
+            setTimeout(() => flash.remove(), 700);
+        }, 80);
+    });
 })();
 </script>
 

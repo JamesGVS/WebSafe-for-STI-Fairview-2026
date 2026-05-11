@@ -104,7 +104,7 @@
     <h1>Web<span>Safe</span></h1>
     <div class="header-right">
 
-        <!-- ★ THEME TOGGLE BUTTON — replaces "WebSafe Online" tag -->
+        <!-- THEME TOGGLE BUTTON -->
         <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle light/dark mode" title="Toggle light mode">
             <div class="theme-toggle-track">
                 <div class="theme-toggle-thumb">
@@ -115,7 +115,7 @@
             <span class="theme-toggle-label" id="theme-toggle-label">DARK</span>
         </button>
 
-        <!-- ★ LANGUAGE TOGGLE BUTTON -->
+        <!-- LANGUAGE TOGGLE BUTTON -->
         <button id="lang-toggle" class="lang-toggle-btn" aria-label="Switch language" title="Switch to Filipino">
             <span class="lang-flag">🇵🇭</span>
             <span class="lang-label" id="lang-label">Filipino</span>
@@ -769,7 +769,6 @@
 <script>
 /* =============================================
   TRANSLATION ENGINE
-  Bilingual content map: EN / FIL
 ============================================= */
 const i18n = {
   en: {
@@ -1029,7 +1028,6 @@ const i18n = {
   }
 };
 
-/* ─── Language state ─── */
 let currentLang = 'en';
 
 function applyTranslations(lang) {
@@ -1050,7 +1048,6 @@ function applyTranslations(lang) {
   document.documentElement.lang = lang === 'fil' ? 'fil' : 'en';
 }
 
-/* ─── Language toggle ─── */
 const langToggle   = document.getElementById('lang-toggle');
 const langLabel    = document.getElementById('lang-label');
 const langCurrent  = document.getElementById('lang-current');
@@ -1085,14 +1082,13 @@ applyTranslations('en');
 updateToggleUI('en');
 
 /* =============================================
-  THEME TOGGLE — Dark / Light Mode
+  THEME TOGGLE
 ============================================= */
 (function() {
     const toggleBtn   = document.getElementById('theme-toggle');
     const toggleLabel = document.getElementById('theme-toggle-label');
     const root        = document.documentElement;
 
-    /* Restore saved preference on load */
     const saved = localStorage.getItem('websafe-theme') || 'dark';
     if (saved === 'light') {
         root.setAttribute('data-theme', 'light');
@@ -1102,11 +1098,9 @@ updateToggleUI('en');
     toggleBtn.addEventListener('click', () => {
         const isLight = root.getAttribute('data-theme') === 'light';
 
-        /* Flash animation */
         toggleBtn.classList.add('theme-flash');
         setTimeout(() => toggleBtn.classList.remove('theme-flash'), 400);
 
-        /* Smooth transition */
         document.body.classList.add('theme-transitioning');
         setTimeout(() => document.body.classList.remove('theme-transitioning'), 400);
 
@@ -1123,7 +1117,7 @@ updateToggleUI('en');
 })();
 
 /* =============================================
-PARTICLE CANVAS — floating dots
+PARTICLE CANVAS
 ============================================= */
 (function () {
     const canvas = document.getElementById("bg-canvas");
@@ -1215,6 +1209,19 @@ VERTICAL SCROLL ENGINE
     const btnNext = document.getElementById("nav-next");
     const totalPanels = panels.length;
     let current = 0, isAnimating = false;
+
+    function updateProgressBar(index) {
+        if (totalPanels <= 1) {
+            progressBar.style.height = '0';
+            progressBar.style.opacity = '0';
+            return;
+        }
+        const pct = index / (totalPanels - 1);
+        progressBar.style.height = (pct * 100) + 'vh';
+        /* Hide on last panel to avoid the stuck full-height line */
+        progressBar.style.opacity = index === totalPanels - 1 ? '0' : '1';
+    }
+
     function goTo(index) {
         if (index < 0 || index >= totalPanels || isAnimating) return;
         isAnimating = true; const prev = current;
@@ -1238,7 +1245,7 @@ VERTICAL SCROLL ENGINE
             panels[current].style.opacity = "1";
         }); });
         dots.forEach((d, i) => d.classList.toggle("active", i === current));
-        progressBar.style.height = (totalPanels > 1 ? (current / (totalPanels - 1)) * 100 : 0) + "vh";
+        updateProgressBar(current);
         btnPrev.classList.toggle("hidden-btn", current === 0);
         btnNext.classList.toggle("hidden-btn", current === totalPanels - 1);
         setTimeout(() => { isAnimating = false; panels[prev].style.transform = ""; panels[prev].style.filter = ""; panels[prev].style.opacity = ""; panels[prev].style.transition = ""; }, 750);
