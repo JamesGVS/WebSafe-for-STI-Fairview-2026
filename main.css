@@ -1570,6 +1570,23 @@ PANEL 1 — HERO
 #results_row::-webkit-scrollbar-track { background: transparent; }
 #results_row::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 
+/* HORIZONTAL SCAN + PREVIEW ROW */
+.results-cols {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: flex-start;
+    width: 100%;
+}
+.results-cols #link_status {
+    flex: 1;
+    min-width: 0;
+}
+.results-cols #preview_area {
+    flex: 1;
+    min-width: 0;
+}
+
 #link_status { min-height: 0; text-align: left; }
 #link_status > div { text-align: left; }
 #preview_area { display:none; flex-direction: column; gap: 10px; }
@@ -1930,6 +1947,7 @@ MOBILE
         flex: none; min-height: auto; max-height: none; overflow-y: visible;
         -webkit-mask-image: none; mask-image: none;
     }
+    .results-cols { flex-direction: column; }
 
     .about-inner { flex-direction:column; gap:24px; padding:82px 22px 36px; }
     .why-grid { grid-template-columns:1fr; gap:24px; }

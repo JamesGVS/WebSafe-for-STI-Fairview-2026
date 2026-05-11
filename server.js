@@ -85,7 +85,7 @@ app.use((req, res, next) => {
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     // XSS protection header (legacy browsers)
     res.setHeader('X-XSS-Protection', '1; mode=block');
-    res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(), payment=()');
+    res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=(self), payment=()');
     // HSTS — instruct browsers to use HTTPS for 1 year (production only, avoids
     // locking out local dev on HTTP)
     if (process.env.NODE_ENV === 'production') {
@@ -105,6 +105,10 @@ app.use((req, res, next) => {
         // Fetch/XHR: self for API calls + Cloudflare DoH (client-side DNS fallback)
         // + wildcard https: for the no-cors site-reachability probe in the client fallback
         "connect-src 'self' https://cloudflare-dns.com https:",
+        // Media: allow camera/video stream for QR scanner
+        "media-src 'self' blob:",
+        // Worker / blob URLs used by html5-qrcode internally
+        "worker-src 'self' blob:",
         // Frames: completely blocked
         "frame-src 'none'",
         "object-src 'none'",
@@ -126,6 +130,8 @@ const PUBLIC_FILES = {
     '/about_us.css':           'about_us.css',
     '/contact_local.html':     'contact_local.html',
     '/contact_local.css':      'contact_local.css',
+    '/Cybersecurity_guide.html': 'Cybersecurity_guide.html',
+    '/Cybersecurity_guide.css':  'Cybersecurity_guide.css',
     '/jsQR.min.js':            'jsQR.min.js',
     '/html5-qrcode.min.js':    'html5-qrcode.min.js',
     '/robots.txt':             'robots.txt',

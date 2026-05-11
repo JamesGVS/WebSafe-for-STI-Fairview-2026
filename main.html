@@ -152,7 +152,7 @@
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             <span data-i18n="nav_threats">Online Threats</span>
         </a>
-        <a href="Cybersecurity_guide.html" class="sidebar-link">
+        <a href="Cybersecurity_guide.html" id="cyberGuideLink" class="sidebar-link">
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
             <span data-i18n="sidebar_guide">Cybersecurity Guide</span>
         </a>
@@ -248,18 +248,20 @@
                         </div>
                         <div id="loading_spinner"></div>
                         <div id="results_row">
-                            <div id="link_status"></div>
-                            <div id="preview_area">
-                                <div id="preview_card">
-                                    <img id="preview_favicon">
-                                    <div>
-                                        <h3 id="preview_title"></h3>
-                                        <p id="preview_domain"></p>
-                                        <p id="preview_description"></p>
-                                        <div id="preview_actions"></div>
+                            <div class="results-cols">
+                                <div id="link_status"></div>
+                                <div id="preview_area">
+                                    <div id="preview_card">
+                                        <img id="preview_favicon">
+                                        <div>
+                                            <h3 id="preview_title"></h3>
+                                            <p id="preview_domain"></p>
+                                            <p id="preview_description"></p>
+                                            <div id="preview_actions"></div>
+                                        </div>
                                     </div>
+                                    <div id="preview_checks"></div>
                                 </div>
-                                <div id="preview_checks"></div>
                             </div>
                         </div>
                     </section>
@@ -1290,6 +1292,7 @@ sidebarClose.addEventListener("click", closeSidebar);
 overlayEl.addEventListener("click", closeSidebar);
 document.getElementById("aboutLink").addEventListener("click", e => { e.preventDefault(); closeSidebar(); window.location.href = "about_us.html"; });
 document.getElementById("contactLocalLink").addEventListener("click", e => { e.preventDefault(); closeSidebar(); window.location.href = "contact_local.html"; });
+document.getElementById("cyberGuideLink").addEventListener("click", e => { e.preventDefault(); closeSidebar(); window.location.href = "Cybersecurity_guide.html"; });
 function syncSidebarHistory() {
     const panel = document.getElementById("sidebar_history_list");
     if (!panel) return;
