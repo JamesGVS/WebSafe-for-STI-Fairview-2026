@@ -1304,7 +1304,7 @@ function syncSidebarHistory() {
         const row = document.createElement("div"); row.className = "sidebar-scan-row";
         row.innerHTML = `<span class="sidebar-scan-dot" style="background:${colors[h.level]||"#9ca3af"}"></span><span class="sidebar-scan-host"></span><span class="sidebar-scan-badge" style="color:${colors[h.level]||"#9ca3af"}">${labels[h.level]||"?"}</span>`;
         row.querySelector(".sidebar-scan-host").textContent = h.hostname;
-        row.addEventListener("click", () => { const inp=document.getElementById("link_input"); if(inp)inp.value=h.url; closeSidebar(); setTimeout(()=>{document.querySelector("[data-panel='0']").click();setTimeout(()=>checkBtn.click(),400);},320); });
+        row.addEventListener("click", () => { const inp=document.getElementById("link_input"); if(inp)inp.value=h.url; closeSidebar(); const heroPanel=document.getElementById("panel-hero"); if(heroPanel){heroPanel.scrollIntoView({behavior:"smooth",block:"start"});} setTimeout(()=>{ const cb=document.getElementById("check_btn"); if(cb)cb.click(); },400); });
         panel.appendChild(row);
     });
 }
@@ -1349,14 +1349,97 @@ let html5QrCode; let isScanning = false; let uploadedImageData = null;
 
 input.addEventListener("keydown", e => { if (e.key === "Enter") checkBtn.click(); });
 
-scanBtn.onclick = () => { qrModal.classList.remove("hidden"); setTimeout(() => qrModal.classList.add("show"), 10); document.body.style.overflow = "hidden"; };
-closeQR.onclick = () => { qrModal.classList.remove("show"); viewfinder.classList.remove("scanning"); setTimeout(() => qrModal.classList.add("hidden"), 300); document.body.style.overflow = ""; if (html5QrCode && isScanning) { html5QrCode.stop().catch(() => {}); isScanning = false; } };
-startScan.onclick = async () => {
-    if (isScanning) return; viewfinder.classList.add("scanning");
+async function startQrScanner() {
+    if (isScanning) return;
+    viewfinder.classList.add("scanning");
+    cameraPlaceholder.style.display = "none";
+    startScan.textContent = "Starting…";
+    startScan.disabled = true;
     html5QrCode = new Html5Qrcode("qr-reader");
-    try { await html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 200 }, (decodedText) => { html5QrCode.stop().catch(() => {}); isScanning = false; viewfinder.classList.remove("scanning"); input.value = decodedText; closeQR.onclick(); checkBtn.click(); }); isScanning = true; }
-    catch { viewfinder.classList.remove("scanning"); alert("Camera error — please allow camera access and try again."); }
+    try {
+        await html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 200 },
+            (decodedText) => {
+                html5QrCode.stop().catch(() => {});
+                isScanning = false;
+                viewfinder.classList.remove("scanning");
+                input.value = decodedText;
+                closeQR.onclick();
+                checkBtn.click();
+            }
+        );
+        isScanning = true;
+        startScan.style.display = "none";
+    } catch (err) {
+        viewfinder.classList.remove("scanning");
+        cameraPlaceholder.style.display = "";
+        startScan.disabled = false;
+        startScan.textContent = "Start Scanner";
+        // Check if it's a permission denial
+        const isDenied = err && (err.name === "NotAllowedError" || (typeof err === "string" && err.toLowerCase().includes("permission")));
+        if (isDenied) {
+            showCameraPermissionBanner();
+        } else {
+            alert("Camera error — please allow camera access and try again.");
+        }
+    }
+}
+
+function showCameraPermissionBanner() {
+    let banner = document.getElementById("qr-permission-banner");
+    if (!banner) {
+        banner = document.createElement("div");
+        banner.id = "qr-permission-banner";
+        banner.style.cssText = "background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.4);border-radius:10px;padding:12px 14px;margin:10px 0 0;text-align:center;font-size:12px;color:#fbbf24;line-height:1.5;";
+        banner.innerHTML = `<strong>📷 Camera Access Required</strong><br>Please allow camera access when prompted by your browser, then click <em>Start Scanner</em> again.<br><small style="opacity:0.7">If denied, go to your browser settings → Site permissions → Camera → Allow for this site.</small>`;
+        document.querySelector(".qr-body").appendChild(banner);
+    }
+    banner.style.display = "";
+}
+
+scanBtn.onclick = async () => {
+    qrModal.classList.remove("hidden");
+    setTimeout(() => qrModal.classList.add("show"), 10);
+    document.body.style.overflow = "hidden";
+    startScan.style.display = "";
+    startScan.disabled = false;
+    startScan.textContent = "Start Scanner";
+    // Check camera permission state and auto-start if already granted
+    if (navigator.permissions) {
+        try {
+            const perm = await navigator.permissions.query({ name: "camera" });
+            if (perm.state === "granted") {
+                setTimeout(startQrScanner, 300);
+            } else if (perm.state === "denied") {
+                showCameraPermissionBanner();
+            } else {
+                // "prompt" — auto-trigger so browser shows permission dialog
+                setTimeout(startQrScanner, 300);
+            }
+        } catch (_) {
+            // Permissions API not supported, just auto-start to trigger prompt
+            setTimeout(startQrScanner, 300);
+        }
+    } else {
+        setTimeout(startQrScanner, 300);
+    }
 };
+
+closeQR.onclick = () => {
+    qrModal.classList.remove("show");
+    viewfinder.classList.remove("scanning");
+    setTimeout(() => qrModal.classList.add("hidden"), 300);
+    document.body.style.overflow = "";
+    if (html5QrCode && isScanning) { html5QrCode.stop().catch(() => {}); isScanning = false; }
+    startScan.style.display = "";
+    startScan.disabled = false;
+    startScan.textContent = "Start Scanner";
+    const banner = document.getElementById("qr-permission-banner");
+    if (banner) banner.style.display = "none";
+};
+
+startScan.onclick = startQrScanner;
 
 uploadQrBtn.onclick = () => { resetUploadModal(); qrUploadModal.classList.remove("hidden"); setTimeout(() => qrUploadModal.classList.add("show"), 10); document.body.style.overflow = "hidden"; };
 closeQrUpload.onclick = closeUploadModal;
