@@ -13,18 +13,64 @@
 </head>
 <body>
 
-<!-- PARTICLE CANVAS -->
+<!-- AURORA BACKGROUND -->
+<div id="aurora-bg">
+    <div class="aurora-orb orb-1"></div>
+    <div class="aurora-orb orb-2"></div>
+    <div class="aurora-orb orb-3"></div>
+    <div class="aurora-orb orb-4"></div>
+    <div class="noise-overlay"></div>
+</div>
+
+<!-- HEX GRID OVERLAY -->
+<div class="hex-grid-overlay"></div>
+
+<!-- PAGE SCAN LINE -->
+<div class="page-scan-line"></div>
+
+<!-- PARTICLE + CYBER CIRCUIT CANVASES -->
 <canvas id="bg-canvas"></canvas>
+<canvas id="cyber-circuit-canvas"></canvas>
 
 <!-- LOADING SCREEN -->
 <div id="loader">
+    <div class="loader-aurora">
+        <div class="loader-aurora-orb l-orb-1"></div>
+        <div class="loader-aurora-orb l-orb-2"></div>
+    </div>
     <div class="loader-content">
-        <div class="logo-shape"></div>
-        <h1>WebSafe</h1>
-        <p>Securing your online experience...</p>
-        <div class="dots">
-            <span></span><span></span><span></span>
+        <div class="loader-logo-wrap">
+            <div class="loader-logo-ring ring-outer"></div>
+            <div class="loader-logo-ring ring-mid"></div>
+            <div class="loader-logo-ring ring-inner"></div>
+            <div class="loader-shield">
+                <svg viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M24 2L4 10V28C4 40.15 12.7 51.42 24 54C35.3 51.42 44 40.15 44 28V10L24 2Z" stroke="url(#shieldGrad)" stroke-width="2.5" stroke-linejoin="round"/>
+                    <path d="M16 28L21 33L33 21" stroke="url(#checkGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="shieldGrad" x1="4" y1="2" x2="44" y2="54" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#48cae4"/><stop offset="1" stop-color="#0077b6"/>
+                        </linearGradient>
+                        <linearGradient id="checkGrad" x1="16" y1="27" x2="33" y2="27" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#90e0ef"/><stop offset="1" stop-color="#48cae4"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
         </div>
+        <div class="loader-brand">
+            <span class="loader-brand-web">
+                <span class="lb" style="--i:0">W</span><span class="lb" style="--i:1">e</span><span class="lb" style="--i:2">b</span>
+            </span><span class="loader-brand-safe">
+                <span class="lb" style="--i:3">S</span><span class="lb" style="--i:4">a</span><span class="lb" style="--i:5">f</span><span class="lb" style="--i:6">e</span>
+            </span>
+        </div>
+        <p class="loader-tagline">Securing your online experience</p>
+        <div class="loader-progress-track">
+            <div class="loader-progress-fill"></div>
+            <div class="loader-progress-glow"></div>
+        </div>
+        <div class="loader-status" id="loader-status">Initializing security engine...</div>
     </div>
 </div>
 
@@ -39,36 +85,27 @@
     <div class="panel-dot" data-panel="3" data-label="Why WebSafe"></div>
     <div class="panel-dot" data-panel="4" data-label="How It Works"></div>
     <div class="panel-dot" data-panel="5" data-label="QR Scan"></div>
-    <div class="panel-dot" data-panel="6" data-label="Stay Safe"></div>
-    <div class="panel-dot" data-panel="7" data-label="About"></div>
+    <div class="panel-dot" data-panel="6" data-label="Report"></div>
+    <div class="panel-dot" data-panel="7" data-label="About Us"></div>
 </div>
 
-<!-- SCROLL NAV ARROWS -->
+<!-- SCROLL NAV ARROWS — Up/Down icons -->
 <button class="scroll-nav-btn hidden-btn" id="nav-prev" aria-label="Previous panel">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    <!-- Up chevron -->
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
 </button>
 <button class="scroll-nav-btn" id="nav-next" aria-label="Next panel">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    <!-- Down chevron -->
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
 </button>
 
 <div id="main_content">
 
 <!-- HEADER -->
 <header id="head_logo">
-    <img src="images/logo_circle.png" alt="WebSafe logo">
     <h1>Web<span>Safe</span></h1>
     <div class="header-right">
-        <div class="header-tag">System Online</div>
-        <div class="header-divider"></div>
-        <div class="header-stat">
-            <span class="header-stat-val">100%</span>
-            <span class="header-stat-label">Free</span>
-        </div>
-        <div class="header-divider"></div>
-        <div class="header-stat">
-            <span class="header-stat-val">PH</span>
-            <span class="header-stat-label">Region</span>
-        </div>
+        <div class="header-tag">WebSafe Online</div>
     </div>
 </header>
 
@@ -85,13 +122,12 @@
 <!-- SIDEBAR -->
 <nav id="sidebar_menu" aria-label="Site navigation">
     <div class="sidebar-header">
-        <img src="images/logo_square.jpg" alt="WebSafe logo" class="sidebar-logo-img">
-        <span class="sidebar-logo-name">WebSafe</span>
+        <span class="sidebar-logo-name">Hello there User!</span>
         <button class="sidebar-close-btn" id="sidebar_close" aria-label="Close menu">&times;</button>
     </div>
 
     <div class="sidebar-section">
-        <p class="sidebar-section-label">Navigation</p>
+        <p class="sidebar-section-label">Navigate Here</p>
         <a href="#panel-hero" class="sidebar-link" data-panel="0">
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             Scan a Link
@@ -99,6 +135,10 @@
         <a href="#panel-threats" class="sidebar-link" data-panel="1">
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             Online Threats
+        </a>
+        <a href="Cybersecurity_guide.html" class="sidebar-link">
+            <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Cybersecurity Guide
         </a>
         <a href="#panel-about" class="sidebar-link" data-panel="2">
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
@@ -110,7 +150,7 @@
         </a>
         <a href="contact_local.html" id="contactLocalLink" class="sidebar-link">
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            Contact Authorities
+            Contact Local Authorities
         </a>
         <a href="about_us.html" id="aboutLink" class="sidebar-link">
             <svg class="sidebar-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -134,93 +174,63 @@
             <a href="tel:+6327243660">(+632) 724-3660</a>
         </div>
         <div class="sidebar-contact-item">
-            <span>Globe</span><a href="tel:211">211</a>
+            <span>Globe</span><a href="https://mail.google.com/mail/u/0/#search/stopspam%40globe.com.ph">stopspam@globe.com.ph</a>
         </div>
         <div class="sidebar-contact-item">
-            <span>Smart</span><a href="tel:1511">1511</a>
+            <span>Smart</span><a href="https://mail.google.com/mail/u/0/#search/reportphishing%40smart.com.ph">reportphishing@smart.com</a>
         </div>
         <div class="sidebar-contact-item">
             <span>DICT</span>
-            <a href="mailto:onlinecims.ocs@gmail.com">onlinecims.ocs@gmail.com</a>
+            <a href="https://mail.google.com/mail/u/0/#search/onlinecims.ocs%40gmail.com">onlinecims.ocs@gmail.com</a>
         </div>
     </div>
 </nav>
 
-<!-- ===================================================
-     HORIZONTAL TRACK — All panels slide side to side
-=================================================== -->
+<!-- VERTICAL SCROLL SCENE WRAPPER -->
+<div id="scroll-scene">
 <div id="horizontal-track">
 
-    <!-- ══════════════════════════════════════════════
-         PANEL 1 — HERO / LINK CHECKER
-    ══════════════════════════════════════════════ -->
+    <!-- PANEL 1 — HERO -->
     <div class="h-panel panel-active" id="panel-hero">
         <span class="panel-label">01 / SCAN</span>
-        <span class="panel-index">01</span>
-
         <div class="hero-inner">
-            <!-- Left: copy -->
             <div class="hero-text-col">
-                <span class="hero-eyebrow">Free URL Safety Checker</span>
+                <span class="hero-eyebrow">Securing your online experience</span>
                 <h1 id="dynamic_greeting">Let's get started, shall we?</h1>
-                <p class="hero-sub">Before you click — let WebSafe verify the link. Paste any URL below to instantly check for phishing, malware, and deceptive sites.</p>
-
-                <div class="hero-stats">
-                    <div class="hero-stat-item">
-                        <span class="hero-stat-num">3<span>+</span></span>
-                        <span class="hero-stat-desc">Threat Types Detected</span>
-                    </div>
-                    <div class="hero-stat-item">
-                        <span class="hero-stat-num">100<span>%</span></span>
-                        <span class="hero-stat-desc">Free to Use</span>
-                    </div>
-                    <div class="hero-stat-item">
-                        <span class="hero-stat-num">∞</span>
-                        <span class="hero-stat-desc">Scans Available</span>
-                    </div>
-                </div>
+                <p class="hero-sub">Before you click — let WebSafe verify the link or QR code. Paste any URL, Scan, or Upload a QR below to instantly check for phishing, malware, and deceptive sites.</p>
             </div>
-
-            <!-- Right: input card -->
             <div class="hero-card-col">
                 <div class="input-card">
                     <label class="input-label" for="link_input">Enter URL to Scan</label>
                     <section id="link_checker">
                         <form onsubmit="return false;">
-                            <input id="link_input" type="text" placeholder="https://example.com or paste any link…">
+                            <input id="link_input" type="text" placeholder="Place your URL here">
                         </form>
-
                         <div class="controls">
                             <button id="check_btn">Verify Security</button>
-                            <button id="preview_btn">Preview Now</button>
+                            <button id="preview_btn">Preview Site</button>
                         </div>
-
                         <div class="divider">OR</div>
-
-                        <button id="scan_qr_btn">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-                                <rect x="3" y="14" width="7" height="7" rx="1"/>
-                                <rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/>
-                                <rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>
-                            </svg>
-                            Scan QR Code with Camera
-                        </button>
-
-                        <div class="divider">OR</div>
-
-                        <button id="upload_qr_btn">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                <polyline points="17 8 12 3 7 8"/>
-                                <line x1="12" y1="3" x2="12" y2="15"/>
-                            </svg>
-                            Upload QR Image File
-                        </button>
-
+                        <div class="qr-btn-group">
+                            <button id="scan_qr_btn">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                    <rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/>
+                                    <rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>
+                                </svg>
+                                Scan QR with Camera
+                            </button>
+                            <button id="upload_qr_btn">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17 8 12 3 7 8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                Upload QR Image
+                            </button>
+                        </div>
                         <div id="loading_spinner"></div>
-
-                        <!-- Results -->
                         <div id="results_row">
                             <div id="link_status"></div>
                             <div id="preview_area">
@@ -240,20 +250,15 @@
                 </div>
             </div>
         </div>
-    </div><!-- /panel-hero -->
+    </div>
 
-    <!-- ══════════════════════════════════════════════
-         PANEL 2 — ONLINE THREATS
-    ══════════════════════════════════════════════ -->
+    <!-- PANEL 2 — ONLINE THREATS -->
     <div class="h-panel" id="panel-threats">
         <span class="panel-label">02 / THREATS</span>
-        <span class="panel-index">02</span>
-
         <div class="threats-inner">
-            <div class="threats-label">Awareness</div>
+            <div class="threats-label">Stay Aware</div>
             <h2 class="threats-title">Understanding<br><span>Online Threats</span></h2>
-            <p class="threats-subtitle">Cybercriminals engineer convincing traps. Knowing the threat types is your first line of defence.</p>
-
+            <p class="threats-subtitle">Cybercriminals engineer convincing traps. Knowing the threat types is your first line of defense.</p>
             <div class="threats-cards">
                 <div class="threat-card">
                     <div class="threat-card-scan"></div>
@@ -267,7 +272,6 @@
                     <h3>Phishing Links</h3>
                     <p>Fake pages that perfectly mimic banks, social media, and government sites to steal your login credentials and personal data.</p>
                 </div>
-
                 <div class="threat-card">
                     <div class="threat-card-scan"></div>
                     <div class="threat-num">02</div>
@@ -282,7 +286,6 @@
                     <h3>QR Code Scams</h3>
                     <p>Printed or digital QR codes that embed harmful links — often placed on posters, menus, or fake payment terminals.</p>
                 </div>
-
                 <div class="threat-card active">
                     <div class="threat-card-scan"></div>
                     <div class="threat-num">03</div>
@@ -298,13 +301,11 @@
                     <p>Disguised downloads — PDFs, executables, Office files — that contain hidden scripts to install ransomware or keyloggers.</p>
                 </div>
             </div>
-
             <div class="threats-info-rows">
                 <div class="threats-info-row">
                     <div class="threats-info-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
                         </svg>
                     </div>
                     <div class="threats-info-text">
@@ -325,28 +326,23 @@
                 </div>
             </div>
         </div>
-    </div><!-- /panel-threats -->
+    </div>
 
-    <!-- ══════════════════════════════════════════════
-         PANEL 3 — WHAT WEBSAFE DOES
-    ══════════════════════════════════════════════ -->
+    <!-- PANEL 3 — WHAT WEBSAFE DOES -->
     <div class="h-panel" id="panel-about">
         <span class="panel-label">03 / ABOUT</span>
-        <span class="panel-index">03</span>
-
         <div class="about-inner">
             <div class="info-text">
-                <span class="badge">Link Verification Tool</span>
-                <h1>What WebSafe<br>Does</h1>
+                <span class="badge">Securing Your Online Experience</span>
+                <h1>Your Safe Browsing<br>Companion</h1>
                 <div class="underline"></div>
-                <p>WebSafe is a user-friendly online tool designed to help you verify links before visiting them. Simply paste any URL to receive an instant preview — including the site's title, favicon, and description — so you know exactly what you're about to open.</p>
+                <p>WebSafe is a user-friendly online tool designed to help you verify links before visiting them. Simply paste, Scan, or Upload to receive an instant preview — including the site's title, favicon, and description — so you know exactly what you're about to open.</p>
                 <p>Our safety checks scan the destination for phishing patterns, suspicious domains, insecure protocols, and known threat databases. You get clear, plain-language results in seconds, with no technical knowledge required.</p>
                 <p>Built for Filipino internet users, WebSafe also provides direct contacts for local cybercrime reporting, keeping you connected to help when you need it most.</p>
-
                 <div class="feature-checklist">
                     <div class="feature-check-item">
                         <div class="feature-check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-                        <span class="feature-check-text">Instant link preview with title, favicon & description</span>
+                        <span class="feature-check-text">Instant link preview with title, favicon &amp; description</span>
                     </div>
                     <div class="feature-check-item">
                         <div class="feature-check-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
@@ -361,33 +357,28 @@
                         <span class="feature-check-text">PH authority contacts built right in — report with one tap</span>
                     </div>
                 </div>
-
-                <div class="features" style="margin-top:20px;">
+                <div class="features" style="margin-top:24px;">
                     <div class="feature-box">Preview Links</div>
                     <div class="feature-box">Safety Checks</div>
                     <div class="feature-box">Instant Results</div>
                     <div class="feature-box">100% Free</div>
                 </div>
             </div>
-
             <div class="info-image">
                 <div class="image-circle-wrapper">
                     <div class="image-circle-orbit"></div>
+                    <div class="image-circle-orbit orbit-2"></div>
                     <div class="image-circle">
                         <img src="images/logo_circle.png" alt="WebSafe logo">
                     </div>
                 </div>
             </div>
         </div>
-    </div><!-- /panel-about -->
+    </div>
 
-    <!-- ══════════════════════════════════════════════
-         PANEL 4 — WHY WEBSAFE
-    ══════════════════════════════════════════════ -->
+    <!-- PANEL 4 — WHY WEBSAFE -->
     <div class="h-panel" id="panel-why">
         <span class="panel-label">04 / WHY US</span>
-        <span class="panel-index">04</span>
-
         <div class="why-inner">
             <span class="ws-badge">Trusted Protection</span>
             <div class="why-grid">
@@ -399,7 +390,7 @@
                     </div>
                 </div>
                 <div class="why-content">
-                    <h2>Why Users Should<br>Choose WebSafe</h2>
+                    <h2>Protection Powered<br>By Prevention</h2>
                     <p class="ws-subtext">With phishing scams rising sharply across the Philippines, having a trusted, zero-cost verification tool is no longer optional — it's essential.</p>
                     <div class="ws-card">
                         WebSafe makes online browsing safer and simpler. It offers a straightforward way to verify link safety before you click — no technical skills, no downloads, no fees. One check can prevent identity theft, financial loss, and account compromise. Over 97% of cyberattacks begin with a malicious link; don't let one click become a costly mistake.
@@ -433,48 +424,38 @@
                 </div>
             </div>
         </div>
-    </div><!-- /panel-why -->
+    </div>
 
-    <!-- ══════════════════════════════════════════════
-         PANEL 5 — HOW IT WORKS (URL)
-    ══════════════════════════════════════════════ -->
+    <!-- PANEL 5 — HOW IT WORKS -->
     <div class="h-panel" id="panel-steps">
         <span class="panel-label">05 / PROCESS</span>
-        <span class="panel-index">05</span>
-
         <div class="steps-inner">
             <span class="ws-how-badge">Simple 3-Step Process</span>
             <h2 class="ws-how-title">How does URL Checker Work?</h2>
             <p class="ws-how-subtext">WebSafe analyzes URLs in real time to help you avoid malware, phishing attempts, counterfeit websites, and deceptive redirects.</p>
-            <p class="ws-how-small">Here's the process:</p>
-
             <div class="ws-steps">
                 <div class="ws-step-card step-blue">
                     <div class="ws-step-icon-num">01</div>
-                    <span class="ws-step-number">01</span>
                     <span class="ws-step-label">STEP 01</span>
                     <h3>Paste</h3>
                     <p>Copy any link you want to check and paste it into the WebSafe input field. Supports full URLs, shortened links, and raw domains.</p>
                 </div>
                 <div class="ws-step-card step-purple">
                     <div class="ws-step-icon-num">02</div>
-                    <span class="ws-step-number">02</span>
                     <span class="ws-step-label">STEP 02</span>
                     <h3>Click</h3>
                     <p>Hit "Verify Security" to trigger a multi-point scan: HTTPS status, domain age, redirect chains, keyword analysis, and more.</p>
                 </div>
                 <div class="ws-step-card step-green">
                     <div class="ws-step-icon-num">03</div>
-                    <span class="ws-step-number">03</span>
                     <span class="ws-step-label">STEP 03</span>
                     <h3>Check</h3>
                     <p>Review your color-coded results with a full breakdown of each safety check and clear guidance on whether it's safe to proceed.</p>
                 </div>
             </div>
-
             <div class="ws-result-box">
                 <div class="ws-result-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><polyline points="20 6 9 17 4 12"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="22" height="22"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
                 <div>
                     <h4>Fast &amp; Accurate Results</h4>
@@ -482,86 +463,69 @@
                 </div>
             </div>
         </div>
-    </div><!-- /panel-steps -->
+    </div>
 
-    <!-- ══════════════════════════════════════════════
-         PANEL 6 — QR SCAN HOW IT WORKS
-    ══════════════════════════════════════════════ -->
+    <!-- PANEL 6 — QR SCAN -->
     <div class="h-panel" id="panel-qr">
         <span class="panel-label">06 / QR SCAN</span>
-        <span class="panel-index">06</span>
-
         <div class="qr-steps-inner">
             <span class="ws-qr-badge">QR Code Safety</span>
-            <h2 class="ws-qr-title">How does <span>QR Scan</span> Work?</h2>
+            <h2 class="ws-qr-title">How does <span>QR Scan &amp; Upload</span> Work?</h2>
             <p class="ws-qr-subtext">QR codes can hide any URL inside them — including malicious ones. WebSafe decodes and inspects the embedded link before you ever open it.</p>
-            <p class="ws-qr-small">Two ways to scan:</p>
-
             <div class="ws-qr-steps">
                 <div class="ws-qr-step-card">
                     <div class="ws-qr-scan-line"></div>
                     <div class="ws-qr-step-icon">
                         <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                     </div>
-                    <span class="ws-qr-step-number">01</span>
                     <span class="ws-qr-step-label">STEP 01</span>
                     <h3>Scan / Upload</h3>
                     <p>Point your camera at a QR code or upload an image file. WebSafe extracts the hidden link without opening it — completely safe.</p>
                 </div>
-
                 <div class="ws-qr-step-card">
                     <div class="ws-qr-scan-line"></div>
                     <div class="ws-qr-step-icon">
                         <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                     </div>
-                    <span class="ws-qr-step-number">02</span>
                     <span class="ws-qr-step-label">STEP 02</span>
                     <h3>Analyze</h3>
                     <p>The extracted URL is run through the same safety engine as manual checks — suspicious domains, unsafe protocols, known phishing patterns.</p>
                 </div>
-
                 <div class="ws-qr-step-card">
                     <div class="ws-qr-scan-line"></div>
                     <div class="ws-qr-step-icon">
                         <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                     </div>
-                    <span class="ws-qr-step-number">03</span>
                     <span class="ws-qr-step-label">STEP 03</span>
                     <h3>Review</h3>
                     <p>Get a full safety report with risk level, detailed check results, and a recommendation — then decide whether to proceed or avoid.</p>
                 </div>
             </div>
-
             <div class="qr-explainer">
                 <div class="qr-explainer-item">
-                    <span class="qr-explainer-icon">📷</span>
+                    <span class="qr-explainer-icon"></span>
                     <div class="qr-explainer-text"><strong>Camera Scan</strong>Point your device's camera at any QR code and let WebSafe decode it live — no app install required.</div>
                 </div>
                 <div class="qr-explainer-item">
-                    <span class="qr-explainer-icon">🖼️</span>
+                    <span class="qr-explainer-icon"></span>
                     <div class="qr-explainer-text"><strong>Image Upload</strong>Already have a screenshot? Upload PNG, JPG, or WEBP and WebSafe will find and decode the QR automatically.</div>
                 </div>
                 <div class="qr-explainer-item">
-                    <span class="qr-explainer-icon">🔒</span>
+                    <span class="qr-explainer-icon"></span>
                     <div class="qr-explainer-text"><strong>No Link Opened</strong>The embedded URL is extracted and analyzed server-side — your browser never navigates to the risky destination.</div>
                 </div>
             </div>
         </div>
-    </div><!-- /panel-qr -->
+    </div>
 
-    <!-- ══════════════════════════════════════════════
-         PANEL 7 — WHAT TO DO (Authorities)
-    ══════════════════════════════════════════════ -->
+    <!-- PANEL 7 — AUTHORITIES -->
     <div class="h-panel" id="panel-authorities">
         <span class="panel-label">07 / RESPONSE</span>
-        <span class="panel-index">07</span>
-
         <div class="authorities-inner">
             <div class="authorities-header">
-                <h2>What To Do If You Encounter a Phishing Scam in the Philippines</h2>
+                <h2>Stay One Step Ahead of Scammers Through Better Digital Safety</h2>
                 <p>Spotted a threat? Don't panic — take these steps immediately to protect yourself and report the incident to the right authorities.</p>
             </div>
-
             <div class="ws-features-grid">
                 <div class="ws-feature-item">
                     <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
@@ -570,15 +534,13 @@
                         <p>Contact your ISP or mobile network immediately. Globe: Call <a href="tel:211">211</a> or use GlobeOne app. Smart: Call <a href="tel:1511">1511</a> or use the Smart app.</p>
                     </div>
                 </div>
-
                 <div class="ws-feature-item">
                     <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
                     <div class="ws-feature-text">
                         <h3>Report To Local Authorities</h3>
-                        <p>PNP Cybercrime Division. Hotline: <a href="tel:+6327243660">(+632) 724-3660</a>. Email: <a href="mailto:onlinecims.ocs@gmail.com">onlinecims.ocs@gmail.com</a></p>
+                        <p>PNP Cybercrime Division. Hotline: <a href="tel:+6327243660">(+632) 724-3660</a>. Email: <a href="https://mail.google.com/mail/u/0/#search/onlinecrime.pnp%40gmail.com">onlinecrime.pnp@gmail.com</a></p>
                     </div>
                 </div>
-
                 <div class="ws-feature-item">
                     <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg></div>
                     <div class="ws-feature-text">
@@ -586,7 +548,6 @@
                         <p>If bank details or financial info were exposed, contact your bank immediately to freeze accounts, change credentials, and request a fraud investigation.</p>
                     </div>
                 </div>
-
                 <div class="ws-feature-item">
                     <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
                     <div class="ws-feature-text">
@@ -594,15 +555,13 @@
                         <p>Stop clicking links, downloading files, or responding to messages from the suspected source. Disconnect from the site and close the browser tab immediately.</p>
                     </div>
                 </div>
-
                 <div class="ws-feature-item">
                     <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
                     <div class="ws-feature-text">
                         <h3>Report to DICT / Anti-Cybercrime</h3>
-                        <p>Department of Information and Communications Technology. Email: <a href="mailto:onlinecims.ocs@gmail.com">onlinecims.ocs@gmail.com</a>. Or visit the DICT website to file an online complaint.</p>
+                        <p>Department of Information and Communications Technology. Email: <a href="https://mail.google.com/mail/u/0/#search/onlinecims.ocs%40gmail.com">onlinecims.ocs@gmail.com</a>. Or visit the DICT website to file an online complaint.</p>
                     </div>
                 </div>
-
                 <div class="ws-feature-item">
                     <div class="ws-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
                     <div class="ws-feature-text">
@@ -611,9 +570,8 @@
                     </div>
                 </div>
             </div>
-
             <div class="emergency-banner">
-                <span class="emergency-icon">🚨</span>
+                <span class="emergency-icon"></span>
                 <div class="emergency-text">
                     <h4>Emergency Cybercrime Contacts</h4>
                     <p>If you believe you are an active victim of cybercrime, contact authorities immediately — don't wait.</p>
@@ -623,32 +581,25 @@
                         (+632) 724-3660
                         <span>PNP Cybercrime</span>
                     </a>
-                    <a href="mailto:onlinecims.ocs@gmail.com" class="emergency-contact-btn">
-                        onlinecims.ocs@gmail.com
+                    <a href="https://mail.google.com/mail/u/0/#search/onlinescam%40dict.gov.ph" class="emergency-contact-btn">
+                        onlinescam@dict.gov.ph
                         <span>DICT / Report</span>
                     </a>
                 </div>
             </div>
         </div>
-    </div><!-- /panel-authorities -->
+    </div>
 
-    <!-- ══════════════════════════════════════════════
-         PANEL 8 — FOOTER
-    ══════════════════════════════════════════════ -->
+    <!-- PANEL 8 — FOOTER -->
     <div class="h-panel" id="panel-footer">
         <span class="panel-label">08 / ABOUT US</span>
-        <span class="panel-index">08</span>
-
         <div class="footer-inner">
             <div class="footer-top">
-                <!-- Brand -->
                 <div class="footer-brand">
                     <img src="images/logo_circle.png" alt="WebSafe logo" class="footer-brand-logo">
                     <span class="footer-brand-name">Web<span>Safe</span></span>
-                    <span class="footer-brand-tagline">Your link safety companion</span>
+                    <span class="footer-brand-tagline">SECURING YOUR ONLINE EXPERIENCE</span>
                 </div>
-
-                <!-- Nav Links -->
                 <div class="footer-links-col">
                     <h4>Navigate</h4>
                     <a href="#" data-nav-panel="0">Scan a Link</a>
@@ -656,10 +607,8 @@
                     <a href="#" data-nav-panel="2">What We Do</a>
                     <a href="#" data-nav-panel="4">How It Works</a>
                     <a href="#" data-nav-panel="5">QR Scan</a>
-                    <a href="#" data-nav-panel="6">Stay Safe</a>
+                    <a href="#" data-nav-panel="6">Report Scam</a>
                 </div>
-
-                <!-- Legal / Info -->
                 <div class="footer-links-col">
                     <h4>Information</h4>
                     <a href="about_us.html">About Us</a>
@@ -667,52 +616,33 @@
                     <a href="https://dict.gov.ph" target="_blank" rel="noopener">DICT Philippines</a>
                     <a href="https://www.pnp.gov.ph/index.php/pnp-act-cybercrime-group/" target="_blank" rel="noopener">PNP Cybercrime</a>
                 </div>
-
-                <!-- Socials -->
                 <div class="footer-socials">
                     <h4>Connect</h4>
                     <div class="footer-social-row">
                         <a href="https://mail.google.com/mail/u/0/#search/websafe.protects%40gmail.com" class="box box1">
-                            <div class="icon">
-                                <svg class="svg" viewBox="0 0 24 24">
-                                    <path d="M4 6h16v12H4z"/>
-                                    <path d="M4 7l8 6 8-6"/>
-                                </svg>
-                            </div>
+                            <div class="icon"><svg class="svg" viewBox="0 0 24 24"><path d="M4 6h16v12H4z"/><path d="M4 7l8 6 8-6"/></svg></div>
                         </a>
                         <a href="https://www.facebook.com/profile.php?id=61588343251116" class="box box2">
-                            <div class="icon">
-                                <svg class="svg" viewBox="0 0 24 24">
-                                    <path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.19 2.23.19v2.45h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 2.89h-2.33v6.99A10 10 0 0 0 22 12z"/>
-                                </svg>
-                            </div>
+                            <div class="icon"><svg class="svg" viewBox="0 0 24 24"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.88 3.77-3.88 1.09 0 2.23.19 2.23.19v2.45h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 2.89h-2.33v6.99A10 10 0 0 0 22 12z"/></svg></div>
                         </a>
-                        <a href="#" class="box box3">
-                            <div class="icon">
-                                <svg class="svg" viewBox="0 0 24 24">
-                                    <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.5 5.5 0 0 1 12 7.5zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5zm5.75-3.25a1.25 1.25 0 1 1-1.25 1.25 1.25 1.25 0 0 1 1.25-1.25z"/>
-                                </svg>
-                            </div>
+                        <a href="https://tinyurl.com/37hycz6j" class="box box3">
+                            <div class="icon"><svg class="svg" viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.5 5.5 0 0 1 12 7.5zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5zm5.75-3.25a1.25 1.25 0 1 1-1.25 1.25 1.25 1.25 0 0 1 1.25-1.25z"/></svg></div>
                         </a>
                     </div>
                 </div>
             </div>
-
             <div class="footer-desc">
-                <p>WebSafe helps Filipinos stay in control of their online experience by letting them check links before clicking. Powered by real-time safety checks, it's your free, always-on shield against phishing, malware, and digital scams.</p>
-                <p class="footer-copy">&copy; 2026 WebSafe — STI College Fairview. All rights reserved.</p>
+                <p>WebSafe helps users stay in control of their online experience by keeping them aware before clicking. Powered by real-time safety checks, it's your free, always-on shield against phishing, malware, and digital scams.</p>
+                <p class="footer-copy">&copy; 2026 WebSafe — STI College Fairview</p>
             </div>
         </div>
-    </div><!-- /panel-footer -->
+    </div>
 
 </div><!-- /#horizontal-track -->
-
+</div><!-- /#scroll-scene -->
 </div><!-- /#main_content -->
 
-
-<!-- ══════════════════════════════════════════════
-     CAMERA QR MODAL
-══════════════════════════════════════════════ -->
+<!-- CAMERA QR MODAL -->
 <div id="qr_modal" class="qr-modal hidden">
     <div class="qr-card">
         <div class="qr-header">
@@ -754,9 +684,7 @@
     </div>
 </div>
 
-<!-- ══════════════════════════════════════════════
-     UPLOAD QR IMAGE MODAL
-══════════════════════════════════════════════ -->
+<!-- UPLOAD QR IMAGE MODAL -->
 <div id="qr_upload_modal" class="qr-upload-modal hidden">
     <div class="qr-upload-card">
         <div class="qr-upload-header">
@@ -787,15 +715,7 @@
                 <div class="drop-corner-br"></div>
                 <div class="qr-drop-default" id="qr_drop_default">
                     <div class="qr-drop-icon">
-                        <svg viewBox="0 0 24 24">
-                            <rect x="3" y="3" width="7" height="7" rx="1"/>
-                            <rect x="14" y="3" width="7" height="7" rx="1"/>
-                            <rect x="3" y="14" width="7" height="7" rx="1"/>
-                            <rect x="14" y="14" width="3" height="3"/>
-                            <rect x="18" y="14" width="3" height="3"/>
-                            <rect x="14" y="18" width="3" height="3"/>
-                            <rect x="18" y="18" width="3" height="3"/>
-                        </svg>
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/><rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/></svg>
                     </div>
                     <p class="qr-drop-label">Drop your QR image here</p>
                     <p class="qr-drop-hint">or click to browse files</p>
@@ -824,7 +744,6 @@
     </div>
 </div>
 
-
 <!-- SCRIPTS -->
 <script src="jsQR.min.js"></script>
 <script src="html5-qrcode.min.js"></script>
@@ -833,7 +752,7 @@
 
 <script>
 /* =============================================
-   PARTICLE CANVAS
+PARTICLE CANVAS — floating dots
 ============================================= */
 (function () {
     const canvas = document.getElementById("bg-canvas");
@@ -842,14 +761,10 @@
     function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
     resize();
     window.addEventListener("resize", resize);
-    const COLORS = ["rgba(29,106,255,","rgba(77,143,255,","rgba(0,212,255,","rgba(10,79,212,","rgba(0,150,220,"];
+    const COLORS = ["rgba(0,180,216,","rgba(72,202,228,","rgba(144,224,239,","rgba(0,119,182,","rgba(2,62,138,"];
     function rand(a, b) { return a + Math.random() * (b - a); }
-    for (let i = 0; i < 50; i++) {
-        particles.push({
-            x: rand(0, window.innerWidth), y: rand(0, window.innerHeight),
-            r: rand(1, 2.5), dx: rand(-0.18, 0.18), dy: rand(-0.12, 0.12),
-            color: COLORS[Math.floor(Math.random() * COLORS.length)], alpha: rand(0.15, 0.45)
-        });
+    for (let i = 0; i < 60; i++) {
+        particles.push({ x: rand(0, window.innerWidth), y: rand(0, window.innerHeight), r: rand(0.8, 2.2), dx: rand(-0.15, 0.15), dy: rand(-0.1, 0.1), color: COLORS[Math.floor(Math.random() * COLORS.length)], alpha: rand(0.12, 0.4) });
     }
     function draw() {
         ctx.clearRect(0, 0, W, H);
@@ -866,98 +781,205 @@
 })();
 
 /* =============================================
-   LOADER
+CYBER CIRCUIT CANVAS — animated circuit traces
 ============================================= */
-window.addEventListener("load", () => {
-    setTimeout(() => {
-        document.getElementById("loader").classList.add("hide");
-        document.getElementById("main_content").classList.add("show");
-    }, 2000);
-});
+(function() {
+    const canvas = document.getElementById("cyber-circuit-canvas");
+    const ctx = canvas.getContext("2d");
+    let W, H;
+    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    resize();
+    window.addEventListener("resize", resize);
+
+    const nodes = [];
+    const traces = [];
+    const pulses = [];
+
+    function init() {
+        nodes.length = 0; traces.length = 0; pulses.length = 0;
+        const cols = Math.ceil(W / 120) + 1;
+        const rows = Math.ceil(H / 100) + 1;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                if (Math.random() > 0.45) {
+                    nodes.push({
+                        x: c * 120 + (Math.random() - 0.5) * 60,
+                        y: r * 100 + (Math.random() - 0.5) * 50,
+                        size: Math.random() > 0.8 ? 2.5 : 1.5,
+                        alpha: 0.08 + Math.random() * 0.14
+                    });
+                }
+            }
+        }
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                const dx = nodes[j].x - nodes[i].x;
+                const dy = nodes[j].y - nodes[i].y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 160 && Math.random() > 0.6) {
+                    traces.push({ a: i, b: j, alpha: 0.04 + Math.random() * 0.06 });
+                }
+            }
+        }
+        for (let i = 0; i < 8; i++) { spawnPulse(); }
+    }
+
+    function spawnPulse() {
+        if (traces.length === 0) return;
+        const t = traces[Math.floor(Math.random() * traces.length)];
+        pulses.push({ traceIdx: traces.indexOf(t), progress: Math.random(), speed: 0.002 + Math.random() * 0.004, alpha: 0.5 + Math.random() * 0.5 });
+    }
+
+    let frame = 0;
+    function draw() {
+        ctx.clearRect(0, 0, W, H);
+        traces.forEach(t => {
+            const a = nodes[t.a], b = nodes[t.b];
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = `rgba(0,180,216,${t.alpha})`; ctx.lineWidth = 0.8; ctx.stroke();
+        });
+        nodes.forEach(n => {
+            ctx.beginPath(); ctx.arc(n.x, n.y, n.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(72,202,228,${n.alpha})`; ctx.fill();
+        });
+        pulses.forEach((p, idx) => {
+            const t = traces[p.traceIdx];
+            if (!t) return;
+            const a = nodes[t.a], b = nodes[t.b];
+            const x = a.x + (b.x - a.x) * p.progress;
+            const y = a.y + (b.y - a.y) * p.progress;
+            ctx.beginPath(); ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(144,224,239,${p.alpha})`; ctx.fill();
+            const grad = ctx.createRadialGradient(x, y, 0, x, y, 8);
+            grad.addColorStop(0, `rgba(72,202,228,${p.alpha * 0.5})`);
+            grad.addColorStop(1, `rgba(72,202,228,0)`);
+            ctx.beginPath(); ctx.arc(x, y, 8, 0, Math.PI * 2);
+            ctx.fillStyle = grad; ctx.fill();
+            p.progress += p.speed;
+            if (p.progress > 1) { pulses.splice(idx, 1); spawnPulse(); }
+        });
+        frame++;
+        if (frame % 120 === 0 && pulses.length < 12) spawnPulse();
+        requestAnimationFrame(draw);
+    }
+
+    init(); draw();
+    window.addEventListener("resize", () => { resize(); init(); });
+})();
 
 /* =============================================
-   RANDOM GREETING
+LOADER
 ============================================= */
-const greetings = [
-    "Let's get started, shall we?",
-    "Hello! Ready to browse safely?",
-    "Welcome to WebSafe.",
-    "Your link safety starts here.",
-    "Don't click blind — scan first.",
-    "Stay protected. Scan your links."
-];
+(function() {
+    const statusEl = document.getElementById("loader-status");
+    const msgs = ["Initializing security engine...","Loading threat databases...","Calibrating safety checks...","Establishing secure connection...","Ready to protect you."];
+    let idx = 0;
+    const interval = setInterval(() => { idx++; if (idx < msgs.length) statusEl.textContent = msgs[idx]; else clearInterval(interval); }, 380);
+    window.addEventListener("load", () => {
+        setTimeout(() => { document.getElementById("loader").classList.add("hide"); document.getElementById("main_content").classList.add("show"); }, 2200);
+    });
+})();
+
+/* RANDOM GREETING */
+const greetings = ["Let's get started, shall we?","Hello! Ready to browse safely?","Welcome to WebSafe.","Your link safety starts here.","Don't click blind — scan first.","Stay protected. Scan your links."];
 document.getElementById("dynamic_greeting").textContent = greetings[Math.floor(Math.random() * greetings.length)];
 
 /* =============================================
-   HORIZONTAL SCROLL ENGINE
+VERTICAL SCROLL ENGINE
+Key changes from horizontal:
+ - track uses translateY instead of translateX
+ - panel 3D animations use translateY / rotateX
+ - keyboard: ArrowDown/Up, ArrowRight/Left both work
+ - wheel: deltaY primary, deltaX secondary
+ - touch: vertical swipe primary
+ - progress bar grows height (top-to-bottom) via CSS
 ============================================= */
 (function() {
-    const track       = document.getElementById("horizontal-track");
-    const dots        = document.querySelectorAll(".panel-dot");
-    const panels      = document.querySelectorAll(".h-panel");
+    const track = document.getElementById("horizontal-track");
+    const dots = document.querySelectorAll(".panel-dot");
+    const panels = document.querySelectorAll(".h-panel");
     const progressBar = document.getElementById("scroll-progress-bar");
-    const btnPrev     = document.getElementById("nav-prev");
-    const btnNext     = document.getElementById("nav-next");
+    const btnPrev = document.getElementById("nav-prev");
+    const btnNext = document.getElementById("nav-next");
     const totalPanels = panels.length;
-    let current = 0;
-    let isAnimating = false;
+    let current = 0, isAnimating = false;
 
     function goTo(index) {
         if (index < 0 || index >= totalPanels || isAnimating) return;
         isAnimating = true;
+        const prev = current;
 
-        panels[current].classList.remove("panel-active");
+        /* Animate the leaving panel */
+        panels[prev].classList.remove("panel-active");
+        panels[prev].style.transition = "transform 0.7s cubic-bezier(0.76,0,0.24,1), filter 0.7s ease, opacity 0.7s ease";
+        const dir = index > prev ? -1 : 1;  /* -1 = scroll down (panel goes up), 1 = scroll up */
+        panels[prev].style.transform = `translateY(${dir * 60}px) rotateX(${dir * -6}deg) scale(0.94)`;
+        panels[prev].style.filter = "brightness(0.65) blur(1.5px)";
+        panels[prev].style.opacity = "0.5";
+
         current = index;
         panels[current].classList.add("panel-active");
 
-        // Slide the track
-        const isMobile = window.innerWidth <= 768;
-        if (isMobile) {
-            track.style.transform = `translateY(-${current * 100}vh)`;
-        } else {
-            track.style.transform = `translateX(-${current * 100}vw)`;
-        }
+        /* Set entering panel's starting position */
+        const inDir = index > prev ? 1 : -1;
+        panels[current].style.transition = "none";
+        panels[current].style.transform = `translateY(${inDir * 80}px) rotateX(${inDir * -8}deg) scale(0.92)`;
+        panels[current].style.filter = "brightness(0.6) blur(3px)";
+        panels[current].style.opacity = "0.4";
 
-        // Update dots
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                /* Move the track vertically */
+                track.style.transform = `translateY(-${current * 100}vh)`;
+
+                /* Animate the entering panel to rest */
+                panels[current].style.transition = "transform 0.72s cubic-bezier(0.22,1,0.36,1), filter 0.55s ease, opacity 0.55s ease";
+                panels[current].style.transform = "translateY(0) rotateX(0deg) scale(1)";
+                panels[current].style.filter = "brightness(1) blur(0px)";
+                panels[current].style.opacity = "1";
+            });
+        });
+
+        /* Update dots, progress bar, buttons */
         dots.forEach((d, i) => d.classList.toggle("active", i === current));
-
-        // Update progress bar
-        const pct = totalPanels > 1 ? (current / (totalPanels - 1)) * 100 : 0;
-        progressBar.style.width = pct + "vw";
-
-        // Update arrows
+        progressBar.style.height = (totalPanels > 1 ? (current / (totalPanels - 1)) * 100 : 0) + "vh";
         btnPrev.classList.toggle("hidden-btn", current === 0);
         btnNext.classList.toggle("hidden-btn", current === totalPanels - 1);
 
-        setTimeout(() => { isAnimating = false; }, 750);
+        setTimeout(() => {
+            isAnimating = false;
+            panels[prev].style.transform = "";
+            panels[prev].style.filter = "";
+            panels[prev].style.opacity = "";
+            panels[prev].style.transition = "";
+        }, 750);
     }
 
-    // Dot clicks
-    dots.forEach(dot => {
-        dot.addEventListener("click", () => goTo(parseInt(dot.dataset.panel)));
-    });
+    /* Dot nav */
+    dots.forEach(dot => dot.addEventListener("click", () => goTo(parseInt(dot.dataset.panel))));
 
-    // Arrow buttons
+    /* Arrow buttons */
     btnPrev.addEventListener("click", () => goTo(current - 1));
     btnNext.addEventListener("click", () => goTo(current + 1));
 
-    // Keyboard arrows
+    /* Keyboard — both axes work */
     document.addEventListener("keydown", e => {
-        if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); goTo(current + 1); }
-        if (e.key === "ArrowLeft"  || e.key === "ArrowUp")   { e.preventDefault(); goTo(current - 1); }
+        if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); goTo(current + 1); }
+        if (e.key === "ArrowUp"   || e.key === "ArrowLeft")  { e.preventDefault(); goTo(current - 1); }
     });
 
-    // Mouse wheel / trackpad
+    /* Mouse wheel — vertical primary */
     let wheelTimeout;
     window.addEventListener("wheel", e => {
         clearTimeout(wheelTimeout);
         wheelTimeout = setTimeout(() => {
-            if (e.deltaY > 30 || e.deltaX > 30)  goTo(current + 1);
-            if (e.deltaY < -30 || e.deltaX < -30) goTo(current - 1);
+            const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+            if (delta > 30)  goTo(current + 1);
+            if (delta < -30) goTo(current - 1);
         }, 50);
     }, { passive: true });
 
-    // Touch swipe
+    /* Touch swipe — vertical primary */
     let touchStartX = 0, touchStartY = 0;
     window.addEventListener("touchstart", e => {
         touchStartX = e.touches[0].clientX;
@@ -966,83 +988,59 @@ document.getElementById("dynamic_greeting").textContent = greetings[Math.floor(M
     window.addEventListener("touchend", e => {
         const dx = touchStartX - e.changedTouches[0].clientX;
         const dy = touchStartY - e.changedTouches[0].clientY;
-        if (Math.abs(dx) > Math.abs(dy)) {
-            if (dx > 50)  goTo(current + 1);
-            if (dx < -50) goTo(current - 1);
-        } else {
+        /* Prefer the larger axis */
+        if (Math.abs(dy) >= Math.abs(dx)) {
             if (dy > 50)  goTo(current + 1);
             if (dy < -50) goTo(current - 1);
+        } else {
+            if (dx > 50)  goTo(current + 1);
+            if (dx < -50) goTo(current - 1);
         }
     }, { passive: true });
 
-    // Footer nav links
-    document.querySelectorAll("[data-nav-panel]").forEach(el => {
-        el.addEventListener("click", e => {
-            e.preventDefault();
-            goTo(parseInt(el.dataset.navPanel));
-        });
-    });
+    /* Footer nav links */
+    document.querySelectorAll("[data-nav-panel]").forEach(el => el.addEventListener("click", e => {
+        e.preventDefault(); goTo(parseInt(el.dataset.navPanel));
+    }));
 
-    // Sidebar panel navigation
+    /* Sidebar nav links */
     document.querySelectorAll(".sidebar-link[data-panel]").forEach(link => {
         link.addEventListener("click", e => {
             const p = parseInt(link.dataset.panel);
-            if (!isNaN(p)) {
-                e.preventDefault();
-                closeSidebar();
-                setTimeout(() => goTo(p), 320);
-            }
+            if (!isNaN(p)) { e.preventDefault(); closeSidebar(); setTimeout(() => goTo(p), 320); }
         });
     });
 
-    // Initial state
     goTo(0);
 })();
 
 /* =============================================
-   THREAT CARD CYCLE
+THREAT CARD CYCLE
 ============================================= */
 (function () {
     const cards = document.querySelectorAll(".threat-card");
     let current = 2;
-    setInterval(() => {
-        cards[current].classList.remove("active");
-        current = (current + 1) % cards.length;
-        cards[current].classList.add("active");
-    }, 3000);
+    setInterval(() => { cards[current].classList.remove("active"); current = (current + 1) % cards.length; cards[current].classList.add("active"); }, 3000);
 })();
 
 /* =============================================
-   SIDEBAR
+SIDEBAR
 ============================================= */
-const menuToggle   = document.getElementById("menu_toggle");
-const sidebarEl    = document.getElementById("sidebar_menu");
-const overlayEl    = document.getElementById("sidebar_overlay");
+const menuToggle = document.getElementById("menu_toggle");
+const sidebarEl = document.getElementById("sidebar_menu");
+const overlayEl = document.getElementById("sidebar_overlay");
 const sidebarClose = document.getElementById("sidebar_close");
-
-function openSidebar()  {
-    sidebarEl.classList.add("active"); overlayEl.classList.add("active");
-    menuToggle.setAttribute("aria-expanded","true");
-    menuToggle.style.opacity="0"; menuToggle.style.pointerEvents="none";
-    syncSidebarHistory();
-}
-function closeSidebar() {
-    sidebarEl.classList.remove("active"); overlayEl.classList.remove("active");
-    menuToggle.setAttribute("aria-expanded","false");
-    menuToggle.style.opacity="1"; menuToggle.style.pointerEvents="";
-}
+function openSidebar() { sidebarEl.classList.add("active"); overlayEl.classList.add("active"); menuToggle.setAttribute("aria-expanded","true"); menuToggle.style.opacity="0"; menuToggle.style.pointerEvents="none"; syncSidebarHistory(); }
+function closeSidebar() { sidebarEl.classList.remove("active"); overlayEl.classList.remove("active"); menuToggle.setAttribute("aria-expanded","false"); menuToggle.style.opacity="1"; menuToggle.style.pointerEvents=""; }
 menuToggle.addEventListener("click", openSidebar);
 sidebarClose.addEventListener("click", closeSidebar);
 overlayEl.addEventListener("click", closeSidebar);
 document.getElementById("aboutLink").addEventListener("click", e => { e.preventDefault(); closeSidebar(); window.location.href = "about_us.html"; });
 document.getElementById("contactLocalLink").addEventListener("click", e => { e.preventDefault(); closeSidebar(); window.location.href = "contact_local.html"; });
-
 function syncSidebarHistory() {
     const panel = document.getElementById("sidebar_history_list");
     if (!panel) return;
-    if (typeof scanHistory === "undefined" || scanHistory.length === 0) {
-        panel.innerHTML = '<p class="sidebar-empty">No scans yet this session</p>'; return;
-    }
+    if (typeof scanHistory === "undefined" || scanHistory.length === 0) { panel.innerHTML = '<p class="sidebar-empty">No scans yet this session</p>'; return; }
     const colors = { safe:"#34d399", hazard:"#fbbf24", danger:"#f87171" };
     const labels = { safe:"Safe", hazard:"Warning", danger:"Danger" };
     panel.innerHTML = "";
@@ -1050,104 +1048,69 @@ function syncSidebarHistory() {
         const row = document.createElement("div"); row.className = "sidebar-scan-row";
         row.innerHTML = `<span class="sidebar-scan-dot" style="background:${colors[h.level]||"#9ca3af"}"></span><span class="sidebar-scan-host"></span><span class="sidebar-scan-badge" style="color:${colors[h.level]||"#9ca3af"}">${labels[h.level]||"?"}</span>`;
         row.querySelector(".sidebar-scan-host").textContent = h.hostname;
-        row.addEventListener("click", () => {
-            const inp = document.getElementById("link_input");
-            if (inp) inp.value = h.url;
-            closeSidebar();
-            // Go to panel 0 then trigger check
-            setTimeout(() => {
-                document.querySelector("[data-panel='0']").click();
-                setTimeout(() => checkBtn.click(), 400);
-            }, 320);
-        });
+        row.addEventListener("click", () => { const inp = document.getElementById("link_input"); if (inp) inp.value = h.url; closeSidebar(); setTimeout(() => { document.querySelector("[data-panel='0']").click(); setTimeout(() => checkBtn.click(), 400); }, 320); });
         panel.appendChild(row);
     });
 }
 setInterval(syncSidebarHistory, 2000);
 
-/* =============================================
-   ELEMENT REFERENCES
-============================================= */
-const input       = document.getElementById("link_input");
-const checkBtn    = document.getElementById("check_btn");
-const previewBtn  = document.getElementById("preview_btn");
-const scanBtn     = document.getElementById("scan_qr_btn");
+/* ELEMENT REFERENCES */
+const input = document.getElementById("link_input");
+const checkBtn = document.getElementById("check_btn");
+const previewBtn = document.getElementById("preview_btn");
+const scanBtn = document.getElementById("scan_qr_btn");
 const uploadQrBtn = document.getElementById("upload_qr_btn");
-const spinner     = document.getElementById("loading_spinner");
-const resultBox   = document.getElementById("link_status");
-const previewArea    = document.getElementById("preview_area");
-const previewTitle   = document.getElementById("preview_title");
-const previewDomain  = document.getElementById("preview_domain");
-const previewDesc    = document.getElementById("preview_description");
+const spinner = document.getElementById("loading_spinner");
+const resultBox = document.getElementById("link_status");
+const previewArea = document.getElementById("preview_area");
+const previewTitle = document.getElementById("preview_title");
+const previewDomain = document.getElementById("preview_domain");
+const previewDesc = document.getElementById("preview_description");
 const previewFavicon = document.getElementById("preview_favicon");
 const previewActions = document.getElementById("preview_actions");
-const previewChecks  = document.getElementById("preview_checks");
-const qrModal           = document.getElementById("qr_modal");
-const closeQR           = document.getElementById("close_qr");
-const startScan         = document.getElementById("start_scan");
-const viewfinder        = document.getElementById("qr-viewfinder");
+const previewChecks = document.getElementById("preview_checks");
+const qrModal = document.getElementById("qr_modal");
+const closeQR = document.getElementById("close_qr");
+const startScan = document.getElementById("start_scan");
+const viewfinder = document.getElementById("qr-viewfinder");
 const cameraPlaceholder = document.getElementById("qr-camera-placeholder");
-const qrUploadModal    = document.getElementById("qr_upload_modal");
-const closeQrUpload    = document.getElementById("close_qr_upload");
-const qrDropZone       = document.getElementById("qr_drop_zone");
-const qrFileInput      = document.getElementById("qr_file_input");
-const qrPreviewWrap    = document.getElementById("qr_preview_wrap");
-const qrDropDefault    = document.getElementById("qr_drop_default");
-const qrPreviewImg     = document.getElementById("qr_preview_img");
-const qrImageName      = document.getElementById("qr_image_name");
-const qrUploadScanBtn  = document.getElementById("qr_upload_scan_btn");
+const qrUploadModal = document.getElementById("qr_upload_modal");
+const closeQrUpload = document.getElementById("close_qr_upload");
+const qrDropZone = document.getElementById("qr_drop_zone");
+const qrFileInput = document.getElementById("qr_file_input");
+const qrPreviewWrap = document.getElementById("qr_preview_wrap");
+const qrDropDefault = document.getElementById("qr_drop_default");
+const qrPreviewImg = document.getElementById("qr_preview_img");
+const qrImageName = document.getElementById("qr_image_name");
+const qrUploadScanBtn = document.getElementById("qr_upload_scan_btn");
 const qrUploadClearBtn = document.getElementById("qr_upload_clear_btn");
-const qrUploadResult   = document.getElementById("qr_upload_result");
-const qrResultIcon     = document.getElementById("qr_result_icon");
-const qrResultLabel    = document.getElementById("qr_result_label");
-const qrResultUrl      = document.getElementById("qr_result_url");
-const qrScanBtnLabel   = document.getElementById("qr_scan_btn_label");
-const qrUploadSpinner  = document.getElementById("qr_upload_spinner");
+const qrUploadResult = document.getElementById("qr_upload_result");
+const qrResultIcon = document.getElementById("qr_result_icon");
+const qrResultLabel = document.getElementById("qr_result_label");
+const qrResultUrl = document.getElementById("qr_result_url");
+const qrScanBtnLabel = document.getElementById("qr_scan_btn_label");
+const qrUploadSpinner = document.getElementById("qr_upload_spinner");
 let html5QrCode; let isScanning = false; let uploadedImageData = null;
 
 input.addEventListener("keydown", e => { if (e.key === "Enter") checkBtn.click(); });
 
-/* =============================================
-   CAMERA QR MODAL
-============================================= */
-scanBtn.onclick = () => {
-    qrModal.classList.remove("hidden");
-    setTimeout(() => qrModal.classList.add("show"), 10);
-    document.body.style.overflow = "hidden";
-};
-closeQR.onclick = () => {
-    qrModal.classList.remove("show"); viewfinder.classList.remove("scanning");
-    setTimeout(() => qrModal.classList.add("hidden"), 300);
-    document.body.style.overflow = "";
-    if (html5QrCode && isScanning) { html5QrCode.stop().catch(() => {}); isScanning = false; }
-};
+/* CAMERA QR MODAL */
+scanBtn.onclick = () => { qrModal.classList.remove("hidden"); setTimeout(() => qrModal.classList.add("show"), 10); document.body.style.overflow = "hidden"; };
+closeQR.onclick = () => { qrModal.classList.remove("show"); viewfinder.classList.remove("scanning"); setTimeout(() => qrModal.classList.add("hidden"), 300); document.body.style.overflow = ""; if (html5QrCode && isScanning) { html5QrCode.stop().catch(() => {}); isScanning = false; } };
 startScan.onclick = async () => {
     if (isScanning) return;
     viewfinder.classList.add("scanning");
     html5QrCode = new Html5Qrcode("qr-reader");
     try {
-        await html5QrCode.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: 200 },
-            (decodedText) => {
-                html5QrCode.stop().catch(() => {});
-                isScanning = false;
-                viewfinder.classList.remove("scanning");
-                input.value = decodedText;
-                closeQR.onclick();
-                checkBtn.click();
-            }
-        );
+        await html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 200 }, (decodedText) => {
+            html5QrCode.stop().catch(() => {}); isScanning = false; viewfinder.classList.remove("scanning");
+            input.value = decodedText; closeQR.onclick(); checkBtn.click();
+        });
         isScanning = true;
-    } catch {
-        viewfinder.classList.remove("scanning");
-        alert("Camera error — please allow camera access and try again.");
-    }
+    } catch { viewfinder.classList.remove("scanning"); alert("Camera error — please allow camera access and try again."); }
 };
 
-/* =============================================
-   UPLOAD QR MODAL
-============================================= */
+/* UPLOAD QR MODAL */
 uploadQrBtn.onclick = () => { resetUploadModal(); qrUploadModal.classList.remove("hidden"); setTimeout(() => qrUploadModal.classList.add("show"), 10); document.body.style.overflow = "hidden"; };
 closeQrUpload.onclick = closeUploadModal;
 qrUploadModal.addEventListener("click", e => { if (e.target === qrUploadModal) closeUploadModal(); });
@@ -1166,12 +1129,7 @@ function loadQrFile(file) {
         qrDropDefault.style.display = "none"; qrPreviewWrap.classList.add("visible");
         qrUploadScanBtn.disabled = false; qrUploadResult.className = "qr-upload-result";
         const img = new Image();
-        img.onload = () => {
-            const canvas = document.createElement("canvas");
-            canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
-            const ctx2 = canvas.getContext("2d"); ctx2.drawImage(img, 0, 0);
-            uploadedImageData = ctx2.getImageData(0, 0, canvas.width, canvas.height);
-        };
+        img.onload = () => { const canvas = document.createElement("canvas"); canvas.width = img.naturalWidth; canvas.height = img.naturalHeight; const ctx2 = canvas.getContext("2d"); ctx2.drawImage(img, 0, 0); uploadedImageData = ctx2.getImageData(0, 0, canvas.width, canvas.height); };
         img.src = dataUrl;
     };
     reader.readAsDataURL(file);
@@ -1198,5 +1156,6 @@ function showUploadResult(type, icon, label, detail, url) {
     qrUploadResult.className = `qr-upload-result visible ${type}`;
 }
 </script>
+
 </body>
 </html>
