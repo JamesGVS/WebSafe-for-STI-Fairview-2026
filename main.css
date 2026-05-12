@@ -1460,35 +1460,29 @@ SCROLL-TRIGGERED PANEL ANIMATIONS
 /* =============================================
 PANEL 1 — HERO
 ============================================= */
-#panel-hero { background: var(--bg-deep); overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
-#panel-hero::-webkit-scrollbar { width: 3px; }
-#panel-hero::-webkit-scrollbar-track { background: transparent; }
-#panel-hero::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+#panel-hero { background: var(--bg-deep); }
 #panel-hero::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 20% 50%, rgba(0,180,216,0.05) 0%, transparent 60%),radial-gradient(ellipse 60% 70% at 80% 30%, rgba(0,119,182,0.04) 0%, transparent 60%); pointer-events:none; }
 
 .hero-inner {
     position: relative;
     z-index: 2;
-    min-height: calc(100vh - 72px);
+    height: calc(100vh - 72px);
     margin-top: 72px;
     display: flex;
-    align-items: flex-start;
+    align-items: stretch;
     justify-content: center;
-    padding: 40px 60px 60px;
-    gap: 72px;
+    padding: 0 48px;
+    gap: 40px;
 }
 
 .hero-text-col {
     flex: 0 0 auto;
-    max-width: 500px;
+    max-width: 420px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: flex-start;
+    justify-content: center;
     padding: 40px 0;
-    position: sticky;
-    top: 40px;
-    align-self: flex-start;
 }
 
 .hero-eyebrow { display:inline-flex; align-items:center; gap:8px; background:var(--accent-dim); border:1px solid var(--border-accent); border-radius:20px; padding:5px 14px; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:1.8px; text-transform:uppercase; color:var(--accent-bright); margin-bottom:22px; animation:fadeUp 0.6s ease both; backdrop-filter:blur(8px); }
@@ -1497,18 +1491,48 @@ PANEL 1 — HERO
 .hero-sub { font-size:15px; color:var(--white-muted); line-height:1.78; margin-bottom:0; font-family:'Space Grotesk',sans-serif; animation:fadeUp 0.8s ease both; animation-delay:0.3s; max-width:420px; }
 
 .hero-card-col {
-    flex: 0 0 auto;
-    width: 480px;
+    flex: 0 0 420px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    padding: 0;
-    align-self: flex-start;
+    justify-content: center;
+    padding: 28px 0;
+    min-width: 0;
 }
+
+/* PREVIEW COLUMN — hidden until preview is triggered */
+.hero-preview-col {
+    flex: 0 0 0;
+    min-width: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 28px 0;
+    opacity: 0;
+    transition: flex-basis 0.45s cubic-bezier(0.4,0,0.2,1),
+                opacity 0.35s ease,
+                min-width 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+.hero-preview-col.visible {
+    flex: 0 0 420px;
+    min-width: 420px;
+    opacity: 1;
+}
+.hero-preview-col #preview_area {
+    display: flex !important;
+    overflow-y: auto;
+    max-height: calc(100vh - 72px - 56px);
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+    padding-right: 4px;
+}
+.hero-preview-col #preview_area::-webkit-scrollbar { width: 3px; }
+.hero-preview-col #preview_area::-webkit-scrollbar-track { background: transparent; }
+.hero-preview-col #preview_area::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 
 .input-card {
     width: 100%;
-    /* No max-height — card grows with results content */
+    max-height: calc(100vh - 72px - 56px);
     display: flex;
     flex-direction: column;
     background: var(--input-card-bg);
@@ -1522,14 +1546,14 @@ PANEL 1 — HERO
     animation: fadeUp 0.8s ease forwards;
     animation-delay: 0.5s;
     opacity: 0;
-    overflow: visible;
+    overflow: hidden;
 }
 .input-card::before { content:""; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--accent-bright),var(--accent-light),transparent); border-radius:var(--radius-card) var(--radius-card) 0 0; background-size:200% 100%; animation:headerGlowSlide 5s linear infinite; }
 
 .input-card-static { flex-shrink: 0; }
 
 .input-label { font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--white-faint); margin-bottom:8px; display:block; }
-#link_checker { display: flex; flex-direction: column; }
+#link_checker { display: flex; flex-direction: column; flex: 1; min-height: 0; }
 #link_checker form { flex-shrink: 0; }
 #link_input { width:100%; padding:14px 18px; font-size:13px; font-family:'JetBrains Mono',monospace; border-radius:10px; border:1px solid var(--border-glass); outline:none; background:var(--input-bg); transition:all 0.25s ease; color:var(--input-color); backdrop-filter:blur(8px); }
 #link_input:focus { border-color:var(--accent-bright); box-shadow:0 0 0 3px var(--accent-dim),0 0 24px rgba(72,202,228,0.08); }
@@ -1559,30 +1583,21 @@ PANEL 1 — HERO
 #loading_spinner { display:none; width:30px; height:30px; margin:16px auto 0; border:2px solid var(--border-glass); border-top-color:var(--accent-bright); border-radius:50%; animation:spin 0.85s linear infinite; flex-shrink: 0; }
 
 #results_row {
-    /* No internal scroll — expands naturally; panel-hero scrolls instead */
-    overflow: visible;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
     margin-top: 14px;
-    padding: 0 0 20px;
+    padding: 0 4px 20px 0;
     display: flex;
     flex-direction: column;
     gap: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
 }
-
-/* SCAN RESULT + PREVIEW — stacked vertically so both get full width */
-.results-cols {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    width: 100%;
-}
-.results-cols #link_status {
-    width: 100%;
-    min-width: 0;
-}
-.results-cols #preview_area {
-    width: 100%;
-    min-width: 0;
-}
+#results_row::-webkit-scrollbar { width: 3px; }
+#results_row::-webkit-scrollbar-track { background: transparent; }
+#results_row::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 
 #link_status { min-height: 0; text-align: left; }
 #link_status > div { text-align: left; }
@@ -1937,13 +1952,13 @@ MOBILE
         align-items: center;
         overflow-y: auto;
     }
-    .hero-text-col { max-width: 100%; padding: 0; align-items: flex-start; position: static; }
-    .hero-card-col { width: 100%; padding: 0; justify-content: flex-start; }
+    .hero-inner { flex-direction: column; align-items: stretch; height: auto; min-height: calc(100vh - 72px); padding: 20px 18px 40px; gap: 20px; overflow-y: auto; }
+    .hero-text-col { max-width: 100%; padding: 20px 0 0; }
+    .hero-card-col { flex: 0 0 auto; width: 100%; padding: 0; }
+    .hero-preview-col { flex: 0 0 auto !important; min-width: 0 !important; width: 100%; opacity: 1 !important; overflow: visible; }
+    .hero-preview-col #preview_area { max-height: none; overflow-y: visible; }
     .input-card { max-height: none; overflow: visible; padding: 20px; }
-    #results_row {
-        flex: none; min-height: auto; max-height: none; overflow-y: visible;
-    }
-    .results-cols { flex-direction: column; }
+    #results_row { flex: none; min-height: auto; max-height: none; overflow-y: visible; }
 
     .about-inner { flex-direction:column; gap:24px; padding:82px 22px 36px; }
     .why-grid { grid-template-columns:1fr; gap:24px; }
