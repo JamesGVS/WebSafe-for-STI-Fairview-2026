@@ -1515,7 +1515,7 @@ PANEL 1 — HERO
     animation: fadeUp 0.8s ease forwards;
     animation-delay: 0.5s;
     opacity: 0;
-    overflow: hidden;
+    overflow: visible; /* allow results to expand; scroll is handled by #results_row */
 }
 .input-card::before { content:""; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--accent-bright),var(--accent-light),transparent); border-radius:var(--radius-card) var(--radius-card) 0 0; background-size:200% 100%; animation:headerGlowSlide 5s linear infinite; }
 
@@ -1557,34 +1557,32 @@ PANEL 1 — HERO
     overflow-y: auto;
     overflow-x: hidden;
     margin-top: 14px;
-    padding: 0 0 16px;
+    padding: 0 0 20px;
     display: flex;
     flex-direction: column;
     gap: 12px;
     scrollbar-width: thin;
     scrollbar-color: var(--accent) transparent;
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 8px, black 100%);
-    mask-image: linear-gradient(to bottom, transparent 0%, black 8px, black 100%);
+    /* removed fade mask — it was visually clipping the top of results */
 }
 #results_row::-webkit-scrollbar { width: 3px; }
 #results_row::-webkit-scrollbar-track { background: transparent; }
 #results_row::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 
-/* HORIZONTAL SCAN + PREVIEW ROW */
+/* SCAN RESULT + PREVIEW — stacked vertically so both get full width */
 .results-cols {
     display: flex;
-    flex-direction: row;
-    gap: 16px;
-    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
     width: 100%;
 }
 .results-cols #link_status {
-    flex: 1.5;
+    width: 100%;
     min-width: 0;
 }
 .results-cols #preview_area {
-    flex: 1;
-    min-width: 220px;
+    width: 100%;
+    min-width: 0;
 }
 
 #link_status { min-height: 0; text-align: left; }
@@ -1945,7 +1943,6 @@ MOBILE
     .input-card { max-height: none; overflow: visible; padding: 20px; }
     #results_row {
         flex: none; min-height: auto; max-height: none; overflow-y: visible;
-        -webkit-mask-image: none; mask-image: none;
     }
     .results-cols { flex-direction: column; }
 
@@ -1978,156 +1975,3 @@ MOBILE
     .h-panel .animate-item-left { transform: translateX(-20px); }
     .h-panel .animate-item-right { transform: translateX(20px); }
 }
-
-/* =============================================
-RESULTS MODAL DRAWER
-============================================= */
-.results-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 9000;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    pointer-events: none;
-    transition: visibility 0s linear 0.4s;
-}
-.results-modal.hidden { visibility: hidden; }
-.results-modal.show {
-    visibility: visible;
-    pointer-events: all;
-    transition: visibility 0s;
-}
-
-.results-modal-backdrop {
-    position: absolute;
-    inset: 0;
-    background: rgba(2, 11, 24, 0.82);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    opacity: 0;
-    transition: opacity 0.35s ease;
-}
-.results-modal.show .results-modal-backdrop { opacity: 1; }
-
-.results-modal-drawer {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 860px;
-    max-height: 82vh;
-    background: var(--bg-card);
-    border: 1px solid var(--border-glass);
-    border-bottom: none;
-    border-radius: 24px 24px 0 0;
-    box-shadow: 0 -8px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(72,202,228,0.06);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    transform: translateY(100%);
-    transition: transform 0.42s cubic-bezier(0.22,1,0.36,1);
-}
-.results-modal-drawer::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent-bright), var(--accent-light), transparent);
-    background-size: 200% 100%;
-    animation: headerGlowSlide 5s linear infinite;
-}
-.results-modal.show .results-modal-drawer { transform: translateY(0); }
-
-.results-modal-handle {
-    flex-shrink: 0;
-    width: 42px;
-    height: 4px;
-    background: var(--border-glass);
-    border-radius: 99px;
-    margin: 14px auto 0;
-}
-
-.results-modal-header {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 20px 12px;
-    border-bottom: 1px solid var(--border);
-}
-
-.results-modal-url-badge {
-    flex: 1;
-    min-width: 0;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--accent-bright);
-    background: var(--accent-dim);
-    border: 1px solid var(--border-accent);
-    border-radius: 8px;
-    padding: 6px 12px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.results-modal-close {
-    flex-shrink: 0;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    border: 1px solid var(--border-glass);
-    background: var(--bg-raised);
-    color: var(--white-muted);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-}
-.results-modal-close:hover {
-    border-color: var(--accent-bright);
-    color: var(--accent-bright);
-    background: var(--accent-dim);
-}
-
-.results-modal-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: row;
-    gap: 18px;
-    align-items: flex-start;
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent) transparent;
-}
-.results-modal-body::-webkit-scrollbar { width: 4px; }
-.results-modal-body::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
-
-#results_modal_status { flex: 1.6; min-width: 0; }
-#results_modal_preview { flex: 1; min-width: 220px; }
-
-/* Light mode overrides */
-:root[data-theme="light"] .results-modal-drawer {
-    background: rgba(255,255,255,0.96);
-    border-color: rgba(0,119,182,0.14);
-}
-:root[data-theme="light"] .results-modal-backdrop {
-    background: rgba(220, 235, 250, 0.6);
-}
-:root[data-theme="light"] .results-modal-url-badge {
-    background: rgba(0,119,182,0.07);
-    border-color: rgba(0,119,182,0.22);
-}
-
-@media (max-width: 700px) {
-    .results-modal-body {
-        flex-direction: column;
-        padding: 16px;
-    }
-    #results_modal_preview { min-width: 0; }
-    .results-modal-drawer { max-height: 88vh; }
-}
-
