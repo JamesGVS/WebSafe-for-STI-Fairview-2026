@@ -1364,7 +1364,10 @@ input.addEventListener("keydown", e => { if (e.key === "Enter") checkBtn.click()
     const syncCol = () => {
         const hasResults = linkStatus && linkStatus.innerHTML.trim() !== "";
         const hasPreview = pa && window.getComputedStyle(pa).display !== "none";
-        resultsCol.classList.toggle("visible", hasResults || hasPreview);
+        const show = hasResults || hasPreview;
+        resultsCol.classList.toggle("visible", show);
+        const heroInner = resultsCol.closest(".hero-inner");
+        if (heroInner) heroInner.classList.toggle("results-open", show);
     };
 
     // Watch link_status for content changes (scan results injected here)
