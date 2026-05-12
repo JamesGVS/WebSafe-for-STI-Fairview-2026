@@ -1471,13 +1471,13 @@ PANEL 1 — HERO
     display: flex;
     align-items: stretch;
     justify-content: center;
-    padding: 0 48px;
-    gap: 40px;
+    padding: 0 40px;
+    gap: 28px;
 }
 
 .hero-text-col {
     flex: 0 0 auto;
-    max-width: 420px;
+    max-width: 360px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -1491,7 +1491,7 @@ PANEL 1 — HERO
 .hero-sub { font-size:15px; color:var(--white-muted); line-height:1.78; margin-bottom:0; font-family:'Space Grotesk',sans-serif; animation:fadeUp 0.8s ease both; animation-delay:0.3s; max-width:420px; }
 
 .hero-card-col {
-    flex: 0 0 420px;
+    flex: 0 0 400px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1499,8 +1499,8 @@ PANEL 1 — HERO
     min-width: 0;
 }
 
-/* PREVIEW COLUMN — hidden until preview is triggered */
-.hero-preview-col {
+/* RESULTS COLUMN — hidden until scan runs, slides in from right */
+.hero-results-col {
     flex: 0 0 0;
     min-width: 0;
     overflow: hidden;
@@ -1509,36 +1509,73 @@ PANEL 1 — HERO
     justify-content: center;
     padding: 28px 0;
     opacity: 0;
-    transition: flex-basis 0.45s cubic-bezier(0.4,0,0.2,1),
-                opacity 0.35s ease,
-                min-width 0.45s cubic-bezier(0.4,0,0.2,1);
+    pointer-events: none;
+    transition: flex-basis 0.5s cubic-bezier(0.4,0,0.2,1),
+                opacity 0.4s ease 0.05s,
+                min-width 0.5s cubic-bezier(0.4,0,0.2,1);
 }
-.hero-preview-col.visible {
+.hero-results-col.visible {
     flex: 0 0 420px;
     min-width: 420px;
     opacity: 1;
+    pointer-events: auto;
 }
-.hero-preview-col #preview_area {
-    display: flex !important;
+.results-col-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
     overflow-y: auto;
-    max-height: calc(100vh - 72px - 56px);
+    overflow-x: hidden;
+    padding: 4px 4px 20px 2px;
     scrollbar-width: thin;
     scrollbar-color: var(--accent) transparent;
-    padding-right: 4px;
 }
-.hero-preview-col #preview_area::-webkit-scrollbar { width: 3px; }
-.hero-preview-col #preview_area::-webkit-scrollbar-track { background: transparent; }
-.hero-preview-col #preview_area::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+.results-col-inner::-webkit-scrollbar { width: 3px; }
+.results-col-inner::-webkit-scrollbar-track { background: transparent; }
+.results-col-inner::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+.results-col-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--white-faint);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+.results-col-label::before {
+    content: "";
+    width: 18px;
+    height: 1px;
+    background: var(--white-faint);
+}
+.hero-results-col #results_row {
+    overflow: visible;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-shrink: 0;
+}
+.hero-results-col #preview_area {
+    display: flex !important;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+}
 
 .input-card {
     width: 100%;
-    max-height: calc(100vh - 72px - 56px);
     display: flex;
     flex-direction: column;
     background: var(--input-card-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    padding: 24px 24px 0;
+    padding: 24px 24px 24px;
     border-radius: var(--radius-card);
     border: 1px solid var(--border-glass);
     box-shadow: 0 32px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(72,202,228,0.05);
@@ -1546,14 +1583,14 @@ PANEL 1 — HERO
     animation: fadeUp 0.8s ease forwards;
     animation-delay: 0.5s;
     opacity: 0;
-    overflow: hidden;
+    overflow: visible;
 }
 .input-card::before { content:""; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--accent-bright),var(--accent-light),transparent); border-radius:var(--radius-card) var(--radius-card) 0 0; background-size:200% 100%; animation:headerGlowSlide 5s linear infinite; }
 
 .input-card-static { flex-shrink: 0; }
 
 .input-label { font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--white-faint); margin-bottom:8px; display:block; }
-#link_checker { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+#link_checker { display: flex; flex-direction: column; }
 #link_checker form { flex-shrink: 0; }
 #link_input { width:100%; padding:14px 18px; font-size:13px; font-family:'JetBrains Mono',monospace; border-radius:10px; border:1px solid var(--border-glass); outline:none; background:var(--input-bg); transition:all 0.25s ease; color:var(--input-color); backdrop-filter:blur(8px); }
 #link_input:focus { border-color:var(--accent-bright); box-shadow:0 0 0 3px var(--accent-dim),0 0 24px rgba(72,202,228,0.08); }
@@ -1583,25 +1620,18 @@ PANEL 1 — HERO
 #loading_spinner { display:none; width:30px; height:30px; margin:16px auto 0; border:2px solid var(--border-glass); border-top-color:var(--accent-bright); border-radius:50%; animation:spin 0.85s linear infinite; flex-shrink: 0; }
 
 #results_row {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    margin-top: 14px;
-    padding: 0 4px 20px 0;
+    overflow: visible;
+    margin-top: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent) transparent;
 }
-#results_row::-webkit-scrollbar { width: 3px; }
-#results_row::-webkit-scrollbar-track { background: transparent; }
-#results_row::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 
 #link_status { min-height: 0; text-align: left; }
 #link_status > div { text-align: left; }
-#preview_area { display:none; flex-direction: column; gap: 10px; }
+#preview_area { display: none; flex-direction: column; gap: 10px; }
+.hero-results-col #preview_area { display: flex !important; }
 #preview_card { background:var(--preview-card-bg); border:1px solid var(--border-glass); padding:13px 16px; border-radius:12px; box-shadow:0 4px 24px rgba(0,0,0,0.5); display:flex; gap:14px; align-items:flex-start; }
 #preview_card > img, #preview_card img#preview_favicon { width:34px; height:34px; border-radius:8px; object-fit:contain; display:none; border:1px solid var(--border-glass); background:var(--accent-dim); }
 #preview_card > div { flex:1; text-align:left; }
@@ -1952,11 +1982,11 @@ MOBILE
         align-items: center;
         overflow-y: auto;
     }
-    .hero-inner { flex-direction: column; align-items: stretch; height: auto; min-height: calc(100vh - 72px); padding: 20px 18px 40px; gap: 20px; overflow-y: auto; }
+    .hero-inner { flex-direction: column; align-items: stretch; height: auto; min-height: calc(100vh - 72px); padding: 20px 18px 40px; gap: 20px; overflow-y: auto; overflow-x: hidden; }
     .hero-text-col { max-width: 100%; padding: 20px 0 0; }
     .hero-card-col { flex: 0 0 auto; width: 100%; padding: 0; }
-    .hero-preview-col { flex: 0 0 auto !important; min-width: 0 !important; width: 100%; opacity: 1 !important; overflow: visible; }
-    .hero-preview-col #preview_area { max-height: none; overflow-y: visible; }
+    .hero-results-col { flex: 0 0 auto !important; min-width: 0 !important; width: 100%; opacity: 1 !important; overflow: visible; }
+    .results-col-inner { height: auto; overflow-y: visible; }
     .input-card { max-height: none; overflow: visible; padding: 20px; }
     #results_row { flex: none; min-height: auto; max-height: none; overflow-y: visible; }
 

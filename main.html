@@ -247,26 +247,29 @@
                             </button>
                         </div>
                         <div id="loading_spinner"></div>
-                        <div id="results_row">
-                            <div id="link_status"></div>
-                        </div>
                     </section>
                 </div>
             </div>
 
-            <!-- PREVIEW COLUMN — appears beside the input card when preview is active -->
-            <div class="hero-preview-col" id="hero_preview_col">
-                <div id="preview_area">
-                    <div id="preview_card">
-                        <img id="preview_favicon">
-                        <div>
-                            <h3 id="preview_title"></h3>
-                            <p id="preview_domain"></p>
-                            <p id="preview_description"></p>
-                            <div id="preview_actions"></div>
-                        </div>
+            <!-- RESULTS COLUMN — slides in after scan, shows results + preview stacked -->
+            <div class="hero-results-col" id="hero_results_col">
+                <div class="results-col-inner">
+                    <div class="results-col-label">SCAN RESULTS</div>
+                    <div id="results_row">
+                        <div id="link_status"></div>
                     </div>
-                    <div id="preview_checks"></div>
+                    <div id="preview_area">
+                        <div id="preview_card">
+                            <img id="preview_favicon">
+                            <div>
+                                <h3 id="preview_title"></h3>
+                                <p id="preview_domain"></p>
+                                <p id="preview_description"></p>
+                                <div id="preview_actions"></div>
+                            </div>
+                        </div>
+                        <div id="preview_checks"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1351,17 +1354,27 @@ let html5QrCode; let isScanning = false; let uploadedImageData = null;
 
 input.addEventListener("keydown", e => { if (e.key === "Enter") checkBtn.click(); });
 
-/* PREVIEW COLUMN — show/hide the side column when preview_area becomes visible */
+/* RESULTS COLUMN — show when scan results or preview content appear */
 (function () {
-    const previewCol = document.getElementById("hero_preview_col");
+    const resultsCol = document.getElementById("hero_results_col");
+    const linkStatus = document.getElementById("link_status");
     const pa = document.getElementById("preview_area");
-    if (!previewCol || !pa) return;
+    if (!resultsCol) return;
+
     const syncCol = () => {
-        const isVisible = window.getComputedStyle(pa).display !== "none";
-        previewCol.classList.toggle("visible", isVisible);
+        const hasResults = linkStatus && linkStatus.innerHTML.trim() !== "";
+        const hasPreview = pa && window.getComputedStyle(pa).display !== "none";
+        resultsCol.classList.toggle("visible", hasResults || hasPreview);
     };
-    const observer = new MutationObserver(syncCol);
-    observer.observe(pa, { attributes: true, attributeFilter: ["style", "class"] });
+
+    // Watch link_status for content changes (scan results injected here)
+    if (linkStatus) {
+        new MutationObserver(syncCol).observe(linkStatus, { childList: true, subtree: true, characterData: true });
+    }
+    // Watch preview_area for style/class changes
+    if (pa) {
+        new MutationObserver(syncCol).observe(pa, { attributes: true, attributeFilter: ["style", "class"] });
+    }
     syncCol();
 })();
 
