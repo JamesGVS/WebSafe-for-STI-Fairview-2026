@@ -1460,18 +1460,21 @@ SCROLL-TRIGGERED PANEL ANIMATIONS
 /* =============================================
 PANEL 1 — HERO
 ============================================= */
-#panel-hero { background: var(--bg-deep); }
+#panel-hero { background: var(--bg-deep); overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
+#panel-hero::-webkit-scrollbar { width: 3px; }
+#panel-hero::-webkit-scrollbar-track { background: transparent; }
+#panel-hero::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 #panel-hero::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 20% 50%, rgba(0,180,216,0.05) 0%, transparent 60%),radial-gradient(ellipse 60% 70% at 80% 30%, rgba(0,119,182,0.04) 0%, transparent 60%); pointer-events:none; }
 
 .hero-inner {
     position: relative;
     z-index: 2;
-    height: calc(100vh - 72px);
+    min-height: calc(100vh - 72px);
     margin-top: 72px;
     display: flex;
-    align-items: stretch;
+    align-items: flex-start;
     justify-content: center;
-    padding: 0 60px;
+    padding: 40px 60px 60px;
     gap: 72px;
 }
 
@@ -1481,8 +1484,11 @@ PANEL 1 — HERO
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: center;
+    justify-content: flex-start;
     padding: 40px 0;
+    position: sticky;
+    top: 40px;
+    align-self: flex-start;
 }
 
 .hero-eyebrow { display:inline-flex; align-items:center; gap:8px; background:var(--accent-dim); border:1px solid var(--border-accent); border-radius:20px; padding:5px 14px; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:1.8px; text-transform:uppercase; color:var(--accent-bright); margin-bottom:22px; animation:fadeUp 0.6s ease both; backdrop-filter:blur(8px); }
@@ -1495,13 +1501,14 @@ PANEL 1 — HERO
     width: 480px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    padding: 24px 0;
+    justify-content: flex-start;
+    padding: 0;
+    align-self: flex-start;
 }
 
 .input-card {
     width: 100%;
-    max-height: calc(100vh - 72px - 48px);
+    /* No max-height — card grows with results content */
     display: flex;
     flex-direction: column;
     background: var(--input-card-bg);
@@ -1515,14 +1522,14 @@ PANEL 1 — HERO
     animation: fadeUp 0.8s ease forwards;
     animation-delay: 0.5s;
     opacity: 0;
-    overflow: visible; /* allow results to expand; scroll is handled by #results_row */
+    overflow: visible;
 }
 .input-card::before { content:""; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--accent-bright),var(--accent-light),transparent); border-radius:var(--radius-card) var(--radius-card) 0 0; background-size:200% 100%; animation:headerGlowSlide 5s linear infinite; }
 
 .input-card-static { flex-shrink: 0; }
 
 .input-label { font-family:'JetBrains Mono',monospace; font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--white-faint); margin-bottom:8px; display:block; }
-#link_checker { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+#link_checker { display: flex; flex-direction: column; }
 #link_checker form { flex-shrink: 0; }
 #link_input { width:100%; padding:14px 18px; font-size:13px; font-family:'JetBrains Mono',monospace; border-radius:10px; border:1px solid var(--border-glass); outline:none; background:var(--input-bg); transition:all 0.25s ease; color:var(--input-color); backdrop-filter:blur(8px); }
 #link_input:focus { border-color:var(--accent-bright); box-shadow:0 0 0 3px var(--accent-dim),0 0 24px rgba(72,202,228,0.08); }
@@ -1552,22 +1559,14 @@ PANEL 1 — HERO
 #loading_spinner { display:none; width:30px; height:30px; margin:16px auto 0; border:2px solid var(--border-glass); border-top-color:var(--accent-bright); border-radius:50%; animation:spin 0.85s linear infinite; flex-shrink: 0; }
 
 #results_row {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
+    /* No internal scroll — expands naturally; panel-hero scrolls instead */
+    overflow: visible;
     margin-top: 14px;
     padding: 0 0 20px;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent) transparent;
-    /* removed fade mask — it was visually clipping the top of results */
 }
-#results_row::-webkit-scrollbar { width: 3px; }
-#results_row::-webkit-scrollbar-track { background: transparent; }
-#results_row::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 
 /* SCAN RESULT + PREVIEW — stacked vertically so both get full width */
 .results-cols {
@@ -1938,7 +1937,7 @@ MOBILE
         align-items: center;
         overflow-y: auto;
     }
-    .hero-text-col { max-width: 100%; padding: 0; align-items: flex-start; }
+    .hero-text-col { max-width: 100%; padding: 0; align-items: flex-start; position: static; }
     .hero-card-col { width: 100%; padding: 0; justify-content: flex-start; }
     .input-card { max-height: none; overflow: visible; padding: 20px; }
     #results_row {

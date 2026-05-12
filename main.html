@@ -762,24 +762,6 @@
     </div>
 </div>
 
-<!-- RESULTS MODAL DRAWER -->
-<div id="results_modal" class="results-modal hidden" role="dialog" aria-modal="true" aria-label="Scan Results">
-    <div class="results-modal-backdrop"></div>
-    <div class="results-modal-drawer">
-        <div class="results-modal-handle"></div>
-        <div class="results-modal-header">
-            <div class="results-modal-url-badge" id="results_modal_url"></div>
-            <button class="results-modal-close" id="results_modal_close" aria-label="Close results">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-        </div>
-        <div class="results-modal-body">
-            <div id="results_modal_status"></div>
-            <div id="results_modal_preview"></div>
-        </div>
-    </div>
-</div>
-
 <!-- SCRIPTS -->
 <script src="jsQR.min.js"></script>
 <script src="html5-qrcode.min.js"></script>
@@ -1278,10 +1260,41 @@ VERTICAL SCROLL ENGINE
         if (e.key === "ArrowUp"   || e.key === "ArrowLeft")  { e.preventDefault(); goTo(current - 1); }
     });
     let wheelTimeout;
-    window.addEventListener("wheel", e => { clearTimeout(wheelTimeout); wheelTimeout = setTimeout(() => { const delta = Math.abs(e.deltaY)>=Math.abs(e.deltaX)?e.deltaY:e.deltaX; if(delta>30)goTo(current+1); if(delta<-30)goTo(current-1); }, 50); }, { passive: true });
+    window.addEventListener("wheel", e => {
+        // If we're on the hero panel and it has scrollable content, let it scroll normally
+        if (current === 0) {
+            const heroPanel = document.getElementById("panel-hero");
+            if (heroPanel) {
+                const atTop = heroPanel.scrollTop <= 0;
+                const atBottom = heroPanel.scrollTop + heroPanel.clientHeight >= heroPanel.scrollHeight - 2;
+                const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+                // Only switch panel if at the boundary scrolling in that direction
+                if (delta > 0 && !atBottom) return; // scrolling down, not at bottom — let panel scroll
+                if (delta < 0 && !atTop) return;    // scrolling up, not at top — let panel scroll
+            }
+        }
+        clearTimeout(wheelTimeout);
+        wheelTimeout = setTimeout(() => {
+            const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+            if (delta > 30) goTo(current + 1);
+            if (delta < -30) goTo(current - 1);
+        }, 50);
+    }, { passive: true });
     let touchStartX=0,touchStartY=0;
     window.addEventListener("touchstart", e => { touchStartX=e.touches[0].clientX; touchStartY=e.touches[0].clientY; }, { passive: true });
-    window.addEventListener("touchend", e => { const dx=touchStartX-e.changedTouches[0].clientX,dy=touchStartY-e.changedTouches[0].clientY; if(Math.abs(dy)>=Math.abs(dx)){if(dy>50)goTo(current+1);if(dy<-50)goTo(current-1);}else{if(dx>50)goTo(current+1);if(dx<-50)goTo(current-1);} }, { passive: true });
+    window.addEventListener("touchend", e => {
+        const dx=touchStartX-e.changedTouches[0].clientX, dy=touchStartY-e.changedTouches[0].clientY;
+        if (current === 0) {
+            const heroPanel = document.getElementById("panel-hero");
+            if (heroPanel) {
+                const atTop = heroPanel.scrollTop <= 0;
+                const atBottom = heroPanel.scrollTop + heroPanel.clientHeight >= heroPanel.scrollHeight - 2;
+                if (dy > 50 && !atBottom) return;
+                if (dy < -50 && !atTop) return;
+            }
+        }
+        if(Math.abs(dy)>=Math.abs(dx)){if(dy>50)goTo(current+1);if(dy<-50)goTo(current-1);}else{if(dx>50)goTo(current+1);if(dx<-50)goTo(current-1);}
+    }, { passive: true });
     document.querySelectorAll("[data-nav-panel]").forEach(el => el.addEventListener("click", e => { e.preventDefault(); goTo(parseInt(el.dataset.navPanel)); }));
     document.querySelectorAll(".sidebar-link[data-panel]").forEach(link => { link.addEventListener("click", e => { const p=parseInt(link.dataset.panel); if(!isNaN(p)){e.preventDefault();closeSidebar();setTimeout(()=>goTo(p),320);} }); });
     goTo(0);
@@ -1505,93 +1518,5 @@ function showUploadResult(type, icon, label, detail, url) {
 }
 </script>
 
-<!-- RESULTS MODAL WIRING -->
-<script>
-(function() {
-    const modal         = document.getElementById('results_modal');
-    const backdrop      = modal.querySelector('.results-modal-backdrop');
-    const drawer        = modal.querySelector('.results-modal-drawer');
-    const closeBtn      = document.getElementById('results_modal_close');
-    const urlBadge      = document.getElementById('results_modal_url');
-    const modalStatus   = document.getElementById('results_modal_status');
-    const modalPreview  = document.getElementById('results_modal_preview');
-
-    /* Original result containers in the card */
-    const origStatus    = document.getElementById('link_status');
-    const origPreview   = document.getElementById('preview_area');
-    const origResultRow = document.getElementById('results_row');
-    const spinner       = document.getElementById('loading_spinner');
-    const linkInput     = document.getElementById('link_input');
-
-    function openModal() {
-        modal.classList.remove('hidden');
-        requestAnimationFrame(() => {
-            modal.classList.add('show');
-        });
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-        modal.classList.remove('show');
-        document.body.style.overflow = '';
-        setTimeout(() => modal.classList.add('hidden'), 420);
-    }
-
-    closeBtn.addEventListener('click', closeModal);
-    backdrop.addEventListener('click', closeModal);
-
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
-    });
-
-    /* Touch-swipe down to close */
-    let touchY = 0;
-    drawer.addEventListener('touchstart', e => { touchY = e.touches[0].clientY; }, { passive: true });
-    drawer.addEventListener('touchend', e => {
-        if (e.changedTouches[0].clientY - touchY > 60) closeModal();
-    }, { passive: true });
-
-    /* MutationObserver: watch the original containers for content changes */
-    const observer = new MutationObserver(() => {
-        const hasStatus  = origStatus.innerHTML.trim().length > 0;
-        const hasPreview = origPreview.style.display === 'flex' || origPreview.style.display === '';
-
-        if (hasStatus && !spinner.style.display.includes('none') === false) return; // still loading
-
-        if (hasStatus) {
-            /* Mirror content into modal */
-            modalStatus.innerHTML  = origStatus.innerHTML;
-            modalPreview.innerHTML = origPreview.innerHTML;
-
-            /* Copy computed display state for preview */
-            modalPreview.style.display = origPreview.style.display || '';
-
-            /* Set URL badge */
-            const url = linkInput.value.trim();
-            urlBadge.textContent = url || 'Scan Results';
-            urlBadge.title       = url;
-
-            openModal();
-        }
-    });
-
-    observer.observe(origStatus,  { childList: true, subtree: true, characterData: true });
-    observer.observe(origPreview, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
-
-    /* Also watch spinner hide → results appear */
-    const spinnerObs = new MutationObserver(() => {
-        if (origStatus.innerHTML.trim().length > 0) {
-            modalStatus.innerHTML  = origStatus.innerHTML;
-            modalPreview.innerHTML = origPreview.innerHTML;
-            modalPreview.style.display = origPreview.style.display || '';
-            const url = linkInput.value.trim();
-            urlBadge.textContent = url || 'Scan Results';
-            urlBadge.title       = url;
-            openModal();
-        }
-    });
-    spinnerObs.observe(spinner, { attributes: true, attributeFilter: ['style'] });
-})();
-</script>
 </body>
 </html>
