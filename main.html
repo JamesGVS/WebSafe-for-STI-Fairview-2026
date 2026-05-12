@@ -762,6 +762,24 @@
     </div>
 </div>
 
+<!-- RESULTS MODAL DRAWER -->
+<div id="results_modal" class="results-modal hidden" role="dialog" aria-modal="true" aria-label="Scan Results">
+    <div class="results-modal-backdrop"></div>
+    <div class="results-modal-drawer">
+        <div class="results-modal-handle"></div>
+        <div class="results-modal-header">
+            <div class="results-modal-url-badge" id="results_modal_url"></div>
+            <button class="results-modal-close" id="results_modal_close" aria-label="Close results">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="results-modal-body">
+            <div id="results_modal_status"></div>
+            <div id="results_modal_preview"></div>
+        </div>
+    </div>
+</div>
+
 <!-- SCRIPTS -->
 <script src="jsQR.min.js"></script>
 <script src="html5-qrcode.min.js"></script>
@@ -1487,5 +1505,93 @@ function showUploadResult(type, icon, label, detail, url) {
 }
 </script>
 
+<!-- RESULTS MODAL WIRING -->
+<script>
+(function() {
+    const modal         = document.getElementById('results_modal');
+    const backdrop      = modal.querySelector('.results-modal-backdrop');
+    const drawer        = modal.querySelector('.results-modal-drawer');
+    const closeBtn      = document.getElementById('results_modal_close');
+    const urlBadge      = document.getElementById('results_modal_url');
+    const modalStatus   = document.getElementById('results_modal_status');
+    const modalPreview  = document.getElementById('results_modal_preview');
+
+    /* Original result containers in the card */
+    const origStatus    = document.getElementById('link_status');
+    const origPreview   = document.getElementById('preview_area');
+    const origResultRow = document.getElementById('results_row');
+    const spinner       = document.getElementById('loading_spinner');
+    const linkInput     = document.getElementById('link_input');
+
+    function openModal() {
+        modal.classList.remove('hidden');
+        requestAnimationFrame(() => {
+            modal.classList.add('show');
+        });
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+        setTimeout(() => modal.classList.add('hidden'), 420);
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
+    });
+
+    /* Touch-swipe down to close */
+    let touchY = 0;
+    drawer.addEventListener('touchstart', e => { touchY = e.touches[0].clientY; }, { passive: true });
+    drawer.addEventListener('touchend', e => {
+        if (e.changedTouches[0].clientY - touchY > 60) closeModal();
+    }, { passive: true });
+
+    /* MutationObserver: watch the original containers for content changes */
+    const observer = new MutationObserver(() => {
+        const hasStatus  = origStatus.innerHTML.trim().length > 0;
+        const hasPreview = origPreview.style.display === 'flex' || origPreview.style.display === '';
+
+        if (hasStatus && !spinner.style.display.includes('none') === false) return; // still loading
+
+        if (hasStatus) {
+            /* Mirror content into modal */
+            modalStatus.innerHTML  = origStatus.innerHTML;
+            modalPreview.innerHTML = origPreview.innerHTML;
+
+            /* Copy computed display state for preview */
+            modalPreview.style.display = origPreview.style.display || '';
+
+            /* Set URL badge */
+            const url = linkInput.value.trim();
+            urlBadge.textContent = url || 'Scan Results';
+            urlBadge.title       = url;
+
+            openModal();
+        }
+    });
+
+    observer.observe(origStatus,  { childList: true, subtree: true, characterData: true });
+    observer.observe(origPreview, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
+
+    /* Also watch spinner hide → results appear */
+    const spinnerObs = new MutationObserver(() => {
+        if (origStatus.innerHTML.trim().length > 0) {
+            modalStatus.innerHTML  = origStatus.innerHTML;
+            modalPreview.innerHTML = origPreview.innerHTML;
+            modalPreview.style.display = origPreview.style.display || '';
+            const url = linkInput.value.trim();
+            urlBadge.textContent = url || 'Scan Results';
+            urlBadge.title       = url;
+            openModal();
+        }
+    });
+    spinnerObs.observe(spinner, { attributes: true, attributeFilter: ['style'] });
+})();
+</script>
 </body>
 </html>
