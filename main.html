@@ -208,12 +208,34 @@
 
     <!-- PANEL 1 — HERO -->
     <div class="h-panel panel-active" id="panel-hero">
-        <span class="panel-label">01 / SCAN</span>
+       <!-- <span class="panel-label">01 / SCAN</span> -->
         <div class="hero-inner">
             <div class="hero-text-col">
                 <span class="hero-eyebrow" data-i18n="hero_eyebrow">Securing your online experience</span>
                 <h1 id="dynamic_greeting" data-i18n="hero_greeting">Let's get started, shall we?</h1>
                 <p class="hero-sub" data-i18n="hero_sub">Before you click — let WebSafe verify the link or QR code. Paste any URL, Scan, or Upload a QR below to instantly check for phishing, malware, and deceptive sites.</p>
+                <!-- Scan summary — fills empty space after results load -->
+                <div class="hero-scan-summary" id="hero_scan_summary">
+                    <div class="scan-summary-url">
+                        <div class="scan-summary-url-dot"></div>
+                        <span id="summary_url_text">—</span>
+                    </div>
+                    <div class="scan-summary-stats">
+                        <div class="scan-stat-box">
+                            <span class="scan-stat-num safe-num" id="summary_passed">—</span>
+                            <span class="scan-stat-label">Passed</span>
+                        </div>
+                        <div class="scan-stat-box">
+                            <span class="scan-stat-num hazard-num" id="summary_failed">—</span>
+                            <span class="scan-stat-label">Failed</span>
+                        </div>
+                        <div class="scan-stat-box">
+                            <span class="scan-stat-num muted-num" id="summary_score">—</span>
+                            <span class="scan-stat-label">Score</span>
+                        </div>
+                    </div>
+                    <div class="scan-summary-apis" id="summary_apis"></div>
+                </div>
             </div>
             <div class="hero-card-col">
                 <div class="input-card">
@@ -251,12 +273,13 @@
                 </div>
             </div>
 
-            <!-- RESULTS COLUMN — slides in after scan, shows results + preview stacked -->
+            <!-- RESULTS COLUMN — slides in after scan, shows results + preview side by side -->
             <div class="hero-results-col" id="hero_results_col">
                 <div class="results-col-inner">
                     <div class="results-col-label">SCAN RESULTS</div>
                     <div id="results_row">
                         <div id="link_status"></div>
+                        <div class="scroll-fade-hint" id="results_scroll_hint"></div>
                     </div>
                     <div id="preview_area">
                         <div id="preview_card">
@@ -269,6 +292,7 @@
                             </div>
                         </div>
                         <div id="preview_checks"></div>
+                        <div class="scroll-fade-hint" id="preview_scroll_hint"></div>
                     </div>
                 </div>
             </div>
@@ -1398,6 +1422,73 @@ input.addEventListener("keydown", e => { if (e.key === "Enter") checkBtn.click()
     const pa = document.getElementById("preview_area");
     if (!resultsCol) return;
 
+    // Scroll-fade hints
+    function setupScrollFade(container, hintEl) {
+        if (!container || !hintEl) return;
+        const update = () => {
+            const canScroll = container.scrollHeight > container.clientHeight + 4;
+            const atBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 8;
+            hintEl.classList.toggle("visible", canScroll && !atBottom);
+        };
+        container.addEventListener("scroll", update, { passive: true });
+        new ResizeObserver(update).observe(container);
+        setTimeout(update, 600); // after pop-in animation
+    }
+    setupScrollFade(
+        document.getElementById("results_row"),
+        document.getElementById("results_scroll_hint")
+    );
+    setupScrollFade(
+        document.getElementById("preview_area"),
+        document.getElementById("preview_scroll_hint")
+    );
+
+    // Populate scan summary in left column
+    function updateScanSummary() {
+        const urlEl     = document.getElementById("summary_url_text");
+        const passedEl  = document.getElementById("summary_passed");
+        const failedEl  = document.getElementById("summary_failed");
+        const scoreEl   = document.getElementById("summary_score");
+        const apisEl    = document.getElementById("summary_apis");
+        if (!urlEl) return;
+
+        // URL
+        const inputVal = document.getElementById("link_input");
+        if (inputVal) urlEl.textContent = inputVal.value || "—";
+
+        // Parse tally from result card
+        const tallyPassed  = linkStatus.querySelector(".tally-passed");
+        const tallyFailed  = linkStatus.querySelector(".tally-failed");
+        const scoreBadge   = linkStatus.querySelector(".result-score-num");
+        const checkedPills = linkStatus.querySelectorAll(".result-checked-pill, .checked-pill");
+
+        if (passedEl) passedEl.textContent = tallyPassed ? tallyPassed.textContent.trim() : "—";
+        if (failedEl) failedEl.textContent = tallyFailed ? tallyFailed.textContent.trim() : "—";
+        if (scoreEl)  scoreEl.textContent  = scoreBadge  ? scoreBadge.textContent.trim()  : "—";
+
+        // API pills from result card's "checked by" section
+        if (apisEl) {
+            apisEl.innerHTML = "";
+            const apiLabels = linkStatus.querySelectorAll(".result-api-badge");
+            if (apiLabels.length) {
+                apiLabels.forEach(el => {
+                    const pill = document.createElement("span");
+                    pill.className = "scan-api-pill";
+                    pill.textContent = el.textContent.trim();
+                    apisEl.appendChild(pill);
+                });
+            } else {
+                // Fallback: hardcode known APIs if elements not found
+                ["Google Safe Browsing", "VirusTotal", "urlscan.io"].forEach(name => {
+                    const pill = document.createElement("span");
+                    pill.className = "scan-api-pill";
+                    pill.textContent = name;
+                    apisEl.appendChild(pill);
+                });
+            }
+        }
+    }
+
     const syncCol = () => {
         const hasResults = linkStatus && linkStatus.innerHTML.trim() !== "";
         const hasPreview = pa && window.getComputedStyle(pa).display !== "none";
@@ -1405,6 +1496,7 @@ input.addEventListener("keydown", e => { if (e.key === "Enter") checkBtn.click()
         resultsCol.classList.toggle("visible", show);
         const heroInner = resultsCol.closest(".hero-inner");
         if (heroInner) heroInner.classList.toggle("results-open", show);
+        if (show && hasResults) setTimeout(updateScanSummary, 200);
     };
 
     // Watch link_status for content changes (scan results injected here)
