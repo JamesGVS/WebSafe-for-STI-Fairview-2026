@@ -210,63 +210,72 @@
     <div class="h-panel panel-active" id="panel-hero">
         <span class="panel-label">01 / SCAN</span>
         <div class="hero-inner">
-            <div class="hero-text-col">
-                <span class="hero-eyebrow" data-i18n="hero_eyebrow">Securing your online experience</span>
-                <h1 id="dynamic_greeting" data-i18n="hero_greeting">Let's get started, shall we?</h1>
-                <p class="hero-sub" data-i18n="hero_sub">Before you click — let WebSafe verify the link or QR code. Paste any URL, Scan, or Upload a QR below to instantly check for phishing, malware, and deceptive sites.</p>
-            </div>
-            <div class="hero-card-col">
-                <div class="input-card">
-                    <label class="input-label" for="link_input" data-i18n="input_label">Enter URL to Scan</label>
-                    <section id="link_checker">
-                        <form onsubmit="return false;">
-                            <input id="link_input" type="text" data-i18n-placeholder="input_placeholder" placeholder="Place your URL here">
-                        </form>
-                        <div class="controls">
-                            <button id="check_btn" data-i18n="btn_verify">Verify Security</button>
-                            <button id="preview_btn" data-i18n="btn_preview">Preview Site</button>
-                        </div>
-                        <div class="divider" data-i18n="divider_or">OR</div>
-                        <div class="qr-btn-group">
-                            <button id="scan_qr_btn">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-                                    <rect x="3" y="14" width="7" height="7" rx="1"/>
-                                    <rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/>
-                                    <rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>
-                                </svg>
-                                <span data-i18n="btn_scan_qr">Scan QR with Camera</span>
-                            </button>
-                            <button id="upload_qr_btn">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="17 8 12 3 7 8"/>
-                                    <line x1="12" y1="3" x2="12" y2="15"/>
-                                </svg>
-                                <span data-i18n="btn_upload_qr">Upload QR Image</span>
-                            </button>
-                        </div>
-                        <div id="loading_spinner"></div>
-                        <div id="results_row">
-                            <div class="results-cols">
-                                <div id="link_status"></div>
-                                <div id="preview_area">
-                                    <div id="preview_card">
-                                        <img id="preview_favicon">
-                                        <div>
-                                            <h3 id="preview_title"></h3>
-                                            <p id="preview_domain"></p>
-                                            <p id="preview_description"></p>
-                                            <div id="preview_actions"></div>
-                                        </div>
-                                    </div>
-                                    <div id="preview_checks"></div>
-                                </div>
+
+            <!-- TOP ROW: hero text (collapses when results appear) + scan card -->
+            <div class="hero-top-row">
+                <div class="hero-text-col" id="hero_text_col">
+                    <span class="hero-eyebrow" data-i18n="hero_eyebrow">Securing your online experience</span>
+                    <h1 id="dynamic_greeting" data-i18n="hero_greeting">Let's get started, shall we?</h1>
+                    <p class="hero-sub" data-i18n="hero_sub">Before you click — let WebSafe verify the link or QR code. Paste any URL, Scan, or Upload a QR below to instantly check for phishing, malware, and deceptive sites.</p>
+                </div>
+                <div class="hero-card-col">
+                    <div class="input-card">
+                        <label class="input-label" for="link_input" data-i18n="input_label">Enter URL to Scan</label>
+                        <section id="link_checker">
+                            <form onsubmit="return false;">
+                                <input id="link_input" type="text" data-i18n-placeholder="input_placeholder" placeholder="Place your URL here">
+                            </form>
+                            <div class="controls">
+                                <button id="check_btn" data-i18n="btn_verify">Verify Security</button>
+                                <button id="preview_btn" data-i18n="btn_preview">Preview Site</button>
                             </div>
-                        </div>
-                    </section>
+                            <div class="divider" data-i18n="divider_or">OR</div>
+                            <div class="qr-btn-group">
+                                <button id="scan_qr_btn">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                                        <rect x="3" y="14" width="7" height="7" rx="1"/>
+                                        <rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/>
+                                        <rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/>
+                                    </svg>
+                                    <span data-i18n="btn_scan_qr">Scan QR with Camera</span>
+                                </button>
+                                <button id="upload_qr_btn">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="17 8 12 3 7 8"/>
+                                        <line x1="12" y1="3" x2="12" y2="15"/>
+                                    </svg>
+                                    <span data-i18n="btn_upload_qr">Upload QR Image</span>
+                                </button>
+                            </div>
+                            <div id="loading_spinner"></div>
+                        </section>
+                    </div>
                 </div>
             </div>
+
+            <!-- BOTTOM ROW: results span full width, hidden until scan runs -->
+            <div class="hero-results-row" id="hero_results_row">
+                <div id="results_row">
+                    <div class="results-cols">
+                        <div id="link_status"></div>
+                        <div id="preview_area">
+                            <div id="preview_card">
+                                <img id="preview_favicon">
+                                <div>
+                                    <h3 id="preview_title"></h3>
+                                    <p id="preview_domain"></p>
+                                    <p id="preview_description"></p>
+                                    <div id="preview_actions"></div>
+                                </div>
+                            </div>
+                            <div id="preview_checks"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -1304,7 +1313,7 @@ function syncSidebarHistory() {
         const row = document.createElement("div"); row.className = "sidebar-scan-row";
         row.innerHTML = `<span class="sidebar-scan-dot" style="background:${colors[h.level]||"#9ca3af"}"></span><span class="sidebar-scan-host"></span><span class="sidebar-scan-badge" style="color:${colors[h.level]||"#9ca3af"}">${labels[h.level]||"?"}</span>`;
         row.querySelector(".sidebar-scan-host").textContent = h.hostname;
-        row.addEventListener("click", () => { const inp=document.getElementById("link_input"); if(inp)inp.value=h.url; closeSidebar(); const heroPanel=document.getElementById("panel-hero"); if(heroPanel){heroPanel.scrollIntoView({behavior:"smooth",block:"start"});} setTimeout(()=>{ const cb=document.getElementById("check_btn"); if(cb)cb.click(); },400); });
+        row.addEventListener("click", () => { const inp=document.getElementById("link_input"); if(inp)inp.value=h.url; closeSidebar(); setTimeout(()=>{document.querySelector("[data-panel='0']").click();setTimeout(()=>checkBtn.click(),400);},320); });
         panel.appendChild(row);
     });
 }
@@ -1349,97 +1358,14 @@ let html5QrCode; let isScanning = false; let uploadedImageData = null;
 
 input.addEventListener("keydown", e => { if (e.key === "Enter") checkBtn.click(); });
 
-async function startQrScanner() {
-    if (isScanning) return;
-    viewfinder.classList.add("scanning");
-    cameraPlaceholder.style.display = "none";
-    startScan.textContent = "Starting…";
-    startScan.disabled = true;
+scanBtn.onclick = () => { qrModal.classList.remove("hidden"); setTimeout(() => qrModal.classList.add("show"), 10); document.body.style.overflow = "hidden"; };
+closeQR.onclick = () => { qrModal.classList.remove("show"); viewfinder.classList.remove("scanning"); setTimeout(() => qrModal.classList.add("hidden"), 300); document.body.style.overflow = ""; if (html5QrCode && isScanning) { html5QrCode.stop().catch(() => {}); isScanning = false; } };
+startScan.onclick = async () => {
+    if (isScanning) return; viewfinder.classList.add("scanning");
     html5QrCode = new Html5Qrcode("qr-reader");
-    try {
-        await html5QrCode.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: 200 },
-            (decodedText) => {
-                html5QrCode.stop().catch(() => {});
-                isScanning = false;
-                viewfinder.classList.remove("scanning");
-                input.value = decodedText;
-                closeQR.onclick();
-                checkBtn.click();
-            }
-        );
-        isScanning = true;
-        startScan.style.display = "none";
-    } catch (err) {
-        viewfinder.classList.remove("scanning");
-        cameraPlaceholder.style.display = "";
-        startScan.disabled = false;
-        startScan.textContent = "Start Scanner";
-        // Check if it's a permission denial
-        const isDenied = err && (err.name === "NotAllowedError" || (typeof err === "string" && err.toLowerCase().includes("permission")));
-        if (isDenied) {
-            showCameraPermissionBanner();
-        } else {
-            alert("Camera error — please allow camera access and try again.");
-        }
-    }
-}
-
-function showCameraPermissionBanner() {
-    let banner = document.getElementById("qr-permission-banner");
-    if (!banner) {
-        banner = document.createElement("div");
-        banner.id = "qr-permission-banner";
-        banner.style.cssText = "background:rgba(251,191,36,0.12);border:1px solid rgba(251,191,36,0.4);border-radius:10px;padding:12px 14px;margin:10px 0 0;text-align:center;font-size:12px;color:#fbbf24;line-height:1.5;";
-        banner.innerHTML = `<strong>📷 Camera Access Required</strong><br>Please allow camera access when prompted by your browser, then click <em>Start Scanner</em> again.<br><small style="opacity:0.7">If denied, go to your browser settings → Site permissions → Camera → Allow for this site.</small>`;
-        document.querySelector(".qr-body").appendChild(banner);
-    }
-    banner.style.display = "";
-}
-
-scanBtn.onclick = async () => {
-    qrModal.classList.remove("hidden");
-    setTimeout(() => qrModal.classList.add("show"), 10);
-    document.body.style.overflow = "hidden";
-    startScan.style.display = "";
-    startScan.disabled = false;
-    startScan.textContent = "Start Scanner";
-    // Check camera permission state and auto-start if already granted
-    if (navigator.permissions) {
-        try {
-            const perm = await navigator.permissions.query({ name: "camera" });
-            if (perm.state === "granted") {
-                setTimeout(startQrScanner, 300);
-            } else if (perm.state === "denied") {
-                showCameraPermissionBanner();
-            } else {
-                // "prompt" — auto-trigger so browser shows permission dialog
-                setTimeout(startQrScanner, 300);
-            }
-        } catch (_) {
-            // Permissions API not supported, just auto-start to trigger prompt
-            setTimeout(startQrScanner, 300);
-        }
-    } else {
-        setTimeout(startQrScanner, 300);
-    }
+    try { await html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 200 }, (decodedText) => { html5QrCode.stop().catch(() => {}); isScanning = false; viewfinder.classList.remove("scanning"); input.value = decodedText; closeQR.onclick(); checkBtn.click(); }); isScanning = true; }
+    catch { viewfinder.classList.remove("scanning"); alert("Camera error — please allow camera access and try again."); }
 };
-
-closeQR.onclick = () => {
-    qrModal.classList.remove("show");
-    viewfinder.classList.remove("scanning");
-    setTimeout(() => qrModal.classList.add("hidden"), 300);
-    document.body.style.overflow = "";
-    if (html5QrCode && isScanning) { html5QrCode.stop().catch(() => {}); isScanning = false; }
-    startScan.style.display = "";
-    startScan.disabled = false;
-    startScan.textContent = "Start Scanner";
-    const banner = document.getElementById("qr-permission-banner");
-    if (banner) banner.style.display = "none";
-};
-
-startScan.onclick = startQrScanner;
 
 uploadQrBtn.onclick = () => { resetUploadModal(); qrUploadModal.classList.remove("hidden"); setTimeout(() => qrUploadModal.classList.add("show"), 10); document.body.style.overflow = "hidden"; };
 closeQrUpload.onclick = closeUploadModal;

@@ -1466,23 +1466,55 @@ PANEL 1 — HERO
 .hero-inner {
     position: relative;
     z-index: 2;
-    height: calc(100vh - 72px);
+    min-height: calc(100vh - 72px);
     margin-top: 72px;
     display: flex;
+    flex-direction: column;
     align-items: stretch;
+    padding: 0 60px 32px;
+    gap: 0;
+}
+
+/* TOP ROW: hero text left + scan card right */
+.hero-top-row {
+    display: flex;
+    align-items: center;
     justify-content: center;
-    padding: 0 60px;
-    gap: 72px;
+    gap: 64px;
+    flex: 0 0 auto;
+    padding: 32px 0 24px;
+    transition: padding 0.4s ease;
+}
+
+/* When results are showing, collapse top row padding */
+.hero-inner.has-results .hero-top-row {
+    padding: 16px 0 16px;
 }
 
 .hero-text-col {
-    flex: 0 0 auto;
-    max-width: 500px;
+    flex: 1 1 auto;
+    max-width: 460px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-    padding: 40px 0;
+    transition: opacity 0.35s ease, transform 0.35s ease, max-height 0.4s ease;
+    overflow: hidden;
+}
+
+/* Collapse hero text when results are visible */
+.hero-inner.has-results .hero-text-col {
+    max-width: 320px;
+}
+.hero-inner.has-results .hero-text-col .hero-sub {
+    display: none;
+}
+.hero-inner.has-results #dynamic_greeting {
+    font-size: clamp(18px, 2.2vw, 28px);
+    margin-bottom: 6px;
+}
+.hero-inner.has-results .hero-eyebrow {
+    margin-bottom: 10px;
 }
 
 .hero-eyebrow { display:inline-flex; align-items:center; gap:8px; background:var(--accent-dim); border:1px solid var(--border-accent); border-radius:20px; padding:5px 14px; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:1.8px; text-transform:uppercase; color:var(--accent-bright); margin-bottom:22px; animation:fadeUp 0.6s ease both; backdrop-filter:blur(8px); }
@@ -1491,23 +1523,21 @@ PANEL 1 — HERO
 .hero-sub { font-size:15px; color:var(--white-muted); line-height:1.78; margin-bottom:0; font-family:'Space Grotesk',sans-serif; animation:fadeUp 0.8s ease both; animation-delay:0.3s; max-width:420px; }
 
 .hero-card-col {
-    flex: 0 0 auto;
-    width: 480px;
+    flex: 0 0 480px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 24px 0;
+    padding: 0;
 }
 
 .input-card {
     width: 100%;
-    max-height: calc(100vh - 72px - 48px);
     display: flex;
     flex-direction: column;
     background: var(--input-card-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    padding: 24px 24px 0;
+    padding: 24px 24px 20px;
     border-radius: var(--radius-card);
     border: 1px solid var(--border-glass);
     box-shadow: 0 32px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(72,202,228,0.05);
@@ -1515,9 +1545,21 @@ PANEL 1 — HERO
     animation: fadeUp 0.8s ease forwards;
     animation-delay: 0.5s;
     opacity: 0;
-    overflow: hidden;
 }
 .input-card::before { content:""; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--accent-bright),var(--accent-light),transparent); border-radius:var(--radius-card) var(--radius-card) 0 0; background-size:200% 100%; animation:headerGlowSlide 5s linear infinite; }
+
+/* RESULTS ROW — spans full width below top row */
+.hero-results-row {
+    display: none;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-bottom: 24px;
+}
+.hero-inner.has-results .hero-results-row {
+    display: flex;
+    flex-direction: column;
+}
+
 
 .input-card-static { flex-shrink: 0; }
 
@@ -1542,12 +1584,13 @@ PANEL 1 — HERO
 .divider { display:flex; align-items:center; text-align:center; color:var(--white-faint); font-size:9px; font-weight:700; letter-spacing:2px; margin:14px 0; gap:12px; font-family:'JetBrains Mono',monospace; flex-shrink: 0; }
 .divider::before,.divider::after { content:""; flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--border-glass),transparent); }
 
-#scan_qr_btn { width:100%; padding:13px; border-radius:12px; background:var(--btn-qr-bg); border:1px solid var(--btn-qr-border); backdrop-filter:blur(8px); animation:fadeUp 0.8s ease forwards; animation-delay:0.8s; opacity:0; display:flex; align-items:center; justify-content:center; gap:10px; color:var(--accent-bright); font-size:13px; }
+#scan_qr_btn { padding:13px; border-radius:12px; background:var(--btn-qr-bg); border:1px solid var(--btn-qr-border); backdrop-filter:blur(8px); animation:fadeUp 0.8s ease forwards; animation-delay:0.8s; opacity:0; display:flex; align-items:center; justify-content:center; gap:8px; color:var(--accent-bright); font-size:12px; }
 #scan_qr_btn:hover { border-color:var(--accent-bright); box-shadow:0 0 26px rgba(0,180,216,0.22); transform:translateY(-2px); }
-#upload_qr_btn { width:100%; padding:13px; border-radius:12px; background:var(--btn-qr-bg); border:1px solid var(--btn-qr-border); backdrop-filter:blur(8px); animation:fadeUp 0.8s ease forwards; animation-delay:0.85s; opacity:0; display:flex; align-items:center; justify-content:center; gap:10px; color:var(--accent-light); font-size:13px; }
+#upload_qr_btn { padding:13px; border-radius:12px; background:var(--btn-qr-bg); border:1px solid var(--btn-qr-border); backdrop-filter:blur(8px); animation:fadeUp 0.8s ease forwards; animation-delay:0.85s; opacity:0; display:flex; align-items:center; justify-content:center; gap:8px; color:var(--accent-light); font-size:12px; }
 #upload_qr_btn:hover { border-color:var(--accent-light); box-shadow:0 0 26px var(--accent-glow); transform:translateY(-2px); }
 
-.qr-btn-group { display:flex; flex-direction:column; gap:9px; flex-shrink: 0; }
+.qr-btn-group { display:flex; flex-direction:row; gap:9px; flex-shrink: 0; }
+#scan_qr_btn, #upload_qr_btn { flex: 1; }
 
 #loading_spinner { display:none; width:30px; height:30px; margin:16px auto 0; border:2px solid var(--border-glass); border-top-color:var(--accent-bright); border-radius:50%; animation:spin 0.85s linear infinite; flex-shrink: 0; }
 
@@ -1556,15 +1599,13 @@ PANEL 1 — HERO
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    margin-top: 14px;
-    padding: 0 0 16px;
+    padding: 0;
     display: flex;
     flex-direction: column;
     gap: 12px;
     scrollbar-width: thin;
     scrollbar-color: var(--accent) transparent;
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 8px, black 100%);
-    mask-image: linear-gradient(to bottom, transparent 0%, black 8px, black 100%);
+    height: 100%;
 }
 #results_row::-webkit-scrollbar { width: 3px; }
 #results_row::-webkit-scrollbar-track { background: transparent; }
@@ -1574,17 +1615,20 @@ PANEL 1 — HERO
 .results-cols {
     display: flex;
     flex-direction: row;
-    gap: 16px;
+    gap: 20px;
     align-items: flex-start;
     width: 100%;
 }
 .results-cols #link_status {
-    flex: 1.5;
+    flex: 1.4;
     min-width: 0;
 }
 .results-cols #preview_area {
     flex: 1;
-    min-width: 220px;
+    min-width: 260px;
+    max-width: 480px;
+    position: sticky;
+    top: 0;
 }
 
 #link_status { min-height: 0; text-align: left; }
@@ -1935,17 +1979,24 @@ MOBILE
         flex-direction: column;
         height: auto;
         min-height: calc(100vh - 72px);
-        gap: 24px;
-        padding: 82px 22px 36px;
-        align-items: center;
+        gap: 0;
+        padding: 82px 18px 36px;
+        align-items: stretch;
         overflow-y: auto;
     }
-    .hero-text-col { max-width: 100%; padding: 0; align-items: flex-start; }
-    .hero-card-col { width: 100%; padding: 0; justify-content: flex-start; }
-    .input-card { max-height: none; overflow: visible; padding: 20px; }
+    .hero-top-row {
+        flex-direction: column;
+        gap: 20px;
+        padding: 16px 0;
+    }
+    .hero-inner.has-results .hero-top-row { padding: 10px 0; }
+    .hero-text-col { max-width: 100%; align-items: flex-start; }
+    .hero-inner.has-results .hero-text-col { max-width: 100%; }
+    .hero-card-col { flex: 0 0 auto; width: 100%; }
+    .input-card { padding: 20px; }
+    .hero-results-row { padding-bottom: 16px; }
     #results_row {
-        flex: none; min-height: auto; max-height: none; overflow-y: visible;
-        -webkit-mask-image: none; mask-image: none;
+        flex: none; min-height: auto; max-height: none;
     }
     .results-cols { flex-direction: column; }
 

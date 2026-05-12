@@ -56,10 +56,9 @@ function normalizeURL(raw) {
 
     // Gibberish heuristic: only apply to the second-level domain (SLD), not subdomains.
     // Subdomains can be auto-generated (S3, CDN, UUID-based) and look like gibberish legitimately.
-    // parts[parts.length-1] = TLD, parts[parts.length-2] = SLD
     const sld = parts.length >= 2 ? parts[parts.length - 2] : '';
     const vowels = /[aeiou]/i;
-    // No-vowel check: only on SLD and only if long (>=8 chars) — short labels are fine
+    // No-vowel check: only on SLD and only if long (>=8 chars)
     if (/^[a-zA-Z]+$/.test(sld) && sld.length >= 8 && !vowels.test(sld)) return null;
     // Consonant-ratio check: only on SLD, threshold 92%
     if (/^[a-zA-Z]+$/.test(sld) && sld.length >= 8) {
@@ -76,7 +75,7 @@ function normalizeURL(raw) {
 function showInvalidUrlError(statusEl) {
     if (!statusEl) return;
     statusEl.innerHTML = `
-        <div style="width:100%;margin:0;border-radius:14px;background:#121929;border:2px solid rgba(220,38,38,0.6);box-shadow:0 4px 24px rgba(220,38,38,.18);overflow:hidden;font-family:inherit;text-align:left;">
+        <div style="max-width:580px;margin:16px auto 0;border-radius:14px;background:#121929;border:2px solid rgba(220,38,38,0.6);box-shadow:0 4px 24px rgba(220,38,38,.18);overflow:hidden;font-family:inherit;text-align:left;">
             <div style="display:flex;align-items:center;gap:14px;padding:15px 20px;background:linear-gradient(135deg,#dc2626,#991b1b);border-bottom:3px solid rgba(220,38,38,0.8);">
                 <span style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);display:inline-flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;font-weight:900;color:#fff;border:1px solid rgba(255,255,255,0.3);">✕</span>
                 <div style="flex:1">
@@ -366,6 +365,7 @@ function friendlyFlagDetail(f) {
 
     let _lastValue = '';
     function clearResults() {
+        setHeroResultsMode(false);
         if (statusEl) statusEl.innerHTML = '';
         const pa = document.getElementById('preview_area');
         if (pa) pa.style.display = 'none';
@@ -375,6 +375,16 @@ function friendlyFlagDetail(f) {
         ['preview_title','preview_domain'].forEach(id => {
             const el = document.getElementById(id); if (el) el.textContent = '';
         });
+    }
+
+    function setHeroResultsMode(active) {
+        const heroInner = document.querySelector('.hero-inner');
+        if (!heroInner) return;
+        if (active) {
+            heroInner.classList.add('has-results');
+        } else {
+            heroInner.classList.remove('has-results');
+        }
     }
     let _debounceTimer = null;
     if (input) {
@@ -432,7 +442,7 @@ function friendlyFlagDetail(f) {
         const t = theme[level]||theme.safe;
 
         const card = document.createElement('div');
-        card.style.cssText = `width:100%;margin:0;border-radius:14px;background:#121929;border:2px solid ${t.accent}55;box-shadow:0 4px 24px ${t.glow},0 0 0 1px ${t.accent}33;overflow:hidden;font-family:inherit;text-align:left;`;
+        card.style.cssText = `max-width:580px;margin:16px auto 0;border-radius:14px;background:#121929;border:2px solid ${t.accent}55;box-shadow:0 4px 24px ${t.glow},0 0 0 1px ${t.accent}33;overflow:hidden;font-family:inherit;text-align:left;`;
 
         const header = document.createElement('div');
         header.style.cssText = `display:flex;align-items:center;gap:14px;padding:16px 20px;background:${t.headerBg};border-bottom:2px solid ${t.accent}55;`;
@@ -495,7 +505,7 @@ function friendlyFlagDetail(f) {
         // ── Report button for dangerous links ────────────────────────────────
         if (level === 'danger') {
             const reportBtn = document.createElement('div');
-            reportBtn.style.cssText = 'width:100%;margin:10px 0 0;';
+            reportBtn.style.cssText = 'max-width:580px;margin:10px auto 0;';
             reportBtn.innerHTML = `
                 <a href="#authorities-anchor"
                    id="ws_report_danger_btn"
@@ -856,6 +866,7 @@ function friendlyFlagDetail(f) {
         renderResultCard({level, reason, checks, fourBadges, score,
             shortened: !!(serverData && serverData.shortened),
             resolvedUrl: serverData && serverData.resolvedUrl});
+        setHeroResultsMode(true);
         logSafetyReport(normalized, level, reason, checks);
         addToHistory(normalized, level);
 
@@ -1555,6 +1566,7 @@ function friendlyFlagDetail(f) {
         const isDead = opts?.deadLink === true;
 
         // Hide old content
+        setHeroResultsMode(true);
         setPreviewVisible(true);
         resetPreviewContent();
         if (pvDomain) pvDomain.textContent = hostname;
