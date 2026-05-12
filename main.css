@@ -1483,12 +1483,28 @@ PANEL 1 — HERO
     transition: grid-template-rows 0.5s cubic-bezier(0.4,0,0.2,1);
 }
 
-/* When results appear, shrink row 1 a little to give row 2 space */
+/* When results appear, tighten row 1 so results sit near the top */
 .hero-inner.results-open {
     grid-template-rows: auto auto;
     align-items: start;
-    padding-top: 24px;
+    padding-top: 12px;
     overflow-y: auto;
+}
+.hero-inner.results-open .hero-text-col {
+    padding: 10px 0 8px;
+}
+.hero-inner.results-open .hero-card-col {
+    padding: 10px 0 8px;
+}
+.hero-inner.results-open #dynamic_greeting {
+    font-size: clamp(20px, 2.4vw, 32px);
+    margin-bottom: 8px;
+}
+.hero-inner.results-open .hero-eyebrow {
+    margin-bottom: 10px;
+}
+.hero-inner.results-open .hero-sub {
+    display: none;
 }
 
 .hero-text-col {
@@ -1530,10 +1546,10 @@ PANEL 1 — HERO
     padding: 0;
 }
 .hero-results-col.visible {
-    max-height: 600px;
+    max-height: 800px;
     opacity: 1;
     pointer-events: auto;
-    padding-bottom: 28px;
+    padding-bottom: 16px;
 }
 
 /* Inner: side-by-side, equal halves */
