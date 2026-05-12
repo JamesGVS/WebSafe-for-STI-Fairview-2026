@@ -1264,7 +1264,9 @@ VERTICAL SCROLL ENGINE
         if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); goTo(current + 1); }
         if (e.key === "ArrowUp"   || e.key === "ArrowLeft")  { e.preventDefault(); goTo(current - 1); }
     });
-    let wheelTimeout;
+    let wheelCooldown = false;
+    let wheelAccum = 0;
+    let wheelResetTimer;
     window.addEventListener("wheel", e => {
         // If the wheel target is inside a scrollable results/preview container,
         // let it scroll that container — only switch panel when it hits the end.
@@ -1272,22 +1274,34 @@ VERTICAL SCROLL ENGINE
             "#results_row, #preview_area, .results-col-inner, .hero-results-col"
         );
         if (scrollable) {
-            // Find the actual overflowing ancestor
             const container = e.target.closest(
                 "#results_row, #preview_area"
             ) || scrollable;
             const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
             const atBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 2;
             const atTop    = container.scrollTop < 2;
-            // Only let the panel navigate if we've scrolled to the edge
             if ((delta > 0 && !atBottom) || (delta < 0 && !atTop)) return;
         }
-        clearTimeout(wheelTimeout);
-        wheelTimeout = setTimeout(() => {
-            const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-            if (delta > 30) goTo(current + 1);
-            if (delta < -30) goTo(current - 1);
-        }, 50);
+
+        if (wheelCooldown) return;
+
+        const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+        wheelAccum += delta;
+
+        // Reset accumulator if user pauses
+        clearTimeout(wheelResetTimer);
+        wheelResetTimer = setTimeout(() => { wheelAccum = 0; }, 300);
+
+        // Require a solid intentional scroll — 180px accumulated
+        if (Math.abs(wheelAccum) < 180) return;
+
+        wheelAccum = 0;
+        wheelCooldown = true;
+        // Lock out further navigation for 900ms so one flick = one panel
+        setTimeout(() => { wheelCooldown = false; }, 900);
+
+        if (delta > 0) goTo(current + 1);
+        else goTo(current - 1);
     }, { passive: true });
     let touchStartX=0,touchStartY=0;
     window.addEventListener("touchstart", e => { touchStartX=e.touches[0].clientX; touchStartY=e.touches[0].clientY; }, { passive: true });
