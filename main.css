@@ -1559,7 +1559,8 @@ PANEL 1 — HERO
     display: flex;
     flex-direction: column;
     gap: 12px;
-    max-height: 460px;
+    max-height: calc(100vh - 380px);
+    min-height: 0;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--accent) transparent;
@@ -1572,7 +1573,8 @@ PANEL 1 — HERO
     display: flex !important;
     flex-direction: column;
     gap: 10px;
-    max-height: 460px;
+    max-height: calc(100vh - 380px);
+    min-height: 0;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--accent) transparent;
