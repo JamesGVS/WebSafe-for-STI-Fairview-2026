@@ -218,7 +218,7 @@
                 <div class="hero-scan-summary" id="hero_scan_summary">
                     <div class="scan-summary-url">
                         <div class="scan-summary-url-dot"></div>
-                        <span id="summary_url_text">—</span>
+                        <span id="summary_url_text">Current Scan Here</span>
                     </div>
                     <div class="scan-summary-stats">
                         <div class="scan-stat-box">
@@ -1242,16 +1242,21 @@ VERTICAL SCROLL ENGINE
     let current = 0, isAnimating = false;
 
     function updateProgressBar(index) {
-        if (totalPanels <= 1) {
-            progressBar.style.height = '0';
-            progressBar.style.opacity = '0';
-            return;
-        }
-        const pct = index / (totalPanels - 1);
-        progressBar.style.height = (pct * 100) + 'vh';
-        /* Hide on last panel to avoid the stuck full-height line */
-        progressBar.style.opacity = index === totalPanels - 1 ? '0' : '1';
+    if (totalPanels <= 1) {
+        progressBar.style.height = '0';
+        progressBar.style.opacity = '0';
+        return;
     }
+    // Hide on first and last panel
+    if (index === 0 || index === totalPanels - 1) {
+        progressBar.style.opacity = '0';
+        progressBar.style.height = '0';
+        return;
+    }
+    const pct = index / (totalPanels - 1);
+    progressBar.style.height = (pct * 100) + 'vh';
+    progressBar.style.opacity = '1';
+}
 
     function goTo(index) {
         if (index < 0 || index >= totalPanels || isAnimating) return;
