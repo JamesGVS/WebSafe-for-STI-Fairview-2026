@@ -14,33 +14,38 @@
 
 /* =====================
    THEME TOKENS — DARK (default)
+   Matched to screenshot palette:
+   - BG: deep navy #050d14
+   - Surface: #091520
+   - Teal accent: #00d4c8 / hi #2ef8f0
+   - Grid overlay visible at ~4%
    ===================== */
 :root {
-  --bg:         #060d12;
-  --bg2:        #091318;
-  --surface:    #0c1c24;
-  --surface2:   #102330;
-  --surface3:   #152a38;
-  --border:     rgba(0, 210, 200, 0.13);
-  --border-hi:  rgba(0, 210, 200, 0.45);
-  --teal:       #00d2c8;
-  --teal-hi:    #2ffaf0;
-  --teal-glow:  rgba(0, 210, 200, 0.12);
-  --cyan:       #00e5ff;
+  --bg:         #050d14;
+  --bg2:        #071219;
+  --surface:    #091520;
+  --surface2:   #0d1e2b;
+  --surface3:   #112435;
+  --border:     rgba(0, 212, 200, 0.14);
+  --border-hi:  rgba(0, 212, 200, 0.50);
+  --teal:       #00d4c8;
+  --teal-hi:    #2ef8f0;
+  --teal-glow:  rgba(0, 212, 200, 0.15);
+  --cyan:       #00e8ff;
   --green:      #00c896;
   --green-hi:   #00f0b0;
-  --text:       #d8eef0;
-  --muted:      #4a7080;
-  --muted-hi:   #6a9aaa;
+  --text:       #cce8ec;
+  --muted:      #3d6878;
+  --muted-hi:   #5d8fa0;
   --mono:       "JetBrains Mono", monospace;
   --sans:       "Syne", sans-serif;
   --radius:     14px;
   --radius-sm:  8px;
 
   /* Navbar specific */
-  --nav-bg:     rgba(6, 13, 18, 0.88);
-  --nav-border: rgba(0, 210, 200, 0.12);
-  --logo-color: #00d2c8;
+  --nav-bg:     rgba(5, 13, 20, 0.90);
+  --nav-border: rgba(0, 212, 200, 0.13);
+  --logo-color: #00d4c8;
 }
 
 /* =====================
@@ -56,7 +61,7 @@
   --border-hi:  rgba(0, 160, 155, 0.45);
   --teal:       #00908a;
   --teal-hi:    #007a75;
-  --teal-glow:  rgba(0, 160, 155, 0.1);
+  --teal-glow:  rgba(0, 160, 155, 0.10);
   --cyan:       #008fa8;
   --green:      #00876a;
   --green-hi:   #006a54;
@@ -87,13 +92,14 @@ body {
 
 /* =====================
    ATMOSPHERIC BACKGROUNDS
+   Noise grain + grid exactly like screenshot
    ===================== */
 .noise {
   pointer-events: none;
   position: fixed;
   inset: 0;
   z-index: 0;
-  opacity: 0.025;
+  opacity: 0.03;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 200px;
@@ -103,51 +109,52 @@ body {
   opacity: 0.015;
 }
 
+/* Grid overlay — matches the subtle grid visible in screenshot */
 .grid-overlay {
   pointer-events: none;
   position: fixed;
   inset: 0;
   z-index: 0;
-  opacity: 0.025;
+  opacity: 0.04;
   background-image:
-    linear-gradient(rgba(0,210,200,0.5) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,210,200,0.5) 1px, transparent 1px);
+    linear-gradient(rgba(0, 212, 200, 0.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 200, 0.6) 1px, transparent 1px);
   background-size: 48px 48px;
   transition: opacity 0.35s ease;
 }
 
 [data-theme="light"] .grid-overlay {
-  opacity: 0.06;
+  opacity: 0.07;
 }
 
-/* Glow orbs */
+/* Glow orbs — same as screenshot's ambient teal glow top-left */
 .orb {
   pointer-events: none;
   position: fixed;
   border-radius: 50%;
-  filter: blur(90px);
+  filter: blur(100px);
   z-index: 0;
   animation: orbDrift 22s ease-in-out infinite;
   transition: opacity 0.35s ease;
 }
 
 .orb-1 {
-  width: 520px; height: 520px;
-  background: radial-gradient(circle, rgba(0,210,200,0.08) 0%, transparent 70%);
-  top: -160px; left: -120px;
+  width: 560px; height: 560px;
+  background: radial-gradient(circle, rgba(0, 212, 200, 0.10) 0%, transparent 70%);
+  top: -180px; left: -140px;
   animation-delay: 0s;
 }
 
 .orb-2 {
-  width: 420px; height: 420px;
-  background: radial-gradient(circle, rgba(0,229,255,0.06) 0%, transparent 70%);
-  bottom: 20%; right: -80px;
+  width: 440px; height: 440px;
+  background: radial-gradient(circle, rgba(0, 232, 255, 0.07) 0%, transparent 70%);
+  bottom: 18%; right: -90px;
   animation-delay: -9s;
 }
 
 .orb-3 {
-  width: 320px; height: 320px;
-  background: radial-gradient(circle, rgba(0,210,200,0.07) 0%, transparent 70%);
+  width: 340px; height: 340px;
+  background: radial-gradient(circle, rgba(0, 212, 200, 0.08) 0%, transparent 70%);
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   animation-delay: -16s;
@@ -165,6 +172,7 @@ body {
 
 /* =====================
    NAVBAR
+   Matches screenshot: dark translucent bar, teal logo, pill toggles
    ===================== */
 .navbar {
   position: fixed;
@@ -173,8 +181,8 @@ body {
   height: 54px;
   background: var(--nav-bg);
   border-bottom: 1px solid var(--nav-border);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
   padding: 0 24px;
@@ -187,7 +195,7 @@ body {
   font-size: 15px;
   font-weight: 500;
   color: var(--logo-color);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -260,7 +268,7 @@ body {
 .theme-toggle:hover {
   border-color: var(--border-hi);
   color: var(--teal-hi);
-  box-shadow: 0 0 10px var(--teal-glow);
+  box-shadow: 0 0 12px var(--teal-glow);
 }
 
 .theme-toggle .toggle-track {
@@ -303,7 +311,7 @@ body {
 .container {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 94px 24px 80px; /* extra top for navbar */
+  padding: 94px 24px 80px;
   position: relative;
   z-index: 1;
 }
@@ -324,7 +332,7 @@ body {
   padding: 7px 14px 7px 10px;
   border: 1px solid var(--border);
   border-radius: 100px;
-  background: rgba(0, 210, 200, 0.04);
+  background: rgba(0, 212, 200, 0.04);
   transition: color 0.2s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
   margin-bottom: 32px;
 }
@@ -338,8 +346,8 @@ body {
 .back-btn:hover {
   color: var(--teal-hi);
   border-color: var(--border-hi);
-  background: rgba(0, 210, 200, 0.08);
-  box-shadow: 0 0 14px rgba(0, 210, 200, 0.1);
+  background: rgba(0, 212, 200, 0.08);
+  box-shadow: 0 0 16px rgba(0, 212, 200, 0.12);
 }
 
 .back-btn:hover svg {
@@ -349,6 +357,9 @@ body {
 
 /* =====================
    HEADER
+   Typography matches screenshot:
+   - "Understanding" = bold Syne 800, white, tight tracking
+   - "Online Threats" = teal gradient, same weight
    ===================== */
 .site-header {
   margin-bottom: 40px;
@@ -364,11 +375,12 @@ body {
   gap: 7px;
   font-family: var(--mono);
   font-size: 10.5px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--teal-hi);
-  background: rgba(0, 210, 200, 0.09);
+  background: rgba(0, 212, 200, 0.08);
   border: 1px solid var(--border-hi);
-  padding: 5px 13px;
+  padding: 5px 14px;
   border-radius: 100px;
   margin-bottom: 22px;
   animation: fadein 0.6s ease both;
@@ -379,16 +391,18 @@ body {
   stroke: var(--teal-hi);
 }
 
+/* Heading matches screenshot weight & letter-spacing exactly */
 .site-header h1 {
   font-size: clamp(40px, 7vw, 68px);
   font-weight: 800;
   line-height: 1.04;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.04em;
   color: var(--text);
   margin-bottom: 14px;
   animation: fadein 0.7s 0.1s ease both;
 }
 
+/* Teal gradient accent — matches the screenshot's "Online Threats" treatment */
 .site-header h1 .accent {
   background: linear-gradient(135deg, var(--teal) 0%, var(--cyan) 100%);
   -webkit-background-clip: text;
@@ -397,12 +411,13 @@ body {
 }
 
 .subtitle {
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--muted-hi);
-  line-height: 1.6;
+  line-height: 1.65;
   max-width: 480px;
   margin-bottom: 28px;
   animation: fadein 0.7s 0.2s ease both;
+  font-weight: 400;
 }
 
 /* Header stats row */
@@ -434,8 +449,8 @@ body {
 
 .stat-label {
   font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
+  font-weight: 600;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -452,7 +467,7 @@ body {
 .guide-banner {
   display: flex;
   align-items: center;
-  background: rgba(0, 210, 200, 0.04);
+  background: rgba(0, 212, 200, 0.04);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 14px 20px;
@@ -471,7 +486,7 @@ body {
   top: 0; left: 0; right: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--teal-hi), transparent);
-  opacity: 0.4;
+  opacity: 0.45;
 }
 
 .guide-item {
@@ -490,7 +505,7 @@ body {
 
 .guide-item strong {
   color: var(--teal-hi);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .guide-sep {
@@ -502,6 +517,7 @@ body {
 
 /* =====================
    SECTION
+   Section numbers match the large, faded "01 02 03" in screenshot
    ===================== */
 .section {
   margin-bottom: 44px;
@@ -519,9 +535,9 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--muted);
   margin-bottom: 16px;
@@ -529,12 +545,14 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+/* Large faded section number — exactly like the "01" "02" "03" in screenshot */
 .section-num {
   font-family: var(--mono);
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 400;
   color: var(--border-hi);
   line-height: 1;
+  opacity: 0.8;
 }
 
 .section-tag {
@@ -545,7 +563,7 @@ body {
   letter-spacing: 0.04em;
   text-transform: none;
   font-weight: 400;
-  opacity: 0.7;
+  opacity: 0.65;
 }
 
 /* =====================
@@ -559,6 +577,10 @@ body {
 
 /* =====================
    CARD
+   Active card style matches screenshot's highlighted "02" card:
+   - Brighter teal border
+   - Top highlight line
+   - Left accent bar
    ===================== */
 .card {
   background: var(--surface);
@@ -578,27 +600,30 @@ body {
     background 0.25s ease;
 }
 
+/* Radial glow in top-left of card — matches screenshot card glow */
 .card-glow {
   position: absolute;
   top: -40px; left: -40px;
-  width: 140px; height: 140px;
+  width: 150px; height: 150px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0,210,200,0.16) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(0, 212, 200, 0.18) 0%, transparent 70%);
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.4s ease;
 }
 
+/* Top shimmer line — present on active/hover card in screenshot */
 .card::before {
   content: "";
   position: absolute;
   top: 0; left: 20px; right: 20px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0,218,210,0.8), transparent);
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 200, 0.9), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
+/* Left accent bar — visible on the highlighted card in screenshot */
 .card::after {
   content: "";
   position: absolute;
@@ -619,9 +644,9 @@ body {
   border-color: var(--border-hi);
   background: var(--surface2);
   box-shadow:
-    0 0 0 1px rgba(0,210,200,0.16),
-    0 8px 40px rgba(0, 210, 200, 0.09),
-    0 2px 12px rgba(0,0,0,0.18);
+    0 0 0 1px rgba(0, 212, 200, 0.18),
+    0 8px 40px rgba(0, 212, 200, 0.10),
+    0 2px 12px rgba(0, 0, 0, 0.25);
   transform: translateY(-4px);
 }
 
@@ -637,12 +662,18 @@ body {
   opacity: 0.7;
 }
 
+/* Active state exactly matching highlighted card in screenshot */
 .card.active {
   border-color: var(--teal);
   background: var(--surface2);
   box-shadow:
-    0 0 0 1px rgba(0,210,200,0.35),
-    0 12px 50px rgba(0, 210, 200, 0.14);
+    0 0 0 1px rgba(0, 212, 200, 0.38),
+    0 12px 50px rgba(0, 212, 200, 0.16),
+    0 4px 20px rgba(0, 0, 0, 0.30);
+}
+
+.card.active .card-glow {
+  opacity: 1;
 }
 
 .card.active::before,
@@ -652,6 +683,7 @@ body {
 
 /* =====================
    CARD HEADER
+   Icon box matches screenshot's small icon squares
    ===================== */
 .card-header {
   display: flex;
@@ -663,8 +695,8 @@ body {
 .card-icon {
   width: 38px;
   height: 38px;
-  background: rgba(0, 210, 200, 0.09);
-  border: 1px solid rgba(0, 210, 200, 0.2);
+  background: rgba(0, 212, 200, 0.08);
+  border: 1px solid rgba(0, 212, 200, 0.20);
   border-radius: 9px;
   display: grid;
   place-items: center;
@@ -673,21 +705,23 @@ body {
 }
 
 .card:hover .card-icon {
-  background: rgba(0, 210, 200, 0.16);
-  border-color: rgba(0, 210, 200, 0.4);
-  box-shadow: 0 0 12px rgba(0, 210, 200, 0.13);
+  background: rgba(0, 212, 200, 0.16);
+  border-color: rgba(0, 212, 200, 0.42);
+  box-shadow: 0 0 14px rgba(0, 212, 200, 0.15);
 }
 
 .card-icon svg {
   stroke: var(--teal-hi);
 }
 
+/* Card title — matches screenshot's bold heading inside cards */
 .card h3 {
   font-size: 14.5px;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 2px;
   line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .org-label {
@@ -702,8 +736,8 @@ body {
    DESCRIPTION BLOCK
    ===================== */
 .desc-block {
-  background: rgba(0,210,200,0.03);
-  border: 1px solid rgba(0,210,200,0.07);
+  background: rgba(0, 212, 200, 0.03);
+  border: 1px solid rgba(0, 212, 200, 0.07);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
   margin-bottom: 14px;
@@ -711,23 +745,19 @@ body {
 }
 
 [data-theme="light"] .desc-block {
-  background: rgba(0,144,138,0.04);
-  border-color: rgba(0,144,138,0.1);
+  background: rgba(0, 144, 138, 0.04);
+  border-color: rgba(0, 144, 138, 0.10);
 }
 
 .desc {
   font-size: 12px;
   color: var(--muted-hi);
-  line-height: 1.65;
+  line-height: 1.7;
   margin-bottom: 10px;
+  font-weight: 400;
 }
 
-.card-header .desc {
-  margin-bottom: 0;
-  font-size: 11.5px;
-}
-
-/* Tags */
+/* Tags — teal pill style matching screenshot */
 .tags {
   display: flex;
   flex-wrap: wrap;
@@ -739,17 +769,17 @@ body {
   font-size: 9.5px;
   letter-spacing: 0.06em;
   color: var(--teal-hi);
-  background: rgba(0, 210, 200, 0.09);
-  border: 1px solid rgba(0, 210, 200, 0.2);
-  padding: 3px 8px;
+  background: rgba(0, 212, 200, 0.09);
+  border: 1px solid rgba(0, 212, 200, 0.22);
+  padding: 3px 9px;
   border-radius: 100px;
   white-space: nowrap;
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .tag:hover {
-  background: rgba(0, 210, 200, 0.18);
-  border-color: rgba(0, 210, 200, 0.4);
+  background: rgba(0, 212, 200, 0.18);
+  border-color: rgba(0, 212, 200, 0.42);
 }
 
 [data-theme="light"] .tag {
@@ -772,21 +802,21 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(0,210,200,0.03);
-  border: 1px solid rgba(0,210,200,0.07);
+  background: rgba(0, 212, 200, 0.03);
+  border: 1px solid rgba(0, 212, 200, 0.07);
   padding: 8px 11px;
   border-radius: 7px;
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 [data-theme="light"] .row {
-  background: rgba(0,144,138,0.04);
-  border-color: rgba(0,144,138,0.1);
+  background: rgba(0, 144, 138, 0.04);
+  border-color: rgba(0, 144, 138, 0.10);
 }
 
 .row:hover {
-  background: rgba(0, 210, 200, 0.07);
-  border-color: rgba(0, 210, 200, 0.2);
+  background: rgba(0, 212, 200, 0.07);
+  border-color: rgba(0, 212, 200, 0.22);
 }
 
 .mono {
@@ -811,6 +841,7 @@ body {
 
 /* =====================
    BUTTONS
+   Green = Call, Teal = Email — matches screenshot button pill style
    ===================== */
 .btn {
   display: inline-flex;
@@ -819,9 +850,9 @@ body {
   gap: 5px;
   font-family: var(--sans);
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  padding: 5px 11px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  padding: 5px 12px;
   border-radius: 6px;
   border: none;
   text-decoration: none;
@@ -843,7 +874,7 @@ body {
 /* Green — Call */
 .btn.green {
   background: rgba(0, 200, 150, 0.12);
-  border: 1px solid rgba(0, 200, 150, 0.28);
+  border: 1px solid rgba(0, 200, 150, 0.30);
   color: var(--green-hi);
 }
 
@@ -853,14 +884,14 @@ body {
 
 .btn.green:hover {
   background: rgba(0, 200, 150, 0.22);
-  border-color: rgba(0, 200, 150, 0.48);
-  box-shadow: 0 0 12px rgba(0, 200, 150, 0.18);
+  border-color: rgba(0, 200, 150, 0.50);
+  box-shadow: 0 0 14px rgba(0, 200, 150, 0.20);
 }
 
 /* Teal — Email */
 .btn.blue {
-  background: rgba(0, 210, 200, 0.1);
-  border: 1px solid rgba(0, 210, 200, 0.28);
+  background: rgba(0, 212, 200, 0.10);
+  border: 1px solid rgba(0, 212, 200, 0.30);
   color: var(--teal-hi);
 }
 
@@ -869,30 +900,26 @@ body {
 }
 
 .btn.blue:hover {
-  background: rgba(0, 210, 200, 0.2);
-  border-color: rgba(0, 210, 200, 0.48);
-  box-shadow: 0 0 12px rgba(0, 210, 200, 0.2);
+  background: rgba(0, 212, 200, 0.20);
+  border-color: rgba(0, 212, 200, 0.50);
+  box-shadow: 0 0 14px rgba(0, 212, 200, 0.22);
 }
 
-[data-theme="light"] .btn.green {
-  color: var(--green);
-}
+[data-theme="light"] .btn.green { color: var(--green); }
 [data-theme="light"] .btn.green svg { stroke: var(--green); }
-[data-theme="light"] .btn.blue {
-  color: var(--teal);
-}
+[data-theme="light"] .btn.blue  { color: var(--teal); }
 [data-theme="light"] .btn.blue svg { stroke: var(--teal); }
 
-/* Save button */
+/* Save button — full-width teal outline */
 .btn.save {
   width: 100%;
   padding: 10px;
   font-size: 11px;
-  background: rgba(0, 210, 200, 0.07);
+  background: rgba(0, 212, 200, 0.07);
   border: 1px solid var(--border-hi);
   color: var(--teal-hi);
   border-radius: 9px;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   margin-top: 2px;
 }
 
@@ -901,14 +928,12 @@ body {
 }
 
 .btn.save:hover {
-  background: rgba(0, 210, 200, 0.16);
-  box-shadow: 0 0 18px rgba(0, 210, 200, 0.16);
+  background: rgba(0, 212, 200, 0.16);
+  box-shadow: 0 0 20px rgba(0, 212, 200, 0.18);
   transform: translateY(-1px);
 }
 
-[data-theme="light"] .btn.save {
-  color: var(--teal);
-}
+[data-theme="light"] .btn.save { color: var(--teal); }
 [data-theme="light"] .btn.save svg { stroke: var(--teal); }
 
 /* =====================
@@ -955,7 +980,7 @@ body {
   pointer-events: none;
   transform: translateY(12px);
   transition: opacity 0.3s ease, transform 0.3s ease, box-shadow 0.25s ease, background 0.25s ease;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.22);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
 }
 
 .scroll-top svg {
@@ -969,8 +994,8 @@ body {
 }
 
 .scroll-top:hover {
-  background: rgba(0, 210, 200, 0.13);
-  box-shadow: 0 6px 28px rgba(0, 210, 200, 0.22);
+  background: rgba(0, 212, 200, 0.14);
+  box-shadow: 0 6px 28px rgba(0, 212, 200, 0.24);
   transform: translateY(-2px);
 }
 

@@ -2158,7 +2158,7 @@ QR MODALS
 #qr_preview_img { max-width:120px; max-height:120px; border-radius:8px; border:1px solid var(--border-accent); object-fit:contain; background:#000; }
 .qr-image-name { font-size:10px; color:var(--white-muted); font-family:'JetBrains Mono',monospace; margin:0; text-align:center; word-break:break-all; max-width:200px; }
 .qr-upload-result { display:none; align-items:center; gap:9px; background:var(--qr-upload-result-bg); backdrop-filter:blur(8px); border:1px solid var(--border-glass); border-radius:10px; padding:11px 13px; }
-.qr-upload-result.visible { display:flex; }
+.qr-upload-result.visible { display:flex; } 
 .qr-result-icon { font-size:18px; flex-shrink:0; }
 .qr-result-text { display:flex; flex-direction:column; gap:2px; min-width:0; }
 #qr_result_label { font-size:12px; font-weight:600; color:var(--white); }

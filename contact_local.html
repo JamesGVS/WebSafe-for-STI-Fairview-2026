@@ -7,7 +7,824 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="contact_local.css">
+  <style>
+/* =====================
+   GOOGLE FONTS
+   ===================== */
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* =====================
+   RESET & BASE
+   ===================== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg:         #050d14;
+  --bg2:        #071219;
+  --surface:    #091520;
+  --surface2:   #0d1e2b;
+  --surface3:   #112435;
+  --border:     rgba(0, 212, 200, 0.14);
+  --border-hi:  rgba(0, 212, 200, 0.50);
+  --teal:       #00d4c8;
+  --teal-hi:    #2ef8f0;
+  --teal-glow:  rgba(0, 212, 200, 0.15);
+  --cyan:       #00e8ff;
+  --green:      #00c896;
+  --green-hi:   #00f0b0;
+  --text:       #cce8ec;
+  --muted:      #3d6878;
+  --muted-hi:   #5d8fa0;
+  --mono:       "JetBrains Mono", monospace;
+  --sans:       "Syne", sans-serif;
+  --radius:     14px;
+  --radius-sm:  8px;
+  --nav-bg:     rgba(5, 13, 20, 0.90);
+  --nav-border: rgba(0, 212, 200, 0.13);
+  --logo-color: #00d4c8;
+}
+
+[data-theme="light"] {
+  --bg:         #eef7f8;
+  --bg2:        #e4f2f4;
+  --surface:    #ffffff;
+  --surface2:   #f0fafb;
+  --surface3:   #e0f5f6;
+  --border:     rgba(0, 160, 155, 0.18);
+  --border-hi:  rgba(0, 160, 155, 0.45);
+  --teal:       #00908a;
+  --teal-hi:    #007a75;
+  --teal-glow:  rgba(0, 160, 155, 0.10);
+  --cyan:       #008fa8;
+  --green:      #00876a;
+  --green-hi:   #006a54;
+  --text:       #0d2e35;
+  --muted:      #5a8090;
+  --muted-hi:   #3a6070;
+  --nav-bg:     rgba(238, 247, 248, 0.92);
+  --nav-border: rgba(0, 160, 155, 0.15);
+  --logo-color: #00908a;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+.noise {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px;
+}
+
+[data-theme="light"] .noise { opacity: 0.015; }
+
+.grid-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.04;
+  background-image:
+    linear-gradient(rgba(0, 212, 200, 0.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 200, 0.6) 1px, transparent 1px);
+  background-size: 48px 48px;
+  transition: opacity 0.35s ease;
+}
+
+[data-theme="light"] .grid-overlay { opacity: 0.07; }
+
+.orb {
+  pointer-events: none;
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  z-index: 0;
+  animation: orbDrift 22s ease-in-out infinite;
+  transition: opacity 0.35s ease;
+}
+
+.orb-1 {
+  width: 560px; height: 560px;
+  background: radial-gradient(circle, rgba(0, 212, 200, 0.10) 0%, transparent 70%);
+  top: -180px; left: -140px;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 440px; height: 440px;
+  background: radial-gradient(circle, rgba(0, 232, 255, 0.07) 0%, transparent 70%);
+  bottom: 18%; right: -90px;
+  animation-delay: -9s;
+}
+
+.orb-3 {
+  width: 340px; height: 340px;
+  background: radial-gradient(circle, rgba(0, 212, 200, 0.08) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -16s;
+}
+
+[data-theme="light"] .orb-1 { background: radial-gradient(circle, rgba(0,160,155,0.07) 0%, transparent 70%); }
+[data-theme="light"] .orb-2 { background: radial-gradient(circle, rgba(0,143,168,0.05) 0%, transparent 70%); }
+[data-theme="light"] .orb-3 { background: radial-gradient(circle, rgba(0,160,155,0.06) 0%, transparent 70%); }
+
+@keyframes orbDrift {
+  0%, 100% { transform: translate(0, 0); }
+  33%       { transform: translate(28px, -18px); }
+  66%       { transform: translate(-18px, 28px); }
+}
+
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 200;
+  height: 54px;
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--nav-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 12px;
+  transition: background 0.35s ease, border-color 0.35s ease;
+}
+
+.nav-logo {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--logo-color);
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+  text-decoration: none;
+}
+
+.nav-logo svg { stroke: var(--logo-color); }
+
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 3px;
+  gap: 2px;
+  transition: border-color 0.25s ease, background 0.35s ease;
+}
+
+.lang-btn {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  padding: 5px 11px;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--muted-hi);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.lang-btn.active { background: var(--teal); color: #fff; }
+[data-theme="light"] .lang-btn.active { color: #fff; }
+.lang-btn:not(.active):hover { color: var(--teal-hi); }
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 5px 13px 5px 10px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  color: var(--muted-hi);
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+}
+
+.theme-toggle:hover {
+  border-color: var(--border-hi);
+  color: var(--teal-hi);
+  box-shadow: 0 0 12px var(--teal-glow);
+}
+
+.theme-toggle .toggle-track {
+  width: 28px; height: 16px;
+  background: var(--surface3);
+  border: 1px solid var(--border-hi);
+  border-radius: 100px;
+  position: relative;
+  transition: background 0.25s ease;
+  flex-shrink: 0;
+}
+
+[data-theme="light"] .theme-toggle .toggle-track { background: var(--teal); }
+
+.theme-toggle .toggle-thumb {
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--muted-hi);
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+
+[data-theme="light"] .theme-toggle .toggle-thumb {
+  transform: translateX(12px);
+  background: #fff;
+}
+
+.theme-toggle .toggle-icon { font-size: 12px; line-height: 1; }
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 94px 24px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  color: var(--muted-hi);
+  text-decoration: none;
+  padding: 7px 14px 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  background: rgba(0, 212, 200, 0.04);
+  transition: color 0.2s ease, border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+  margin-bottom: 32px;
+}
+
+.back-btn svg {
+  stroke: var(--muted-hi);
+  flex-shrink: 0;
+  transition: stroke 0.2s ease, transform 0.25s ease;
+}
+
+.back-btn:hover {
+  color: var(--teal-hi);
+  border-color: var(--border-hi);
+  background: rgba(0, 212, 200, 0.08);
+  box-shadow: 0 0 16px rgba(0, 212, 200, 0.12);
+}
+
+.back-btn:hover svg {
+  stroke: var(--teal-hi);
+  transform: translateX(-3px);
+}
+
+.site-header { margin-bottom: 40px; }
+.header-content { margin-top: 4px; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--teal-hi);
+  background: rgba(0, 212, 200, 0.08);
+  border: 1px solid var(--border-hi);
+  padding: 5px 14px;
+  border-radius: 100px;
+  margin-bottom: 22px;
+  animation: fadein 0.6s ease both;
+}
+
+.badge svg { flex-shrink: 0; stroke: var(--teal-hi); }
+
+.site-header h1 {
+  font-size: clamp(40px, 7vw, 68px);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  color: var(--text);
+  margin-bottom: 14px;
+  animation: fadein 0.7s 0.1s ease both;
+}
+
+.site-header h1 .accent {
+  background: linear-gradient(135deg, var(--teal) 0%, var(--cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: 13.5px;
+  color: var(--muted-hi);
+  line-height: 1.65;
+  max-width: 480px;
+  margin-bottom: 28px;
+  animation: fadein 0.7s 0.2s ease both;
+  font-weight: 400;
+}
+
+.header-stats {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  animation: fadein 0.7s 0.3s ease both;
+}
+
+.stat { display: flex; flex-direction: column; gap: 2px; padding: 0 20px; }
+.stat:first-child { padding-left: 0; }
+
+.stat-num {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--teal-hi);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.stat-divider { width: 1px; height: 36px; background: var(--border); }
+
+.guide-banner {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 212, 200, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+  gap: 12px;
+  animation: fadein 0.7s 0.4s ease both;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.35s ease, border-color 0.35s ease;
+}
+
+.guide-banner::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--teal-hi), transparent);
+  opacity: 0.45;
+}
+
+.guide-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted-hi); }
+.guide-item svg { stroke: var(--teal-hi); flex-shrink: 0; opacity: 0.85; }
+.guide-item strong { color: var(--teal-hi); font-weight: 700; }
+.guide-sep { width: 1px; height: 18px; background: var(--border); flex-shrink: 0; }
+
+.section {
+  margin-bottom: 44px;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.section.in-view { opacity: 1; transform: translateY(0); }
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-num {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--border-hi);
+  line-height: 1;
+  opacity: 0.8;
+}
+
+.section-tag {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-weight: 400;
+  opacity: 0.65;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.card-glow {
+  position: absolute;
+  top: -40px; left: -40px;
+  width: 150px; height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 212, 200, 0.18) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 20px; right: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 200, 0.9), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card::after {
+  content: "";
+  position: absolute;
+  top: 20px; bottom: 20px; left: 0;
+  width: 2px;
+  background: linear-gradient(180deg, transparent, var(--teal), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 0 2px 2px 0;
+}
+
+.card.show { opacity: 1; transform: translateY(0); }
+
+.card:hover {
+  border-color: var(--border-hi);
+  background: var(--surface2);
+  box-shadow:
+    0 0 0 1px rgba(0, 212, 200, 0.18),
+    0 8px 40px rgba(0, 212, 200, 0.10),
+    0 2px 12px rgba(0, 0, 0, 0.25);
+  transform: translateY(-4px);
+}
+
+.card:hover .card-glow { opacity: 1; }
+.card:hover::before { opacity: 1; }
+.card:hover::after { opacity: 0.7; }
+
+.card.active {
+  border-color: var(--teal);
+  background: var(--surface2);
+  box-shadow:
+    0 0 0 1px rgba(0, 212, 200, 0.38),
+    0 12px 50px rgba(0, 212, 200, 0.16),
+    0 4px 20px rgba(0, 0, 0, 0.30);
+}
+
+.card.active .card-glow { opacity: 1; }
+.card.active::before, .card.active::after { opacity: 1; }
+
+.card-header { display: flex; align-items: flex-start; gap: 13px; margin-bottom: 14px; }
+
+.card-icon {
+  width: 38px; height: 38px;
+  background: rgba(0, 212, 200, 0.08);
+  border: 1px solid rgba(0, 212, 200, 0.20);
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover .card-icon {
+  background: rgba(0, 212, 200, 0.16);
+  border-color: rgba(0, 212, 200, 0.42);
+  box-shadow: 0 0 14px rgba(0, 212, 200, 0.15);
+}
+
+.card-icon svg { stroke: var(--teal-hi); }
+
+.card h3 {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.org-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+}
+
+.desc-block {
+  background: rgba(0, 212, 200, 0.03);
+  border: 1px solid rgba(0, 212, 200, 0.07);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  transition: background 0.35s ease;
+}
+
+[data-theme="light"] .desc-block {
+  background: rgba(0, 144, 138, 0.04);
+  border-color: rgba(0, 144, 138, 0.10);
+}
+
+.desc {
+  font-size: 12px;
+  color: var(--muted-hi);
+  line-height: 1.7;
+  margin-bottom: 10px;
+  font-weight: 400;
+}
+
+.tags { display: flex; flex-wrap: wrap; gap: 5px; }
+
+.tag {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  color: var(--teal-hi);
+  background: rgba(0, 212, 200, 0.09);
+  border: 1px solid rgba(0, 212, 200, 0.22);
+  padding: 3px 9px;
+  border-radius: 100px;
+  white-space: nowrap;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.tag:hover {
+  background: rgba(0, 212, 200, 0.18);
+  border-color: rgba(0, 212, 200, 0.42);
+}
+
+[data-theme="light"] .tag {
+  color: var(--teal);
+  background: rgba(0, 144, 138, 0.08);
+  border-color: rgba(0, 144, 138, 0.22);
+}
+
+.contacts { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 212, 200, 0.03);
+  border: 1px solid rgba(0, 212, 200, 0.07);
+  padding: 8px 11px;
+  border-radius: 7px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+[data-theme="light"] .row {
+  background: rgba(0, 144, 138, 0.04);
+  border-color: rgba(0, 144, 138, 0.10);
+}
+
+.row:hover {
+  background: rgba(0, 212, 200, 0.07);
+  border-color: rgba(0, 212, 200, 0.22);
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--text);
+  letter-spacing: 0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 68%;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.row-icon { flex-shrink: 0; stroke: var(--muted); opacity: 0.7; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-family: var(--sans);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: none;
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn:hover { transform: scale(1.06); }
+.btn:active { transform: scale(0.97); }
+
+.btn.green {
+  background: rgba(0, 200, 150, 0.12);
+  border: 1px solid rgba(0, 200, 150, 0.30);
+  color: var(--green-hi);
+}
+
+.btn.green svg { stroke: var(--green-hi); }
+
+.btn.green:hover {
+  background: rgba(0, 200, 150, 0.22);
+  border-color: rgba(0, 200, 150, 0.50);
+  box-shadow: 0 0 14px rgba(0, 200, 150, 0.20);
+}
+
+.btn.blue {
+  background: rgba(0, 212, 200, 0.10);
+  border: 1px solid rgba(0, 212, 200, 0.30);
+  color: var(--teal-hi);
+}
+
+.btn.blue svg { stroke: var(--teal-hi); }
+
+.btn.blue:hover {
+  background: rgba(0, 212, 200, 0.20);
+  border-color: rgba(0, 212, 200, 0.50);
+  box-shadow: 0 0 14px rgba(0, 212, 200, 0.22);
+}
+
+[data-theme="light"] .btn.green { color: var(--green); }
+[data-theme="light"] .btn.green svg { stroke: var(--green); }
+[data-theme="light"] .btn.blue  { color: var(--teal); }
+[data-theme="light"] .btn.blue svg { stroke: var(--teal); }
+
+.btn.save {
+  width: 100%;
+  padding: 10px;
+  font-size: 11px;
+  background: rgba(0, 212, 200, 0.07);
+  border: 1px solid var(--border-hi);
+  color: var(--teal-hi);
+  border-radius: 9px;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+.btn.save svg { stroke: var(--teal-hi); }
+
+.btn.save:hover {
+  background: rgba(0, 212, 200, 0.16);
+  box-shadow: 0 0 20px rgba(0, 212, 200, 0.18);
+  transform: translateY(-1px);
+}
+
+[data-theme="light"] .btn.save { color: var(--teal); }
+[data-theme="light"] .btn.save svg { stroke: var(--teal); }
+
+.site-footer {
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.footer-inner svg { stroke: var(--muted); flex-shrink: 0; opacity: 0.7; }
+
+.scroll-top {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  z-index: 100;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid var(--border-hi);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
+  transition: opacity 0.3s ease, transform 0.3s ease, box-shadow 0.25s ease, background 0.25s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.28);
+}
+
+.scroll-top svg { stroke: var(--teal-hi); }
+
+.scroll-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.scroll-top:hover {
+  background: rgba(0, 212, 200, 0.14);
+  box-shadow: 0 6px 28px rgba(0, 212, 200, 0.24);
+  transform: translateY(-2px);
+}
+
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .container { padding: 84px 16px 80px; }
+  .navbar { padding: 0 14px; gap: 8px; }
+  .lang-btn { padding: 4px 8px; }
+  .theme-toggle { padding: 5px 9px 5px 8px; gap: 6px; }
+  .theme-toggle .toggle-label { display: none; }
+  .row { flex-direction: column; align-items: flex-start; gap: 7px; }
+  .mono { max-width: 100%; white-space: normal; word-break: break-all; }
+  .btn.green, .btn.blue { width: 100%; text-align: center; padding: 7px 10px; justify-content: center; }
+  .site-header h1 { font-size: 38px; }
+  .guide-banner { flex-direction: column; gap: 10px; }
+  .guide-sep { display: none; }
+  .header-stats { gap: 0; }
+  .stat { padding: 0 14px; }
+  .section-tag { display: none; }
+  .stat-num { font-size: 18px; }
+  .scroll-top { bottom: 16px; right: 16px; }
+}
+
+@media (max-width: 380px) {
+  .header-stats { flex-wrap: wrap; gap: 12px; }
+  .stat-divider { display: none; }
+  .stat { padding: 0; }
+}
+  </style>
 </head>
 <body>
 
@@ -17,22 +834,16 @@
 <div class="orb orb-2"></div>
 <div class="orb orb-3"></div>
 
-<!-- ========================
-     NAVBAR
-======================== -->
+<!-- NAVBAR -->
 <nav class="navbar">
   <a href="main.html" class="nav-logo">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
     WebSafe
   </a>
-
-  <!-- Language toggle -->
   <div class="lang-toggle" id="langToggle">
     <button class="lang-btn active" data-lang="en" onclick="setLang('en')">EN</button>
     <button class="lang-btn" data-lang="fil" onclick="setLang('fil')">Filipino</button>
   </div>
-
-  <!-- Dark / Light toggle -->
   <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">
     <span class="toggle-track"><span class="toggle-thumb"></span></span>
     <span class="toggle-icon" id="themeIcon"></span>
@@ -40,9 +851,7 @@
   </button>
 </nav>
 
-<!-- ========================
-     MAIN CONTAINER
-======================== -->
+<!-- MAIN CONTAINER -->
 <div class="container">
 
   <!-- HEADER -->
@@ -51,24 +860,21 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       <span data-i18n="back">Back to WebSafe</span>
     </a>
-
     <div class="header-content">
       <span class="badge">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         WebSafe
       </span>
-
       <h1><span data-i18n="h1_line1">Local</span><br><span class="accent" data-i18n="h1_line2">Authorities</span></h1>
       <p class="subtitle" data-i18n="subtitle">Quick report access for Philippine cyber incidents — verified government and telco channels</p>
-
       <div class="header-stats">
         <div class="stat">
-          <span class="stat-num">8</span>
+          <span class="stat-num">9</span>
           <span class="stat-label" data-i18n="stat_agencies">Agencies</span>
         </div>
         <div class="stat-divider"></div>
         <div class="stat">
-          <span class="stat-num">5</span>
+          <span class="stat-num">6</span>
           <span class="stat-label" data-i18n="stat_categories">Categories</span>
         </div>
         <div class="stat-divider"></div>
@@ -96,9 +902,14 @@
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
       <span data-i18n="guide3"><span>Spam SMS? → </span><strong>Globe or Smart</strong></span>
     </div>
+    <div class="guide-sep"></div>
+    <div class="guide-item">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+      <span data-i18n="guide4"><span>Telco abuse? → </span><strong>NTC</strong></span>
+    </div>
   </div>
 
-  <!-- ======================== LAW ENFORCEMENT ======================== -->
+  <!-- 01 LAW ENFORCEMENT -->
   <section class="section">
     <h2 class="section-title">
       <span class="section-num">01</span>
@@ -135,11 +946,11 @@
           </div>
           <div class="row">
             <span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>acg@pnp.gov.ph</span>
-            <a href="https://mail.google.com/mail/u/0/#search/acg%40pnp.gov.ph" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a>
+            <a href="https://mail.google.com/mail/u/0/#search/acg%40pnp.gov.ph" target="_blank" rel="noopener" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a>
           </div>
           <div class="row">
             <span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>onlinecrime.pnp@gmail.com</span>
-            <a href="https://mail.google.com/mail/u/0/#search/onlinecrime.pnp%40gmail.com" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a>
+            <a href="https://mail.google.com/mail/u/0/#search/onlinecrime.pnp%40gmail.com" target="_blank" rel="noopener" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a>
           </div>
         </div>
         <button class="btn save" onclick="saveContact('PNP ACG','0287230401','acg@pnp.gov.ph')">
@@ -175,7 +986,7 @@
           <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>8525-4093</span><a href="tel:0285254093" class="btn green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-i18n="btn_call">Call</span></a></div>
           <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>0955-140-5330</span><a href="tel:09551405330" class="btn green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-i18n="btn_call">Call</span></a></div>
           <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>0920-412-9999</span><a href="tel:09204129999" class="btn green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-i18n="btn_call">Call</span></a></div>
-          <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>ccd@nbi.gov.ph</span><a href="https://mail.google.com/mail/u/0/#search/ccd%40nbi.gov.ph" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a></div>
+          <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>ccd@nbi.gov.ph</span><a href="https://mail.google.com/mail/u/0/#search/ccd%40nbi.gov.ph" target="_blank" rel="noopener" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a></div>
         </div>
         <button class="btn save" onclick="saveContact('NBI Cybercrime','0285238231','ccd@nbi.gov.ph')">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -186,7 +997,7 @@
     </div>
   </section>
 
-  <!-- ======================== FINANCIAL ======================== -->
+  <!-- 02 FINANCIAL -->
   <section class="section">
     <h2 class="section-title">
       <span class="section-num">02</span>
@@ -218,7 +1029,7 @@
         </div>
         <div class="contacts">
           <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>8708-7087</span><a href="tel:0287087087" class="btn green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-i18n="btn_call">Call</span></a></div>
-          <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>consumeraffairs@bsp.gov.ph</span><a href="https://mail.google.com/mail/u/0/#search/consumeraffairs%40bsp.gov.ph" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a></div>
+          <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>consumeraffairs@bsp.gov.ph</span><a href="https://mail.google.com/mail/u/0/#search/consumeraffairs%40bsp.gov.ph" target="_blank" rel="noopener" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a></div>
         </div>
         <button class="btn save" onclick="saveContact('BSP','0287087087','consumeraffairs@bsp.gov.ph')">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -250,7 +1061,7 @@
         <div class="contacts">
           <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>8818-5990</span><a href="tel:0288185990" class="btn green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-i18n="btn_call">Call</span></a></div>
           <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>8818-6047</span><a href="tel:0288186047" class="btn green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-i18n="btn_call">Call</span></a></div>
-          <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>epd@sec.gov.ph</span><a href="https://mail.google.com/mail/u/0/#search/epd%40sec.gov.ph" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a></div>
+          <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>epd@sec.gov.ph</span><a href="https://mail.google.com/mail/u/0/#search/epd%40sec.gov.ph" target="_blank" rel="noopener" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a></div>
         </div>
         <button class="btn save" onclick="saveContact('SEC','0288185990','epd@sec.gov.ph')">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -261,7 +1072,7 @@
     </div>
   </section>
 
-  <!-- ======================== PRIVACY ======================== -->
+  <!-- 03 PRIVACY -->
   <section class="section">
     <h2 class="section-title">
       <span class="section-num">03</span>
@@ -293,7 +1104,7 @@
           <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>5322-1322</span><a href="tel:0253221322" class="btn green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-i18n="btn_call">Call</span></a></div>
           <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>0970-818-0555</span><a href="tel:09708180555" class="btn green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-i18n="btn_call">Call</span></a></div>
           <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>0905-506-1478</span><a href="tel:09055061478" class="btn green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-i18n="btn_call">Call</span></a></div>
-          <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>info@privacy.gov.ph</span><a href="https://mail.google.com/mail/u/0/#search/info%40privacy.gov.ph" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a></div>
+          <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>info@privacy.gov.ph</span><a href="https://mail.google.com/mail/u/0/#search/info%40privacy.gov.ph" target="_blank" rel="noopener" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a></div>
         </div>
         <button class="btn save" onclick="saveContact('NPC','0253221322','info@privacy.gov.ph')">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -303,7 +1114,7 @@
     </div>
   </section>
 
-  <!-- ======================== CYBER ======================== -->
+  <!-- 04 CYBER -->
   <section class="section">
     <h2 class="section-title">
       <span class="section-num">04</span>
@@ -332,7 +1143,7 @@
           </div>
         </div>
         <div class="contacts">
-          <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>onlinescam@dict.gov.ph</span><a href="https://mail.google.com/mail/u/0/#search/onlinescam%40dict.gov.ph" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a></div>
+          <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>onlinescam@dict.gov.ph</span><a href="https://mail.google.com/mail/u/0/#search/onlinescam%40dict.gov.ph" target="_blank" rel="noopener" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a></div>
         </div>
         <button class="btn save" onclick="saveContact('DICT','','onlinescam@dict.gov.ph')">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -342,7 +1153,7 @@
     </div>
   </section>
 
-  <!-- ======================== SMS / TELCO ======================== -->
+  <!-- 05 SMS / TELCO -->
   <section class="section">
     <h2 class="section-title">
       <span class="section-num">05</span>
@@ -374,7 +1185,7 @@
         </div>
         <div class="contacts">
           <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>211 (Globe)</span><a href="tel:211" class="btn green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-i18n="btn_call">Call</span></a></div>
-          <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>stopspam@globe.com.ph</span><a href="https://mail.google.com/mail/u/0/#search/stopspam%40globe.com.ph" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a></div>
+          <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>stopspam@globe.com.ph</span><a href="https://mail.google.com/mail/u/0/#search/stopspam%40globe.com.ph" target="_blank" rel="noopener" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a></div>
         </div>
         <button class="btn save" onclick="saveContact('Globe','211','stopspam@globe.com.ph')">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -405,9 +1216,71 @@
         </div>
         <div class="contacts">
           <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>*888 (Smart)</span><a href="tel:*888" class="btn green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-i18n="btn_call">Call</span></a></div>
-          <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>reportphishing@smart.com.ph</span><a href="https://mail.google.com/mail/u/0/#search/reportphishing%40smart.com.ph" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a></div>
+          <div class="row"><span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>reportphishing@smart.com.ph</span><a href="https://mail.google.com/mail/u/0/#search/reportphishing%40smart.com.ph" target="_blank" rel="noopener" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a></div>
         </div>
         <button class="btn save" onclick="saveContact('Smart','*888','reportphishing@smart.com.ph')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span data-i18n="btn_save">Save Contact</span>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 06 TELECOMMUNICATIONS -->
+  <section class="section">
+    <h2 class="section-title">
+      <span class="section-num">06</span>
+      <span data-i18n="sec6_title">Telecommunications</span>
+      <span class="section-tag" data-i18n="sec6_tag">For telco abuse &amp; regulatory complaints</span>
+    </h2>
+    <div class="grid">
+
+      <!-- NTC -->
+      <div class="card" data-index="8">
+        <div class="card-glow"></div>
+        <div class="card-header">
+          <div class="card-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div>
+            <h3 data-i18n="ntc_name">National Telecommunications Commission</h3>
+            <p class="org-label" data-i18n="ntc_org">NTC — Telecom Regulatory Authority</p>
+          </div>
+        </div>
+        <div class="desc-block">
+          <p class="desc" data-i18n="ntc_desc">The government body that regulates and supervises all telecommunications companies and services in the Philippines, including mobile networks, internet service providers, and cable operators. File a complaint if your telco fails to block reported spam numbers, if you experience SIM-related fraud your network refuses to address, or if a telecommunications provider is enabling or ignoring scam operations. The NTC can issue cease-and-desist orders, impose fines, and revoke the franchise of non-compliant telcos. They also oversee enforcement of the SIM Registration Act (RA 11934) and coordinate with DICT and PNP ACG on telco-facilitated cybercrimes.</p>
+          <div class="tags">
+            <span class="tag" data-i18n="tag_telco_abuse">Telco Abuse</span>
+            <span class="tag" data-i18n="tag_sim_reg">SIM Registration</span>
+            <span class="tag" data-i18n="tag_isp_complaint">ISP Complaints</span>
+            <span class="tag" data-i18n="tag_unblocked_spam">Unblocked Spam</span>
+            <span class="tag" data-i18n="tag_telco_fraud">Telco Fraud</span>
+          </div>
+        </div>
+        <div class="contacts">
+          <div class="row">
+            <span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>8921-3251</span>
+            <a href="tel:0289213251" class="btn green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-i18n="btn_call">Call</span></a>
+          </div>
+          <div class="row">
+            <span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>8921-3252</span>
+            <a href="tel:0289213252" class="btn green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-i18n="btn_call">Call</span></a>
+          </div>
+          <div class="row">
+            <span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>1682 (NTC Hotline)</span>
+            <a href="tel:1682" class="btn green"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.69a16 16 0 0 0 6.29 6.29l.89-.89a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span data-i18n="btn_call">Call</span></a>
+          </div>
+          <div class="row">
+            <span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>info@ntc.gov.ph</span>
+            <a href="https://mail.google.com/mail/u/0/#search/info%40ntc.gov.ph" target="_blank" rel="noopener" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a>
+          </div>
+          <div class="row">
+            <span class="mono"><svg class="row-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>complaints@ntc.gov.ph</span>
+            <a href="https://mail.google.com/mail/u/0/#search/complaints%40ntc.gov.ph" target="_blank" rel="noopener" class="btn blue"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span data-i18n="btn_email">Email</span></a>
+          </div>
+        </div>
+        <button class="btn save" onclick="saveContact('NTC','0289213251','complaints@ntc.gov.ph')">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span data-i18n="btn_save">Save Contact</span>
         </button>
@@ -432,170 +1305,97 @@
 </button>
 
 <script>
-/* ========================
-   TRANSLATIONS
-======================== */
 const i18n = {
   en: {
     back: "Back to WebSafe",
-    h1_line1: "Local",
-    h1_line2: "Authorities",
+    h1_line1: "Local", h1_line2: "Authorities",
     subtitle: "Quick report access for Philippine cyber incidents — verified government and telco channels",
-    stat_agencies: "Agencies",
-    stat_categories: "Categories",
-    stat_available: "Available",
+    stat_agencies: "Agencies", stat_categories: "Categories", stat_available: "Available",
     guide1: "Hacked account? → <strong>PNP ACG</strong>",
     guide2: "Money stolen? → <strong>BSP or NBI</strong>",
     guide3: "Spam SMS? → <strong>Globe or Smart</strong>",
-    sec1_title: "Law Enforcement",
-    sec1_tag: "For active scams & crimes",
-    sec2_title: "Financial",
-    sec2_tag: "For fraud & unauthorized transactions",
-    sec3_title: "Privacy",
-    sec3_tag: "For data leaks & personal info misuse",
-    sec4_title: "Cyber",
-    sec4_tag: "For phishing links & fake websites",
-    sec5_title: "SMS / Telco",
-    sec5_tag: "For spam & phishing text messages",
-    pnp_name: "PNP Anti-Cybercrime Group",
-    pnp_org: "Philippine National Police",
+    guide4: "Telco abuse? → <strong>NTC</strong>",
+    sec1_title: "Law Enforcement", sec1_tag: "For active scams & crimes",
+    sec2_title: "Financial", sec2_tag: "For fraud & unauthorized transactions",
+    sec3_title: "Privacy", sec3_tag: "For data leaks & personal info misuse",
+    sec4_title: "Cyber", sec4_tag: "For phishing links & fake websites",
+    sec5_title: "SMS / Telco", sec5_tag: "For spam & phishing text messages",
+    sec6_title: "Telecommunications", sec6_tag: "For telco abuse & regulatory complaints",
+    pnp_name: "PNP Anti-Cybercrime Group", pnp_org: "Philippine National Police",
     pnp_desc: "Handles active cybercrime incidents including hacked social media accounts, online impersonation, real-time scams, online threats, and cyber harassment. File a complaint if you are actively being victimized or have evidence of an ongoing cybercrime operation. Walk-in reports are also accepted at Camp Crame, Quezon City.",
-    nbi_name: "NBI Cybercrime Division",
-    nbi_org: "National Bureau of Investigation",
+    nbi_name: "NBI Cybercrime Division", nbi_org: "National Bureau of Investigation",
     nbi_desc: "Investigates serious cybercrimes involving financial loss, identity theft, online fraud, and complex scam networks. The NBI has authority to conduct cyber forensics, execute search warrants, and build criminal cases for prosecution. Ideal for cases with documented evidence and significant monetary damage.",
-    bsp_name: "Bangko Sentral ng Pilipinas",
-    bsp_org: "BSP — Central Bank of the Philippines",
+    bsp_name: "Bangko Sentral ng Pilipinas", bsp_org: "BSP — Central Bank of the Philippines",
     bsp_desc: "Regulates all banks, e-wallets (GCash, Maya, etc.), and financial institutions in the Philippines. Report unauthorized transactions, suspicious bank activity, OTP-based fraud, or any financial service that fails to address your complaint. BSP can compel banks to investigate and potentially reverse fraudulent transactions.",
-    sec_name: "Securities & Exchange Commission",
-    sec_org: "SEC — Corporate Regulator",
+    sec_name: "Securities & Exchange Commission", sec_org: "SEC — Corporate Regulator",
     sec_desc: "Regulates investment activities and securities markets in the Philippines. Report investment scams, crypto fraud, Ponzi or pyramid schemes, fake trading platforms, and unregistered entities soliciting investments. The SEC can issue advisories, freeze assets, and revoke business licenses of fraudulent companies.",
-    npc_name: "National Privacy Commission",
-    npc_org: "NPC — Data Protection Authority",
+    npc_name: "National Privacy Commission", npc_org: "NPC — Data Protection Authority",
     npc_desc: "Enforces the Data Privacy Act of 2012 (RA 10173) and protects citizens against unlawful collection, misuse, and exposure of personal information. Report phishing forms harvesting your data, companies that leaked your info, unauthorized sharing of personal records, or identity misuse by apps and online platforms.",
-    dict_name: "Dept. of Information & Communications Technology",
-    dict_org: "DICT — National ICT Agency",
+    dict_name: "Dept. of Information & Communications Technology", dict_org: "DICT — National ICT Agency",
     dict_desc: "The primary government body responsible for ICT policy and cybersecurity awareness in the Philippines. Report phishing websites, fake government portals, suspicious online forms mimicking official pages, and malicious links spreading via email or social media. DICT coordinates with other agencies to take down fraudulent online properties.",
-    globe_name: "Globe Telecom",
-    globe_org: "Globe — Telco Provider",
+    globe_name: "Globe Telecom", globe_org: "Globe — Telco Provider",
     globe_desc: "Globe's anti-spam and fraud prevention team handles reports of unsolicited SMS messages, phishing texts impersonating banks or government agencies, OTP interception attempts, and suspicious text messages with malicious links. You can call 211 from a Globe number or forward the suspicious message directly via email for faster processing.",
-    smart_name: "Smart Communications",
-    smart_org: "Smart / PLDT — Telco Provider",
+    smart_name: "Smart Communications", smart_org: "Smart / PLDT — Telco Provider",
     smart_desc: "Smart's cybersecurity and customer protection team addresses scam text messages, phishing SMS from numbers pretending to be banks or government offices, suspicious promotional messages, and SIM-swapping attempts. Dial *888 from a Smart number for immediate hotline assistance, or forward suspicious messages via email with sender number included.",
-    tag_hacked: "Hacked Accounts",
-    tag_impersonation: "Impersonation",
-    tag_active_scams: "Active Scams",
-    tag_harassment: "Cyber Harassment",
-    tag_money_loss: "Money Loss",
-    tag_identity: "Identity Theft",
-    tag_fraud: "Serious Fraud",
-    tag_forensics: "Forensics",
-    tag_unauth: "Unauthorized Transactions",
-    tag_ewallet: "E-Wallet Fraud",
-    tag_bank_scam: "Bank Scams",
-    tag_otp: "OTP Theft",
-    tag_invest_scam: "Investment Scams",
-    tag_crypto: "Crypto Fraud",
-    tag_ponzi: "Ponzi Schemes",
-    tag_fake_trading: "Fake Trading",
-    tag_data_leak: "Data Leaks",
-    tag_phish_form: "Phishing Forms",
-    tag_id_misuse: "Identity Misuse",
-    tag_privacy: "Privacy Violations",
-    tag_phish_links: "Phishing Links",
-    tag_fake_sites: "Fake Websites",
-    tag_malicious_url: "Malicious URLs",
-    tag_fake_gov: "Fake Gov Portals",
-    tag_spam_sms: "Spam SMS",
-    tag_phish_texts: "Phishing Texts",
-    tag_fake_otp: "Fake OTPs",
-    tag_smishing: "Smishing",
-    tag_scam_texts: "Scam Texts",
-    tag_phish_sms: "Phishing SMS",
-    tag_sim_swap: "SIM Swap",
-    btn_call: "Call",
-    btn_email: "Email",
-    btn_save: "Save Contact",
+    ntc_name: "National Telecommunications Commission", ntc_org: "NTC — Telecom Regulatory Authority",
+    ntc_desc: "The government body that regulates and supervises all telecommunications companies and services in the Philippines, including mobile networks, internet service providers, and cable operators. File a complaint if your telco fails to block reported spam numbers, if you experience SIM-related fraud your network refuses to address, or if a telecommunications provider is enabling or ignoring scam operations. The NTC can issue cease-and-desist orders, impose fines, and revoke the franchise of non-compliant telcos. They also oversee enforcement of the SIM Registration Act (RA 11934) and coordinate with DICT and PNP ACG on telco-facilitated cybercrimes.",
+    tag_hacked: "Hacked Accounts", tag_impersonation: "Impersonation", tag_active_scams: "Active Scams", tag_harassment: "Cyber Harassment",
+    tag_money_loss: "Money Loss", tag_identity: "Identity Theft", tag_fraud: "Serious Fraud", tag_forensics: "Forensics",
+    tag_unauth: "Unauthorized Transactions", tag_ewallet: "E-Wallet Fraud", tag_bank_scam: "Bank Scams", tag_otp: "OTP Theft",
+    tag_invest_scam: "Investment Scams", tag_crypto: "Crypto Fraud", tag_ponzi: "Ponzi Schemes", tag_fake_trading: "Fake Trading",
+    tag_data_leak: "Data Leaks", tag_phish_form: "Phishing Forms", tag_id_misuse: "Identity Misuse", tag_privacy: "Privacy Violations",
+    tag_phish_links: "Phishing Links", tag_fake_sites: "Fake Websites", tag_malicious_url: "Malicious URLs", tag_fake_gov: "Fake Gov Portals",
+    tag_spam_sms: "Spam SMS", tag_phish_texts: "Phishing Texts", tag_fake_otp: "Fake OTPs", tag_smishing: "Smishing",
+    tag_scam_texts: "Scam Texts", tag_phish_sms: "Phishing SMS", tag_sim_swap: "SIM Swap",
+    tag_telco_abuse: "Telco Abuse", tag_sim_reg: "SIM Registration", tag_isp_complaint: "ISP Complaints",
+    tag_unblocked_spam: "Unblocked Spam", tag_telco_fraud: "Telco Fraud",
+    btn_call: "Call", btn_email: "Email", btn_save: "Save Contact",
     footer: "All contacts are official Philippine government and telco channels. Information verified for public use."
   },
   fil: {
     back: "Bumalik sa WebSafe",
-    h1_line1: "Mga Lokal na",
-    h1_line2: "Awtoridad",
+    h1_line1: "Mga Lokal na", h1_line2: "Awtoridad",
     subtitle: "Mabilis na access para sa pag-uulat ng mga cyber insidente sa Pilipinas — mga verified na channel ng gobyerno at telco",
-    stat_agencies: "Ahensya",
-    stat_categories: "Kategorya",
-    stat_available: "Available",
+    stat_agencies: "Ahensya", stat_categories: "Kategorya", stat_available: "Available",
     guide1: "Na-hack ang account? → <strong>PNP ACG</strong>",
     guide2: "Ninakaw ang pera? → <strong>BSP o NBI</strong>",
     guide3: "Spam SMS? → <strong>Globe o Smart</strong>",
-    sec1_title: "Pagpapatupad ng Batas",
-    sec1_tag: "Para sa mga aktibong scam at krimen",
-    sec2_title: "Pinansyal",
-    sec2_tag: "Para sa pandaraya at walang pahintulot na transaksyon",
-    sec3_title: "Privacy",
-    sec3_tag: "Para sa mga data leak at maling paggamit ng personal na impormasyon",
-    sec4_title: "Cyber",
-    sec4_tag: "Para sa mga phishing link at pekeng website",
-    sec5_title: "SMS / Telco",
-    sec5_tag: "Para sa spam at phishing text messages",
-    pnp_name: "PNP Anti-Cybercrime Group",
-    pnp_org: "Philippine National Police",
+    guide4: "Abuso ng telco? → <strong>NTC</strong>",
+    sec1_title: "Pagpapatupad ng Batas", sec1_tag: "Para sa mga aktibong scam at krimen",
+    sec2_title: "Pinansyal", sec2_tag: "Para sa pandaraya at walang pahintulot na transaksyon",
+    sec3_title: "Privacy", sec3_tag: "Para sa mga data leak at maling paggamit ng personal na impormasyon",
+    sec4_title: "Cyber", sec4_tag: "Para sa mga phishing link at pekeng website",
+    sec5_title: "SMS / Telco", sec5_tag: "Para sa spam at phishing text messages",
+    sec6_title: "Telekomunikasyon", sec6_tag: "Para sa abuso ng telco at mga reklamong regulatoryo",
+    pnp_name: "PNP Anti-Cybercrime Group", pnp_org: "Philippine National Police",
     pnp_desc: "Humahawak ng mga aktibong insidente ng cybercrime kabilang ang na-hack na mga social media account, online na pagpapanggap, real-time na scam, online na banta, at cyber harassment. Mag-file ng reklamo kung aktibo kang biktima o may ebidensya ka ng patuloy na operasyon ng cybercrime. Tinatanggap din ang walk-in na mga ulat sa Camp Crame, Quezon City.",
-    nbi_name: "NBI Cybercrime Division",
-    nbi_org: "National Bureau of Investigation",
-    nbi_desc: "Nagsisiyasat ng mabigat na cybercrime na may kaugnayan sa pagkawala ng pera, pagnanakaw ng pagkakakilanlan, online na pandaraya, at mga kumplikadong network ng scam. May kapangyarihan ang NBI na magsagawa ng cyber forensics, maglabas ng search warrant, at bumuo ng kriminal na kaso para sa pag-uusig. Angkop para sa mga kaso na may dokumentadong ebidensya at malaking pinsalang pinansyal.",
-    bsp_name: "Bangko Sentral ng Pilipinas",
-    bsp_org: "BSP — Sentral na Bangko ng Pilipinas",
-    bsp_desc: "Nag-aayos ng lahat ng bangko, e-wallet (GCash, Maya, atbp.), at mga institusyong pinansyal sa Pilipinas. I-ulat ang mga walang pahintulot na transaksyon, kahina-hinalang aktibidad sa bangko, pandaraya gamit ang OTP, o anumang serbisyong pinansyal na hindi natutugunan ang iyong reklamo. Maaaring piliting mag-imbestiga ang BSP sa mga bangko at posibleng baligtarin ang mga mapanlinlang na transaksyon.",
-    sec_name: "Securities & Exchange Commission",
-    sec_org: "SEC — Tagapag-ayos ng Korporasyon",
-    sec_desc: "Nag-aayos ng mga aktibidad sa pamumuhunan at mga pamilihan ng seguridad sa Pilipinas. I-ulat ang mga investment scam, crypto fraud, Ponzi o pyramid scheme, pekeng trading platform, at mga hindi rehistradong entidad na humihingi ng pamumuhunan. Maaaring mag-isyu ng advisory, mag-freeze ng assets, at bawiin ang business license ng mga mapanlinlang na kumpanya ang SEC.",
-    npc_name: "National Privacy Commission",
-    npc_org: "NPC — Awtoridad sa Proteksyon ng Data",
-    npc_desc: "Nagpapatupad ng Data Privacy Act ng 2012 (RA 10173) at nagpoprotekta sa mga mamamayan laban sa ilegal na pangongolekta, maling paggamit, at pagbubunyag ng personal na impormasyon. I-ulat ang mga phishing form na kumukuha ng iyong data, mga kumpanyang nagpakalat ng iyong impormasyon, hindi awtorisadong pagbabahagi ng personal na rekord, o maling paggamit ng pagkakakilanlan sa pamamagitan ng mga app at online na platform.",
-    dict_name: "Kagawaran ng Impormasyon at Komunikasyon",
-    dict_org: "DICT — Pambansang Ahensya ng ICT",
-    dict_desc: "Ang pangunahing katawan ng gobyerno na responsable para sa patakaran ng ICT at kamalayan sa cybersecurity sa Pilipinas. I-ulat ang mga phishing website, pekeng portal ng gobyerno, kahina-hinalang online na form na ginagaya ang mga opisyal na pahina, at mga nakakasamang link na kumakalat sa pamamagitan ng email o social media. Nakikipagtulungan ang DICT sa iba pang ahensya para tapusin ang mga mapanlinlang na online na ari-arian.",
-    globe_name: "Globe Telecom",
-    globe_org: "Globe — Telco Provider",
-    globe_desc: "Ang anti-spam at fraud prevention team ng Globe ay humahawak ng mga ulat ng mga hindi hinihinging mensahe sa SMS, phishing text na nagpapanggap na bangko o ahensya ng gobyerno, mga pagtatangkang mag-intercept ng OTP, at mga kahina-hinalang text message na may nakakasamang link. Maaari kang tumawag sa 211 mula sa isang Globe number o ipasa ang kahina-hinalang mensahe nang direkta sa pamamagitan ng email para sa mas mabilis na pagproseso.",
-    smart_name: "Smart Communications",
-    smart_org: "Smart / PLDT — Telco Provider",
-    smart_desc: "Ang cybersecurity at customer protection team ng Smart ay tumutugon sa mga scam na text message, phishing SMS mula sa mga numerong nagpapanggap na bangko o opisina ng gobyerno, mga kahina-hinalang mensaheng pang-promosyon, at mga pagtatangkang mag-SIM swap. I-dial ang *888 mula sa isang Smart number para sa agarang tulong sa hotline, o ipasa ang mga kahina-hinalang mensahe sa pamamagitan ng email na may kasamang numero ng nagpadala.",
-    tag_hacked: "Na-hack na Account",
-    tag_impersonation: "Pagpapanggap",
-    tag_active_scams: "Aktibong Scam",
-    tag_harassment: "Cyber Harassment",
-    tag_money_loss: "Pagkawala ng Pera",
-    tag_identity: "Pagnanakaw ng Pagkakakilanlan",
-    tag_fraud: "Mabigat na Pandaraya",
-    tag_forensics: "Forensics",
-    tag_unauth: "Hindi Awtorisadong Transaksyon",
-    tag_ewallet: "E-Wallet Fraud",
-    tag_bank_scam: "Bank Scam",
-    tag_otp: "Pagnanakaw ng OTP",
-    tag_invest_scam: "Investment Scam",
-    tag_crypto: "Crypto Fraud",
-    tag_ponzi: "Ponzi Scheme",
-    tag_fake_trading: "Pekeng Trading",
-    tag_data_leak: "Data Leak",
-    tag_phish_form: "Phishing Form",
-    tag_id_misuse: "Maling Paggamit ng Pagkakakilanlan",
-    tag_privacy: "Paglabag sa Privacy",
-    tag_phish_links: "Phishing Link",
-    tag_fake_sites: "Pekeng Website",
-    tag_malicious_url: "Nakakasamang URL",
-    tag_fake_gov: "Pekeng Portal ng Gobyerno",
-    tag_spam_sms: "Spam SMS",
-    tag_phish_texts: "Phishing Text",
-    tag_fake_otp: "Pekeng OTP",
-    tag_smishing: "Smishing",
-    tag_scam_texts: "Scam Text",
-    tag_phish_sms: "Phishing SMS",
-    tag_sim_swap: "SIM Swap",
-    btn_call: "Tumawag",
-    btn_email: "Mag-email",
-    btn_save: "I-save ang Contact",
+    nbi_name: "NBI Cybercrime Division", nbi_org: "National Bureau of Investigation",
+    nbi_desc: "Nagsisiyasat ng mabigat na cybercrime na may kaugnayan sa pagkawala ng pera, pagnanakaw ng pagkakakilanlan, online na pandaraya, at mga kumplikadong network ng scam. May kapangyarihan ang NBI na magsagawa ng cyber forensics, maglabas ng search warrant, at bumuo ng kriminal na kaso para sa pag-uusig.",
+    bsp_name: "Bangko Sentral ng Pilipinas", bsp_org: "BSP — Sentral na Bangko ng Pilipinas",
+    bsp_desc: "Nag-aayos ng lahat ng bangko, e-wallet (GCash, Maya, atbp.), at mga institusyong pinansyal sa Pilipinas. I-ulat ang mga walang pahintulot na transaksyon, kahina-hinalang aktibidad sa bangko, pandaraya gamit ang OTP, o anumang serbisyong pinansyal na hindi natutugunan ang iyong reklamo.",
+    sec_name: "Securities & Exchange Commission", sec_org: "SEC — Tagapag-ayos ng Korporasyon",
+    sec_desc: "Nag-aayos ng mga aktibidad sa pamumuhunan at mga pamilihan ng seguridad sa Pilipinas. I-ulat ang mga investment scam, crypto fraud, Ponzi o pyramid scheme, pekeng trading platform, at mga hindi rehistradong entidad na humihingi ng pamumuhunan.",
+    npc_name: "National Privacy Commission", npc_org: "NPC — Awtoridad sa Proteksyon ng Data",
+    npc_desc: "Nagpapatupad ng Data Privacy Act ng 2012 (RA 10173) at nagpoprotekta sa mga mamamayan laban sa ilegal na pangongolekta, maling paggamit, at pagbubunyag ng personal na impormasyon.",
+    dict_name: "Kagawaran ng Impormasyon at Komunikasyon", dict_org: "DICT — Pambansang Ahensya ng ICT",
+    dict_desc: "Ang pangunahing katawan ng gobyerno na responsable para sa patakaran ng ICT at kamalayan sa cybersecurity sa Pilipinas. I-ulat ang mga phishing website, pekeng portal ng gobyerno, kahina-hinalang online na form, at mga nakakasamang link.",
+    globe_name: "Globe Telecom", globe_org: "Globe — Telco Provider",
+    globe_desc: "Ang anti-spam at fraud prevention team ng Globe ay humahawak ng mga ulat ng mga hindi hinihinging mensahe sa SMS, phishing text, mga pagtatangkang mag-intercept ng OTP, at mga kahina-hinalang text message na may nakakasamang link.",
+    smart_name: "Smart Communications", smart_org: "Smart / PLDT — Telco Provider",
+    smart_desc: "Ang cybersecurity at customer protection team ng Smart ay tumutugon sa mga scam na text message, phishing SMS, mga kahina-hinalang mensaheng pang-promosyon, at mga pagtatangkang mag-SIM swap. I-dial ang *888 mula sa isang Smart number para sa agarang tulong.",
+    ntc_name: "National Telecommunications Commission", ntc_org: "NTC — Awtoridad sa Regulasyon ng Telekomunikasyon",
+    ntc_desc: "Ang katawan ng gobyerno na nag-aayos at nangangasiwa sa lahat ng kumpanya at serbisyo ng telekomunikasyon sa Pilipinas, kasama ang mga mobile network, internet service provider, at cable operator. Mag-file ng reklamo kung ang iyong telco ay nabigo sa pag-block ng mga naiulat na spam number.",
+    tag_hacked: "Na-hack na Account", tag_impersonation: "Pagpapanggap", tag_active_scams: "Aktibong Scam", tag_harassment: "Cyber Harassment",
+    tag_money_loss: "Pagkawala ng Pera", tag_identity: "Pagnanakaw ng Pagkakakilanlan", tag_fraud: "Mabigat na Pandaraya", tag_forensics: "Forensics",
+    tag_unauth: "Hindi Awtorisadong Transaksyon", tag_ewallet: "E-Wallet Fraud", tag_bank_scam: "Bank Scam", tag_otp: "Pagnanakaw ng OTP",
+    tag_invest_scam: "Investment Scam", tag_crypto: "Crypto Fraud", tag_ponzi: "Ponzi Scheme", tag_fake_trading: "Pekeng Trading",
+    tag_data_leak: "Data Leak", tag_phish_form: "Phishing Form", tag_id_misuse: "Maling Paggamit ng Pagkakakilanlan", tag_privacy: "Paglabag sa Privacy",
+    tag_phish_links: "Phishing Link", tag_fake_sites: "Pekeng Website", tag_malicious_url: "Nakakasamang URL", tag_fake_gov: "Pekeng Portal ng Gobyerno",
+    tag_spam_sms: "Spam SMS", tag_phish_texts: "Phishing Text", tag_fake_otp: "Pekeng OTP", tag_smishing: "Smishing",
+    tag_scam_texts: "Scam Text", tag_phish_sms: "Phishing SMS", tag_sim_swap: "SIM Swap",
+    tag_telco_abuse: "Abuso ng Telco", tag_sim_reg: "Pagpaparehistro ng SIM", tag_isp_complaint: "Reklamo sa ISP",
+    tag_unblocked_spam: "Hindi Na-block na Spam", tag_telco_fraud: "Pandaraya ng Telco",
+    btn_call: "Tumawag", btn_email: "Mag-email", btn_save: "I-save ang Contact",
     footer: "Lahat ng contact ay opisyal na channel ng gobyerno at telco ng Pilipinas. Napatunayan ang impormasyon para sa paggamit ng publiko."
   }
 };
@@ -615,9 +1415,6 @@ function setLang(lang) {
   });
 }
 
-/* ========================
-   THEME TOGGLE
-======================== */
 function toggleTheme() {
   const html = document.documentElement;
   const isLight = html.getAttribute('data-theme') === 'light';
@@ -626,9 +1423,6 @@ function toggleTheme() {
   document.getElementById('themeLabel').textContent = isLight ? 'DARK' : 'LIGHT';
 }
 
-/* ========================
-   SAVE CONTACT
-======================== */
 function saveContact(name, phone, email) {
   let vcf = "BEGIN:VCARD\nVERSION:3.0\n";
   vcf += `FN:${name}\n`;
@@ -646,9 +1440,6 @@ function scrollToTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/* ========================
-   INTERSECTION OBSERVERS
-======================== */
 const cardObs = new IntersectionObserver((entries) => {
   entries.forEach((e) => {
     if (e.isIntersecting) {
