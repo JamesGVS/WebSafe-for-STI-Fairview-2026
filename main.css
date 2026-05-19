@@ -1475,7 +1475,12 @@ PANEL 1 — HERO
     grid-template-columns: minmax(0,1fr) minmax(0,1fr);
     grid-template-rows: 1fr auto;
     align-items: center;
+    justify-content: center;
     padding: 0 48px;
+    max-width: 1280px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
     column-gap: 32px;
     row-gap: 0;
     overflow: hidden;
