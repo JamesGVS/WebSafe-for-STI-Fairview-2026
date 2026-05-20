@@ -328,7 +328,7 @@ LIGHT MODE — SIDEBAR
 /* =============================================
 LIGHT MODE — PANELS background
 ============================================= */
-:root[data-theme="light"] #panel-hero { background: var(--bg-deep); }
+:root[data-theme="light"] #panel-hero { background: var(--bg-deep); overflow-y: auto; overflow-x: hidden; }
 :root[data-theme="light"] #panel-threats { background: var(--bg-mid); }
 :root[data-theme="light"] #panel-threats::before {
     background-image: linear-gradient(rgba(0,119,182,0.05) 1px,transparent 1px),
@@ -1459,7 +1459,7 @@ SCROLL-TRIGGERED PANEL ANIMATIONS
 /* =============================================
 PANEL 1 — HERO
 ============================================= */
-#panel-hero { background: var(--bg-deep); }
+#panel-hero { background: var(--bg-deep); overflow-y: auto; overflow-x: hidden; }
 #panel-hero::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 20% 50%, rgba(0,180,216,0.05) 0%, transparent 60%),radial-gradient(ellipse 60% 70% at 80% 30%, rgba(0,119,182,0.04) 0%, transparent 60%); pointer-events:none; }
 
 /* ── HERO INNER — 3-column layout matching sketch ─────────────
