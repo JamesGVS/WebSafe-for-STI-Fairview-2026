@@ -1471,7 +1471,7 @@ PANEL 1 — HERO
     height: calc(100vh - 72px);
     margin-top: 72px;
     display: grid;
-    grid-template-columns: 1fr minmax(300px, 440px) 1fr 1fr;
+    grid-template-columns: minmax(300px, 1fr) minmax(360px, 460px) minmax(300px, 1fr);
     grid-template-rows: 1fr;
     align-items: stretch;
     gap: 24px;
@@ -1653,11 +1653,12 @@ PANEL 1 — HERO
     justify-content: center;
     width: 100%;
     min-width: 0;
+    gap: 16px;
 }
 
-/* ── RESULTS COLUMN — right column, always visible ─────────────── */
+/* ── RESULTS COLUMN — left column ─────────────── */
 .hero-results-col {
-    grid-column: 3 / 5;
+    grid-column: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1673,8 +1674,32 @@ PANEL 1 — HERO
     pointer-events: auto;
 }
 
+.hero-preview-col {
+    grid-column: 3;
+    display: flex !important;
+    flex-direction: column;
+    gap: 10px;
+    max-height: calc(100vh - 72px - 48px);
+    min-height: 120px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+    border-radius: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.38s ease 0.08s;
+}
+.hero-preview-col.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+.hero-preview-col::-webkit-scrollbar { width: 3px; }
+.hero-preview-col::-webkit-scrollbar-track { background: transparent; }
+.hero-preview-col::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
 /* Inner: horizontal split — scan results left, preview right */
-.results-col-inner {
+.results-col-inner-unused {
     display: flex;
     flex-direction: row;
     gap: 14px;
@@ -2234,10 +2259,10 @@ MOBILE
         overflow: visible;
         padding-bottom: 12px;
     }
-    .results-col-inner { display: flex; flex-direction: column; overflow-x: visible; overflow-y: visible; }
-    .results-col-inner > * { width: 100%; flex: none; }
+    .results-col-inner-unused { display: flex; flex-direction: column; overflow-x: visible; overflow-y: visible; }
+    .results-col-inner-unused > * { width: 100%; flex: none; }
     .hero-results-col #results_row,
-    .hero-results-col #preview_area { opacity: 1 !important; transform: none !important; animation: none !important; pointer-events: auto; max-height: none; overflow-y: visible; }
+    .hero-preview-col { opacity: 1 !important; transform: none !important; animation: none !important; pointer-events: auto; max-height: none; overflow-y: visible; }
     #results_row { flex: none; min-height: auto; max-height: none; overflow-y: visible; }
 
     .about-inner { flex-direction:column; gap:24px; padding:82px 22px 36px; }

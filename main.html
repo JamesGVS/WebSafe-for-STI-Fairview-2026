@@ -291,13 +291,20 @@
         <!-- PANEL 1 — HERO -->
         <div class="h-panel panel-active" id="panel-hero">
             <div class="hero-inner">
-                <div class="hero-text-col">
-                    <span class="hero-eyebrow animate-item" data-delay="1" data-i18n="hero_eyebrow">Securing your online experience</span>
-                    <h1 id="dynamic_greeting" class="animate-item" data-delay="2" data-i18n="hero_greeting">Let's get started, shall we?</h1>
-                    <p class="hero-sub animate-item" data-delay="3" data-i18n="hero_sub">Before you click — let WebSafe verify the link or QR code. Paste any URL, Scan, or Upload a QR below to instantly check for phishing, malware, and deceptive sites.</p>
-
+                <div class="hero-results-col" id="hero_results_col">
+                    <div id="results_row">
+                        <div class="results-col-label">SCAN RESULTS</div>
+                        <div id="link_status"></div>
+                        <div class="scroll-fade-hint" id="results_scroll_hint"></div>
+                    </div>
                 </div>
+
                 <div class="hero-card-col">
+                    <div class="hero-text-col">
+                        <span class="hero-eyebrow animate-item" data-delay="1" data-i18n="hero_eyebrow">Securing your online experience</span>
+                        <h1 id="dynamic_greeting" class="animate-item" data-delay="2" data-i18n="hero_greeting">Let's get started, shall we?</h1>
+                        <p class="hero-sub animate-item" data-delay="3" data-i18n="hero_sub">Before you click — let WebSafe verify the link or QR code. Paste any URL, Scan, or Upload a QR below to instantly check for phishing, malware, and deceptive sites.</p>
+                    </div>
                     <div class="input-card animate-item-scale" data-delay="2">
                         <label class="input-label" for="link_input" data-i18n="input_label">Enter URL to Scan</label>
                         <section id="link_checker">
@@ -333,29 +340,19 @@
                     </div>
                 </div>
 
-                <!-- RESULTS COLUMN -->
-                <div class="hero-results-col" id="hero_results_col">
-                    <div class="results-col-inner">
-                        <div id="results_row">
-                            <div class="results-col-label">SCAN RESULTS</div>
-                            <div id="link_status"></div>
-                            <div class="scroll-fade-hint" id="results_scroll_hint"></div>
-                        </div>
-                        <div id="preview_area">
-                            <div class="results-col-label">SITE PREVIEW</div>
-                            <div id="preview_card">
-                                <img id="preview_favicon">
-                                <div>
-                                    <h3 id="preview_title"></h3>
-                                    <p id="preview_domain"></p>
-                                    <p id="preview_description"></p>
-                                    <div id="preview_actions"></div>
-                                </div>
-                            </div>
-                            <div id="preview_checks"></div>
-                            <div class="scroll-fade-hint" id="preview_scroll_hint"></div>
+                <div class="hero-preview-col" id="preview_area">
+                    <div class="results-col-label">SITE PREVIEW</div>
+                    <div id="preview_card">
+                        <img id="preview_favicon">
+                        <div>
+                            <h3 id="preview_title"></h3>
+                            <p id="preview_domain"></p>
+                            <p id="preview_description"></p>
+                            <div id="preview_actions"></div>
                         </div>
                     </div>
+                    <div id="preview_checks"></div>
+                    <div class="scroll-fade-hint" id="preview_scroll_hint"></div>
                 </div>
             </div>
         </div>
