@@ -2234,9 +2234,10 @@ QR MODALS
 MOBILE
 ============================================= */
 @media (max-width: 768px) {
-    html,body { overflow:hidden; max-width:100%; }
-    #horizontal-track { flex-direction:column; width:100vw; height:max-content; transition:transform 0.72s cubic-bezier(0.76,0,0.24,1); }
-    .h-panel { width:100vw; min-height:100svh; height:100svh; overflow-y:auto; overflow-x:hidden; }
+    html,body { overflow-x:hidden; overflow-y:auto; max-width:100%; }
+    #scroll-scene { height:auto; min-height:100svh; overflow:visible; }
+    #horizontal-track { flex-direction:column; width:100vw; height:max-content; transition:none; transform:none !important; }
+    .h-panel { width:100vw; min-height:100svh; height:auto; overflow:visible; }
 
     #sidebar_menu { width:min(86vw,320px); left:-86vw; }
     #menu_toggle { width:42px; height:42px; top:10px; left:12px; }
@@ -2261,8 +2262,9 @@ MOBILE
         overflow-x: hidden;
     }
     .hero-text-col { grid-column: unset; grid-row: unset; max-width: 100%; padding: 14px 0 0; }
-    .hero-card-col { grid-column: unset; grid-row: unset; width: 100%; padding: 0; }
+    .hero-card-col { grid-column: unset; grid-row: unset; width: 100%; padding: 0; order: 1; }
     .hero-results-col {
+        order: 2;
         grid-column: unset !important;
         grid-row: unset !important;
         max-height: none !important;
@@ -2274,6 +2276,7 @@ MOBILE
     .results-col-inner-unused > * { width: 100%; flex: none; }
     .hero-results-col #results_row,
     .hero-preview-col { opacity: 1 !important; transform: none !important; animation: none !important; pointer-events: auto; max-height: none; overflow-y: visible; }
+    .hero-preview-col { order: 3; }
     #results_row { flex: none; min-height: auto; max-height: none; overflow-y: visible; }
 
     .about-inner { flex-direction:column; gap:24px; padding:82px 22px 36px; }
