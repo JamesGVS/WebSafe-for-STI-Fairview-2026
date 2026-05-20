@@ -1462,32 +1462,50 @@ PANEL 1 — HERO
 #panel-hero { background: var(--bg-deep); }
 #panel-hero::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 20% 50%, rgba(0,180,216,0.05) 0%, transparent 60%),radial-gradient(ellipse 60% 70% at 80% 30%, rgba(0,119,182,0.04) 0%, transparent 60%); pointer-events:none; }
 
-/* ── HERO INNER — 3-column layout matching sketch ─────────────
-   Left: text col | Center: input card | Right: results col
+/* ── HERO INNER — centered single-column layout ─────────────
+   Text on top, card centered, results revealed below
 ──────────────────────────────────────────────────────────── */
 .hero-inner {
     position: relative;
     z-index: 2;
-    height: calc(100vh - 72px);
+    min-height: calc(100vh - 72px);
     margin-top: 72px;
-    display: grid;
-    grid-template-columns: minmax(300px, 1fr) minmax(360px, 460px) minmax(300px, 1fr);
-    grid-template-rows: 1fr;
-    align-items: stretch;
-    gap: 24px;
-    padding: 24px 32px;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px 48px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
 }
+.hero-inner::-webkit-scrollbar { display: none; }
 
-/* When results appear — no layout change needed, results col is always there */
+/* When results appear, align to top */
 .hero-inner.results-open {
-    /* no change */
+    justify-content: flex-start;
+    padding-top: 24px;
 }
-.hero-inner.results-open .hero-text-col { /* no change */ }
-.hero-inner.results-open .hero-card-col { /* no change */ }
-.hero-inner.results-open #dynamic_greeting { /* no change */ }
-.hero-inner.results-open .hero-eyebrow { /* no change */ }
-.hero-inner.results-open .hero-sub { /* no change */ }
+.hero-inner.results-open .hero-text-col {
+    padding-bottom: 16px;
+    align-items: center;
+}
+.hero-inner.results-open .hero-card-col {
+    width: 100%;
+    max-width: 640px;
+}
+.hero-inner.results-open #dynamic_greeting {
+    font-size: clamp(18px, 2.2vw, 26px);
+    margin-bottom: 4px;
+    letter-spacing: -1px;
+    text-align: center;
+}
+.hero-inner.results-open .hero-eyebrow {
+    margin-bottom: 8px;
+}
+.hero-inner.results-open .hero-sub {
+    display: none;
+}
 
 /* Scan summary stats — shown in empty left space after scan */
 /* =============================================
@@ -1633,80 +1651,47 @@ PANEL 1 — HERO
 
 .hero-eyebrow { display:inline-flex; align-items:center; gap:8px; background:var(--accent-dim); border:1px solid var(--border-accent); border-radius:20px; padding:5px 14px; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:1.8px; text-transform:uppercase; color:var(--accent-bright); margin-bottom:22px; animation:fadeUp 0.6s ease both; backdrop-filter:blur(8px); }
 .hero-eyebrow::before { content:""; width:6px; height:6px; border-radius:50%; background:var(--safe-fg); animation:dotPulse 1.6s ease-in-out infinite; box-shadow:0 0 8px rgba(52,211,153,0.8); }
-#dynamic_greeting { font-family:'Outfit',sans-serif; font-size:clamp(28px,3.8vw,52px); font-weight:900; color:var(--white); letter-spacing:-1.5px; line-height:1.08; margin-bottom:16px; animation:textReveal 0.9s cubic-bezier(0.22,1,0.36,1) both; animation-delay:0.1s; text-align:left; }
-.hero-sub { font-size:15px; color:var(--white-muted); line-height:1.75; margin-bottom:0; font-family:'Space Grotesk',sans-serif; animation:fadeUp 0.8s ease both; animation-delay:0.3s; text-align:left; max-width:560px; }
-
-.hero-text-col {
-    grid-column: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 0 8px;
-    min-width: 0;
-}
+#dynamic_greeting { font-family:'Outfit',sans-serif; font-size:clamp(28px,3.8vw,52px); font-weight:900; color:var(--white); letter-spacing:-1.5px; line-height:1.08; margin-bottom:16px; animation:textReveal 0.9s cubic-bezier(0.22,1,0.36,1) both; animation-delay:0.1s; text-align:center; }
+.hero-sub { font-size:15px; color:var(--white-muted); line-height:1.75; margin-bottom:0; font-family:'Space Grotesk',sans-serif; animation:fadeUp 0.8s ease both; animation-delay:0.3s; text-align:center; max-width:560px; }
 
 .hero-card-col {
-    grid-column: 2;
     display: flex;
     flex-direction: column;
     justify-content: center;
     width: 100%;
+    max-width: 640px;
     min-width: 0;
-    gap: 16px;
 }
 
-/* ── RESULTS COLUMN — left column ─────────────── */
+/* ── RESULTS ROW — full width below card ─────────────── */
 .hero-results-col {
-    grid-column: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    width: 100%;
+    max-width: 1100px;
     overflow: hidden;
+    max-height: 0;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.38s ease 0.08s;
+    transition: max-height 0.52s cubic-bezier(0.4,0,0.2,1),
+                opacity    0.38s ease 0.08s,
+                padding    0.52s cubic-bezier(0.4,0,0.2,1);
     padding: 0;
-    min-width: 0;
 }
 .hero-results-col.visible {
+    max-height: 800px;
     opacity: 1;
     pointer-events: auto;
+    padding-top: 20px;
+    padding-bottom: 16px;
 }
 
-.hero-preview-col {
-    grid-column: 3;
-    display: flex !important;
-    flex-direction: column;
-    gap: 10px;
-    max-height: calc(100vh - 72px - 48px);
-    min-height: 120px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent) transparent;
-    border-radius: 14px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.38s ease 0.08s;
-}
-.hero-preview-col.visible {
-    opacity: 1;
-    pointer-events: auto;
-}
-.hero-preview-col::-webkit-scrollbar { width: 3px; }
-.hero-preview-col::-webkit-scrollbar-track { background: transparent; }
-.hero-preview-col::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
-
-/* Inner: horizontal split — scan results left, preview right */
-.results-col-inner-unused {
+/* Inner: side-by-side horizontal layout */
+.results-col-inner {
     display: flex;
     flex-direction: row;
     gap: 14px;
     width: 100%;
-    height: 100%;
     padding: 4px 2px;
-    align-items: stretch;
+    align-items: flex-start;
 }
 
 /* label */
@@ -1750,6 +1735,7 @@ PANEL 1 — HERO
     opacity: 0.7;
 }
 
+/* #results_row left, #preview_area right — both scroll within, equal height */
 .hero-results-col #results_row {
     position: relative;
     margin: 0;
@@ -1759,7 +1745,7 @@ PANEL 1 — HERO
     gap: 12px;
     flex: 1 1 0;
     min-width: 0;
-    max-height: calc(100vh - 72px - 48px);
+    max-height: calc(100vh - 310px);
     min-height: 120px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -1778,7 +1764,7 @@ PANEL 1 — HERO
     gap: 10px;
     flex: 1 1 0;
     min-width: 0;
-    max-height: calc(100vh - 72px - 48px);
+    max-height: calc(100vh - 310px);
     min-height: 120px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -2259,10 +2245,10 @@ MOBILE
         overflow: visible;
         padding-bottom: 12px;
     }
-    .results-col-inner-unused { display: flex; flex-direction: column; overflow-x: visible; overflow-y: visible; }
-    .results-col-inner-unused > * { width: 100%; flex: none; }
+    .results-col-inner { display: flex; flex-direction: column; overflow-x: visible; overflow-y: visible; }
+    .results-col-inner > * { width: 100%; flex: none; }
     .hero-results-col #results_row,
-    .hero-preview-col { opacity: 1 !important; transform: none !important; animation: none !important; pointer-events: auto; max-height: none; overflow-y: visible; }
+    .hero-results-col #preview_area { opacity: 1 !important; transform: none !important; animation: none !important; pointer-events: auto; max-height: none; overflow-y: visible; }
     #results_row { flex: none; min-height: auto; max-height: none; overflow-y: visible; }
 
     .about-inner { flex-direction:column; gap:24px; padding:82px 22px 36px; }
