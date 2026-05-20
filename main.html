@@ -1462,6 +1462,92 @@
     const qrUploadSpinner = document.getElementById("qr_upload_spinner");
     let html5QrCode; let isScanning = false; let uploadedImageData = null;
 
+    const scanHistory = [];
+
+    function normalizeUrl(raw) {
+        const v = (raw || "").trim();
+        if (!v) return "";
+        if (/^https?:\/\//i.test(v)) return v;
+        return `https://${v}`;
+    }
+
+    function setResultMessage(kind, title, detail) {
+        resultBox.innerHTML = `<div class="result-inline ${kind}"><strong>${title}</strong>${detail ? `<div class="result-inline-detail">${detail}</div>` : ""}</div>`;
+    }
+
+    async function previewSite() {
+        const normalized = normalizeUrl(input.value);
+        if (!normalized) {
+            setResultMessage("warn", "Enter a link first.", "Paste a URL, then click Preview Site.");
+            return;
+        }
+        input.value = normalized;
+        previewBtn.disabled = true;
+        previewBtn.textContent = currentLang === "fil" ? "Nini-preview…" : "Previewing…";
+
+        try {
+            const res = await fetch(`/api/fetch?url=${encodeURIComponent(normalized)}`);
+            const data = await res.json();
+            if (!res.ok || !data.ok) throw new Error(data.error || "Unable to preview this site.");
+
+            const finalUrl = data.finalUrl || normalized;
+            const finalObj = new URL(finalUrl);
+            previewTitle.textContent = data.title || finalObj.hostname;
+            previewDomain.textContent = finalObj.hostname;
+            previewDesc.textContent = data.description || "No description available.";
+            previewFavicon.src = data.favicon || `${finalObj.origin}/favicon.ico`;
+            previewFavicon.alt = `${finalObj.hostname} favicon`;
+            previewActions.innerHTML = `<a href="${finalUrl}" target="_blank" rel="noopener noreferrer">Open site in new tab</a>`;
+            previewChecks.innerHTML = "";
+            previewArea.style.display = "block";
+        } catch (err) {
+            setResultMessage("error", "Preview failed", err.message || "Could not fetch preview.");
+            previewArea.style.display = "none";
+        } finally {
+            previewBtn.disabled = false;
+            previewBtn.textContent = i18n[currentLang].btn_preview;
+        }
+    }
+
+    async function checkSite() {
+        const normalized = normalizeUrl(input.value);
+        if (!normalized) {
+            setResultMessage("warn", "Enter a link first.", "Paste a URL, then click Check Safety.");
+            return;
+        }
+        input.value = normalized;
+        checkBtn.disabled = true;
+        spinner.classList.add("show");
+
+        try {
+            const res = await fetch(`/api/check?url=${encodeURIComponent(normalized)}`);
+            const data = await res.json();
+            if (!res.ok || !data.ok) throw new Error(data.error || "Safety scan failed.");
+
+            const hostname = (() => { try { return new URL(data.finalUrl || normalized).hostname; } catch (_) { return normalized; } })();
+            const score = data.riskScore ?? "N/A";
+            const level = (data.level || "unknown").toUpperCase();
+            const reasons = Array.isArray(data.reasons) ? data.reasons.slice(0, 5) : [];
+            resultBox.innerHTML = `
+                <div class="result-inline ${String(data.level || "safe").toLowerCase()}">
+                    <strong>${level} • Risk score: ${score}</strong>
+                    <div class="result-inline-detail">${hostname}</div>
+                    ${reasons.length ? `<ul>${reasons.map(r => `<li>${r}</li>`).join("")}</ul>` : ""}
+                </div>`;
+
+            scanHistory.unshift({ url: normalized, hostname, level: String(data.level || "safe").toLowerCase() });
+            if (scanHistory.length > 20) scanHistory.length = 20;
+        } catch (err) {
+            setResultMessage("error", "Scan failed", err.message || "Unable to check this link.");
+        } finally {
+            spinner.classList.remove("show");
+            checkBtn.disabled = false;
+        }
+    }
+
+    previewBtn.addEventListener("click", previewSite);
+    checkBtn.addEventListener("click", checkSite);
+
     input.addEventListener("keydown", e => { if (e.key === "Enter") checkBtn.click(); });
 
     /* =============================================
