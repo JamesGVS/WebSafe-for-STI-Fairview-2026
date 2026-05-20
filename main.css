@@ -1462,8 +1462,8 @@ PANEL 1 — HERO
 #panel-hero { background: var(--bg-deep); }
 #panel-hero::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 20% 50%, rgba(0,180,216,0.05) 0%, transparent 60%),radial-gradient(ellipse 60% 70% at 80% 30%, rgba(0,119,182,0.04) 0%, transparent 60%); pointer-events:none; }
 
-/* ── HERO INNER — 3-column layout matching sketch ─────────────
-   Left: text col | Center: input card | Right: results col
+/* ── HERO INNER — 3-column layout ─────────────────────────────
+   Left: results col | Center: text + input stacked | Right: spacer
 ──────────────────────────────────────────────────────────── */
 .hero-inner {
     position: relative;
@@ -1477,6 +1477,13 @@ PANEL 1 — HERO
     gap: 24px;
     padding: 24px 32px;
     overflow: hidden;
+}
+
+/* Hero spacer col (right) */
+.hero-spacer-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 /* When results appear — no layout change needed, results col is always there */
@@ -1620,29 +1627,18 @@ PANEL 1 — HERO
     flex-shrink: 0;
 }
 
-.hero-text-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 0 0 24px;
-    width: 100%;
-    max-width: 680px;
-}
-
 .hero-eyebrow { display:inline-flex; align-items:center; gap:8px; background:var(--accent-dim); border:1px solid var(--border-accent); border-radius:20px; padding:5px 14px; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:1.8px; text-transform:uppercase; color:var(--accent-bright); margin-bottom:22px; animation:fadeUp 0.6s ease both; backdrop-filter:blur(8px); }
 .hero-eyebrow::before { content:""; width:6px; height:6px; border-radius:50%; background:var(--safe-fg); animation:dotPulse 1.6s ease-in-out infinite; box-shadow:0 0 8px rgba(52,211,153,0.8); }
 #dynamic_greeting { font-family:'Outfit',sans-serif; font-size:clamp(28px,3.8vw,52px); font-weight:900; color:var(--white); letter-spacing:-1.5px; line-height:1.08; margin-bottom:16px; animation:textReveal 0.9s cubic-bezier(0.22,1,0.36,1) both; animation-delay:0.1s; text-align:left; }
 .hero-sub { font-size:15px; color:var(--white-muted); line-height:1.75; margin-bottom:0; font-family:'Space Grotesk',sans-serif; animation:fadeUp 0.8s ease both; animation-delay:0.3s; text-align:left; max-width:560px; }
 
+/* hero-text-col is now inside hero-card-col — just a stacked header */
 .hero-text-col {
-    grid-column: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: flex-start;
-    padding: 0 8px;
+    padding: 0 0 20px 0;
+    width: 100%;
     min-width: 0;
 }
 
@@ -1655,9 +1651,9 @@ PANEL 1 — HERO
     min-width: 0;
 }
 
-/* ── RESULTS COLUMN — right column, always visible ─────────────── */
+/* ── RESULTS COLUMN — left column, always visible ─────────────── */
 .hero-results-col {
-    grid-column: 3;
+    grid-column: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
