@@ -1766,10 +1766,9 @@
             }
             /* 🔍 → search SVG */
             showUploadResult("info", SVG_ICONS.search,
-                currentLang==='fil'?"Nahanap ang link — nini-scan…":"Link found — scanning…",
+                currentLang==='fil'?"Nahanap ang link. Pindutin ang Verify Security para i-scan.":"Link found. Click Verify Security to scan it.",
                 "", decoded);
             input.value = decoded;
-            setTimeout(() => { closeUploadModal(); checkBtn.click(); }, 1800);
         }, 600);
     });
 
