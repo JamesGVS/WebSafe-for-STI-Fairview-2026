@@ -160,8 +160,7 @@ app.use((req, res, next) => {
 // ── Rate limiters — separate budgets per endpoint cost ────────────────────────
 //
 //   /api/check  → 5 req/min  (fires 8 external API calls each — most expensive)
-//   /api/chat   → 10 req/min (costs real tokens per message)
-//   everything  → 30 req/min (fetch, whois, status — cheap reads)
+//   everything else under /api/ → 30 req/min (fetch, whois, status — cheap reads)
 //
 // IPs that exceed their budget 10+ times in a single window are soft-blocked
 // for the remainder of that window (saves external API quota from abuse).
@@ -213,7 +212,12 @@ function makeRateLimiter(maxPerMin, message) {
 app.use('/api/check', makeRateLimiter(5,  'Scan limit reached (5/min) — please wait before scanning again.'));
 
 // Cheap endpoints: fetch, whois, status
-app.use('/api/',      makeRateLimiter(30, 'Too many requests — please wait a moment.'));
+const API_GENERIC_LIMITER = makeRateLimiter(30, 'Too many requests — please wait a moment.');
+app.use('/api/', (req, res, next) => {
+    // Avoid double-counting /api/check requests: they already have a stricter budget above.
+    if (req.path === '/check' || req.path.startsWith('/check/')) return next();
+    return API_GENERIC_LIMITER(req, res, next);
+});
 
 // ── Request logger ────────────────────────────────────────────────────────────
 app.use((req, res, next) => {
