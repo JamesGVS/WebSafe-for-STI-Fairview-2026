@@ -1666,7 +1666,7 @@ PANEL 1 — HERO
 /* ── RESULTS ROW — full width below card ─────────────── */
 .hero-results-col {
     width: 100%;
-    max-width: 900px;
+    max-width: 1100px;
     overflow: hidden;
     max-height: 0;
     opacity: 0;
@@ -1684,13 +1684,14 @@ PANEL 1 — HERO
     padding-bottom: 16px;
 }
 
-/* Inner: single column stacked */
+/* Inner: side-by-side horizontal layout */
 .results-col-inner {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 14px;
     width: 100%;
     padding: 4px 2px;
+    align-items: flex-start;
 }
 
 /* label */
@@ -1742,6 +1743,8 @@ PANEL 1 — HERO
     display: flex;
     flex-direction: column;
     gap: 12px;
+    flex: 1 1 0;
+    min-width: 0;
     max-height: calc(100vh - 310px);
     min-height: 120px;
     overflow-y: auto;
@@ -1759,6 +1762,8 @@ PANEL 1 — HERO
     display: flex !important;
     flex-direction: column;
     gap: 10px;
+    flex: 1 1 0;
+    min-width: 0;
     max-height: calc(100vh - 310px);
     min-height: 120px;
     overflow-y: auto;
@@ -2241,7 +2246,7 @@ MOBILE
         padding-bottom: 12px;
     }
     .results-col-inner { display: flex; flex-direction: column; overflow-x: visible; overflow-y: visible; }
-    .results-col-inner > * { width: 100%; }
+    .results-col-inner > * { width: 100%; flex: none; }
     .hero-results-col #results_row,
     .hero-results-col #preview_area { opacity: 1 !important; transform: none !important; animation: none !important; pointer-events: auto; max-height: none; overflow-y: visible; }
     #results_row { flex: none; min-height: auto; max-height: none; overflow-y: visible; }
