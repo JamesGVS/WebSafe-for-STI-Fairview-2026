@@ -1494,7 +1494,7 @@
             const finalObj = new URL(finalUrl);
             previewTitle.textContent = data.title || finalObj.hostname;
             previewDomain.textContent = finalObj.hostname;
-            previewDesc.textContent = data.description || "No description available.";
+            previewDesc.textContent = data.description || "No page description found. You can still open and inspect the site in a new tab.";
             previewFavicon.src = data.favicon || `${finalObj.origin}/favicon.ico`;
             previewFavicon.alt = `${finalObj.hostname} favicon`;
             previewActions.innerHTML = `<a href="${finalUrl}" target="_blank" rel="noopener noreferrer">Open site in new tab</a>`;
@@ -1526,11 +1526,13 @@
 
             const hostname = (() => { try { return new URL(data.finalUrl || normalized).hostname; } catch (_) { return normalized; } })();
             const score = data.riskScore ?? "N/A";
-            const level = (data.level || "unknown").toUpperCase();
+            const rawLevel = String(data.verdict || data.level || "safe").toLowerCase();
+            const normalizedLevel = ["safe", "hazard", "danger"].includes(rawLevel) ? rawLevel : "hazard";
+            const levelLabel = normalizedLevel.toUpperCase();
             const reasons = Array.isArray(data.reasons) ? data.reasons.slice(0, 5) : [];
             resultBox.innerHTML = `
-                <div class="result-inline ${String(data.level || "safe").toLowerCase()}">
-                    <strong>${level} • Risk score: ${score}</strong>
+                <div class="result-inline ${normalizedLevel}">
+                    <strong>${levelLabel} • Risk score: ${score}</strong>
                     <div class="result-inline-detail">${hostname}</div>
                     ${reasons.length ? `<ul>${reasons.map(r => `<li>${r}</li>`).join("")}</ul>` : ""}
                 </div>`;
