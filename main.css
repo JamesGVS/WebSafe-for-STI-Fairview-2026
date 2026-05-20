@@ -1468,7 +1468,7 @@ PANEL 1 — HERO
 .hero-inner {
     position: relative;
     z-index: 2;
-    height: calc(100vh - 72px);
+    height: calc(100svh - 72px);
     margin-top: 72px;
     display: grid;
     grid-template-columns: minmax(300px, 1fr) minmax(360px, 460px) minmax(300px, 1fr);
@@ -1679,7 +1679,7 @@ PANEL 1 — HERO
     display: flex !important;
     flex-direction: column;
     gap: 10px;
-    max-height: calc(100vh - 72px - 48px);
+    max-height: calc(100svh - 72px - 48px);
     min-height: 120px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -1759,7 +1759,7 @@ PANEL 1 — HERO
     gap: 12px;
     flex: 1 1 0;
     min-width: 0;
-    max-height: calc(100vh - 72px - 48px);
+    max-height: calc(100svh - 72px - 48px);
     min-height: 120px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -1778,7 +1778,7 @@ PANEL 1 — HERO
     gap: 10px;
     flex: 1 1 0;
     min-width: 0;
-    max-height: calc(100vh - 72px - 48px);
+    max-height: calc(100svh - 72px - 48px);
     min-height: 120px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -2253,7 +2253,7 @@ MOBILE
         display: flex;
         flex-direction: column;
         height: auto;
-        min-height: calc(100vh - 72px);
+        min-height: calc(100svh - 72px);
         gap: 16px;
         padding: 14px 12px 24px;
         align-items: stretch;
