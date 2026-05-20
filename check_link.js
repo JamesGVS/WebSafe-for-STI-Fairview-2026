@@ -1352,16 +1352,17 @@ function friendlyFlagDetail(f) {
         });
     }
 
-    async function getScreenshot(url) {
+    async function getScreenshot(url, startIndex = 0) {
         const enc = encodeURIComponent(url);
         const sources = [
             `https://image.thum.io/get/width/960/crop/700/noanimate/${url}`,
             `https://pageshot.site/v1/screenshot?url=${enc}&width=960&height=700&format=png&block_ads=true&hide_banners=true`,
             `https://mini.s-shot.ru/1024x768/PNG/1024/Z100/?${url}`,
         ];
-        for (const src of sources) {
+        for (let i = startIndex; i < sources.length; i++) {
+            const src = sources[i];
             const r = await tryLoadImage(src, 13000);
-            if (r) return r;
+            if (r) return { src: r, sourceIndex: i };
         }
         return null;
     }
@@ -1615,8 +1616,17 @@ function friendlyFlagDetail(f) {
             viewport.style.overflowY = 'auto';
             const img = document.createElement('img');
             img.className = 'ws-screenshot-img';
-            img.src  = shot;
+            img.src  = shot.src;
             img.alt  = `Preview of ${hostname}`;
+            img.addEventListener('error', async () => {
+                const retry = await getScreenshot(url, (shot.sourceIndex || 0) + 1);
+                if (retry) {
+                    img.src = retry.src;
+                } else {
+                    viewport.innerHTML = '';
+                    viewport.appendChild(makeFallback(hostname));
+                }
+            }, { once: true });
             viewport.appendChild(img);
 
             // Badge
@@ -1644,7 +1654,7 @@ function friendlyFlagDetail(f) {
                     if (newShot) {
                         const img2 = document.createElement('img');
                         img2.className = 'ws-screenshot-img';
-                        img2.src = newShot;
+                        img2.src = newShot.src;
                         viewport.appendChild(img2);
                         const b2 = document.createElement('div');
                         b2.className = 'ws-screenshot-badge';
