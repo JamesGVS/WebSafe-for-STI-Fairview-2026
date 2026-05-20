@@ -1319,7 +1319,9 @@ function friendlyFlagDetail(f) {
 
     // ── Helpers ───────────────────────────────────────────────────────────────
     function setPreviewVisible(v) {
-        if (previewArea) previewArea.style.display = v ? 'block' : 'none';
+        if (!previewArea) return;
+        previewArea.style.display = v ? 'flex' : 'none';
+        previewArea.classList.toggle('visible', !!v);
     }
     function resetPreviewContent() {
         if (pvDomain)  pvDomain.textContent = '';
