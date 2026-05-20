@@ -1471,7 +1471,7 @@ PANEL 1 — HERO
     height: calc(100vh - 72px);
     margin-top: 72px;
     display: grid;
-    grid-template-columns: 1fr minmax(300px, 440px) 1.4fr;
+    grid-template-columns: 1fr minmax(300px, 440px) 1fr 1fr;
     grid-template-rows: 1fr;
     align-items: stretch;
     gap: 24px;
@@ -1657,7 +1657,7 @@ PANEL 1 — HERO
 
 /* ── RESULTS COLUMN — right column, always visible ─────────────── */
 .hero-results-col {
-    grid-column: 3;
+    grid-column: 3 / 5;
     display: flex;
     flex-direction: column;
     justify-content: center;
