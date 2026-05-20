@@ -4,18 +4,15 @@ Disallow: /api/
 # Block aggressive SEO crawlers that inflate suspicious-activity signals
 User-agent: AhrefsBot
 Disallow: /
-
 User-agent: SemrushBot
 Disallow: /
-
 User-agent: MJ12bot
 Disallow: /
-
 User-agent: DotBot
 Disallow: /
-
 User-agent: BLEXBot
 Disallow: /
-
 User-agent: PetalBot
 Disallow: /
+
+Sitemap: https://websafe.eu.cc/sitemap.xml
