@@ -1352,13 +1352,13 @@
         let wheelAccum = 0;
         let wheelResetTimer;
         window.addEventListener("wheel", e => {
-            const scrollable = e.target.closest("#results_row, #preview_area, .results-col-inner, .hero-results-col");
+            const scrollable = e.target.closest("#results_row, #preview_area, .hero-results-col");
             if (scrollable) {
                 const container = e.target.closest("#results_row, #preview_area") || scrollable;
-                const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+                const deltaEdge = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
                 const atBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 2;
-                const atTop    = container.scrollTop < 2;
-                if ((delta > 0 && !atBottom) || (delta < 0 && !atTop)) return;
+                const atTop = container.scrollTop < 2;
+                if ((deltaEdge > 0 && !atBottom) || (deltaEdge < 0 && !atTop)) return;
             }
             if (wheelCooldown) return;
             const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
