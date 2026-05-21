@@ -1304,6 +1304,27 @@
         const btnNext = document.getElementById("nav-next");
         const totalPanels = panels.length;
         let current = 0, isAnimating = false;
+        function isMobileViewport() { return window.matchMedia("(max-width: 768px)").matches; }
+
+        function applyMobilePanelMode() {
+            if (!isMobileViewport()) return false;
+            track.style.transform = "none";
+            panels.forEach((panel, i) => {
+                panel.classList.toggle("panel-active", i === 0);
+                panel.style.transform = "";
+                panel.style.filter = "";
+                panel.style.opacity = "";
+                panel.style.transition = "";
+            });
+            dots.forEach((d, i) => d.classList.toggle("active", i === 0));
+            btnPrev.classList.add("hidden-btn");
+            btnNext.classList.add("hidden-btn");
+            progressBar.style.opacity = "0";
+            progressBar.style.height = "0";
+            current = 0;
+            isAnimating = false;
+            return true;
+        }
 
         function updateProgressBar(index) {
             if (totalPanels <= 1) { progressBar.style.height = '0'; progressBar.style.opacity = '0'; return; }
@@ -1314,6 +1335,7 @@
         }
 
         function goTo(index) {
+            if (applyMobilePanelMode()) return;
             if (index < 0 || index >= totalPanels || isAnimating) return;
             isAnimating = true; const prev = current;
             panels[prev].classList.remove("panel-active");
@@ -1357,6 +1379,7 @@
         btnPrev.addEventListener("click", () => goTo(current - 1));
         btnNext.addEventListener("click", () => scrollHeroThenMaybeGoNext());
         document.addEventListener("keydown", e => {
+            if (isMobileViewport()) return;
             if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); scrollHeroThenMaybeGoNext(); }
             if (e.key === "ArrowUp"   || e.key === "ArrowLeft")  { e.preventDefault(); goTo(current - 1); }
         });
@@ -1364,6 +1387,7 @@
         let wheelAccum = 0;
         let wheelResetTimer;
         window.addEventListener("wheel", e => {
+            if (isMobileViewport()) return;
             if (current === 0) return;
             const scrollable = e.target.closest("#results_row, #preview_area, .hero-results-col");
             if (scrollable) {
@@ -1386,7 +1410,6 @@
             else goTo(current - 1);
         }, { passive: true });
         let touchStartX=0,touchStartY=0;
-        function isMobileViewport() { return window.matchMedia("(max-width: 768px)").matches; }
         window.addEventListener("touchstart", e => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
@@ -1405,7 +1428,8 @@
         }, { passive: true });
         document.querySelectorAll("[data-nav-panel]").forEach(el => el.addEventListener("click", e => { e.preventDefault(); goTo(parseInt(el.dataset.navPanel)); }));
         document.querySelectorAll(".sidebar-link[data-panel]").forEach(link => { link.addEventListener("click", e => { const p=parseInt(link.dataset.panel); if(!isNaN(p)){e.preventDefault();closeSidebar();setTimeout(()=>goTo(p),320);} }); });
-        goTo(0);
+        window.addEventListener("resize", () => { applyMobilePanelMode(); });
+        if (!applyMobilePanelMode()) goTo(0);
     })();
 
     /* =============================================
