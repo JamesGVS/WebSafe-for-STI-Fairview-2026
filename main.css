@@ -328,7 +328,7 @@ LIGHT MODE — SIDEBAR
 /* =============================================
 LIGHT MODE — PANELS background
 ============================================= */
-:root[data-theme="light"] #panel-hero { background: var(--bg-deep); }
+:root[data-theme="light"] #panel-hero { background: var(--bg-deep); overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
 :root[data-theme="light"] #panel-threats { background: var(--bg-mid); }
 :root[data-theme="light"] #panel-threats::before {
     background-image: linear-gradient(rgba(0,119,182,0.05) 1px,transparent 1px),
@@ -1459,7 +1459,7 @@ SCROLL-TRIGGERED PANEL ANIMATIONS
 /* =============================================
 PANEL 1 — HERO
 ============================================= */
-#panel-hero { background: var(--bg-deep); }
+#panel-hero { background: var(--bg-deep); overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
 #panel-hero::before { content:""; position:absolute; inset:0; background:radial-gradient(ellipse 80% 60% at 20% 50%, rgba(0,180,216,0.05) 0%, transparent 60%),radial-gradient(ellipse 60% 70% at 80% 30%, rgba(0,119,182,0.04) 0%, transparent 60%); pointer-events:none; }
 
 /* ── HERO INNER — 3-column layout matching sketch ─────────────
@@ -1468,7 +1468,8 @@ PANEL 1 — HERO
 .hero-inner {
     position: relative;
     z-index: 2;
-    height: calc(100vh - 72px);
+    min-height: calc(100svh - 72px);
+    height: auto;
     margin-top: 72px;
     display: grid;
     grid-template-columns: minmax(300px, 1fr) minmax(360px, 460px) minmax(300px, 1fr);
@@ -1679,7 +1680,7 @@ PANEL 1 — HERO
     display: flex !important;
     flex-direction: column;
     gap: 10px;
-    max-height: calc(100vh - 72px - 48px);
+    max-height: none;
     min-height: 120px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -1759,7 +1760,7 @@ PANEL 1 — HERO
     gap: 12px;
     flex: 1 1 0;
     min-width: 0;
-    max-height: calc(100vh - 72px - 48px);
+    max-height: none;
     min-height: 120px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -1778,7 +1779,7 @@ PANEL 1 — HERO
     gap: 10px;
     flex: 1 1 0;
     min-width: 0;
-    max-height: calc(100vh - 72px - 48px);
+    max-height: none;
     min-height: 120px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -2253,7 +2254,7 @@ MOBILE
         display: flex;
         flex-direction: column;
         height: auto;
-        min-height: calc(100vh - 72px);
+        min-height: calc(100svh - 72px);
         gap: 16px;
         padding: 14px 12px 24px;
         align-items: stretch;
@@ -2288,7 +2289,7 @@ MOBILE
     .emergency-banner { flex-direction:column; }
     .emergency-contacts { margin-left:0; }
     .panel-label { display:none; }
-    #panel-nav { display:none; }
+    #panel-nav { display:flex; right:12px; left:auto; bottom:96px; gap:10px; }
     #nav-prev { left:16px; bottom:36px; }
     #nav-next { right:16px; left:auto; bottom:36px; }
     .header-right { gap:6px; margin-left:auto; }
