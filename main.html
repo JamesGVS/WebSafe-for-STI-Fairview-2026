@@ -1323,13 +1323,19 @@
             return true;
         }
 
-        function goToMobile(index) {
+        function syncMobileUi(index) {
             if (index < 0 || index >= totalPanels) return;
             current = index;
-            panels[current].scrollIntoView({ behavior: "smooth", block: "start" });
+            panels.forEach((panel, i) => panel.classList.toggle("panel-active", i === current));
             dots.forEach((d, i) => d.classList.toggle("active", i === current));
             btnPrev.classList.toggle("hidden-btn", current === 0);
             btnNext.classList.toggle("hidden-btn", current === totalPanels - 1);
+        }
+
+        function goToMobile(index) {
+            if (index < 0 || index >= totalPanels) return;
+            syncMobileUi(index);
+            panels[current].scrollIntoView({ behavior: "smooth", block: "start" });
         }
 
         function updateProgressBar(index) {
@@ -1434,9 +1440,42 @@
         }, { passive: true });
         document.querySelectorAll("[data-nav-panel]").forEach(el => el.addEventListener("click", e => { e.preventDefault(); goTo(parseInt(el.dataset.navPanel)); }));
         document.querySelectorAll(".sidebar-link[data-panel]").forEach(link => { link.addEventListener("click", e => { const p=parseInt(link.dataset.panel); if(!isNaN(p)){e.preventDefault();closeSidebar();setTimeout(()=>goTo(p),320);} }); });
-        window.addEventListener("resize", () => { applyMobilePanelMode(); });
+        function updateMobileCurrentFromViewport() {
+            if (!isMobileViewport()) return;
+            let bestIndex = current;
+            let bestVisible = -1;
+            panels.forEach((panel, i) => {
+                const rect = panel.getBoundingClientRect();
+                const visible = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
+                if (visible > bestVisible) { bestVisible = visible; bestIndex = i; }
+            });
+            syncMobileUi(bestIndex);
+        }
+
+        let viewportMode = isMobileViewport() ? "mobile" : "desktop";
+        window.addEventListener("resize", () => {
+            const mode = isMobileViewport() ? "mobile" : "desktop";
+            if (mode !== viewportMode) {
+                viewportMode = mode;
+                if (mode === "mobile") {
+                    applyMobilePanelMode();
+                    updateMobileCurrentFromViewport();
+                } else {
+                    goTo(current);
+                }
+            } else if (mode === "mobile") {
+                applyMobilePanelMode();
+                updateMobileCurrentFromViewport();
+            }
+        });
+
+        window.addEventListener("scroll", () => {
+            if (!isMobileViewport()) return;
+            updateMobileCurrentFromViewport();
+        }, { passive: true });
         if (applyMobilePanelMode()) {
             goToMobile(0);
+            updateMobileCurrentFromViewport();
         } else {
             goTo(0);
         }
