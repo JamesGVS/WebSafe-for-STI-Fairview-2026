@@ -1304,6 +1304,33 @@
         const btnNext = document.getElementById("nav-next");
         const totalPanels = panels.length;
         let current = 0, isAnimating = false;
+        function isMobileViewport() { return window.matchMedia("(max-width: 768px)").matches; }
+
+        function applyMobilePanelMode() {
+            if (!isMobileViewport()) return false;
+            track.style.transform = "none";
+            panels.forEach((panel, i) => {
+                panel.classList.toggle("panel-active", i === current);
+                panel.style.transform = "";
+                panel.style.filter = "";
+                panel.style.opacity = "";
+                panel.style.transition = "";
+            });
+            dots.forEach((d, i) => d.classList.toggle("active", i === current));
+            progressBar.style.opacity = "0";
+            progressBar.style.height = "0";
+            isAnimating = false;
+            return true;
+        }
+
+        function goToMobile(index) {
+            if (index < 0 || index >= totalPanels) return;
+            current = index;
+            panels[current].scrollIntoView({ behavior: "smooth", block: "start" });
+            dots.forEach((d, i) => d.classList.toggle("active", i === current));
+            btnPrev.classList.toggle("hidden-btn", current === 0);
+            btnNext.classList.toggle("hidden-btn", current === totalPanels - 1);
+        }
 
         function updateProgressBar(index) {
             if (totalPanels <= 1) { progressBar.style.height = '0'; progressBar.style.opacity = '0'; return; }
@@ -1314,6 +1341,7 @@
         }
 
         function goTo(index) {
+            if (applyMobilePanelMode()) return goToMobile(index);
             if (index < 0 || index >= totalPanels || isAnimating) return;
             isAnimating = true; const prev = current;
             panels[prev].classList.remove("panel-active");
@@ -1342,23 +1370,38 @@
             setTimeout(() => { isAnimating = false; panels[prev].style.transform = ""; panels[prev].style.filter = ""; panels[prev].style.opacity = ""; panels[prev].style.transition = ""; }, 750);
         }
         dots.forEach(dot => dot.addEventListener("click", () => goTo(parseInt(dot.dataset.panel))));
-        btnPrev.addEventListener("click", () => goTo(current - 1));
-        btnNext.addEventListener("click", () => goTo(current + 1));
+
+        function scrollHeroThenMaybeGoNext() {
+            if (current !== 0) { goTo(current + 1); return; }
+            const heroPanel = document.getElementById("panel-hero");
+            if (!heroPanel) { goTo(current + 1); return; }
+            const atBottom = heroPanel.scrollHeight - heroPanel.scrollTop - heroPanel.clientHeight < 4;
+            if (!atBottom) {
+                heroPanel.scrollBy({ top: Math.max(220, Math.round(heroPanel.clientHeight * 0.65)), behavior: "smooth" });
+                return;
+            }
+            goTo(current + 1);
+        }
+        btnPrev.addEventListener("click", () => isMobileViewport() ? goToMobile(current - 1) : goTo(current - 1));
+        btnNext.addEventListener("click", () => isMobileViewport() ? goToMobile(current + 1) : scrollHeroThenMaybeGoNext());
         document.addEventListener("keydown", e => {
-            if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); goTo(current + 1); }
+            if (isMobileViewport()) return;
+            if (e.key === "ArrowDown" || e.key === "ArrowRight") { e.preventDefault(); scrollHeroThenMaybeGoNext(); }
             if (e.key === "ArrowUp"   || e.key === "ArrowLeft")  { e.preventDefault(); goTo(current - 1); }
         });
         let wheelCooldown = false;
         let wheelAccum = 0;
         let wheelResetTimer;
         window.addEventListener("wheel", e => {
-            const scrollable = e.target.closest("#results_row, #preview_area, .results-col-inner, .hero-results-col");
+            if (isMobileViewport()) return;
+            if (current === 0) return;
+            const scrollable = e.target.closest("#results_row, #preview_area, .hero-results-col");
             if (scrollable) {
                 const container = e.target.closest("#results_row, #preview_area") || scrollable;
-                const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+                const deltaEdge = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
                 const atBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 2;
-                const atTop    = container.scrollTop < 2;
-                if ((delta > 0 && !atBottom) || (delta < 0 && !atTop)) return;
+                const atTop = container.scrollTop < 2;
+                if ((deltaEdge > 0 && !atBottom) || (deltaEdge < 0 && !atTop)) return;
             }
             if (wheelCooldown) return;
             const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
@@ -1373,7 +1416,6 @@
             else goTo(current - 1);
         }, { passive: true });
         let touchStartX=0,touchStartY=0;
-        function isMobileViewport() { return window.matchMedia("(max-width: 768px)").matches; }
         window.addEventListener("touchstart", e => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
@@ -1383,16 +1425,21 @@
             const dx = touchStartX - e.changedTouches[0].clientX;
             const dy = touchStartY - e.changedTouches[0].clientY;
             if (Math.abs(dy) >= Math.abs(dx)) {
-                if (dy > 50) goTo(current + 1);
+                if (dy > 50) scrollHeroThenMaybeGoNext();
                 if (dy < -50) goTo(current - 1);
             } else {
-                if (dx > 50) goTo(current + 1);
+                if (dx > 50) scrollHeroThenMaybeGoNext();
                 if (dx < -50) goTo(current - 1);
             }
         }, { passive: true });
         document.querySelectorAll("[data-nav-panel]").forEach(el => el.addEventListener("click", e => { e.preventDefault(); goTo(parseInt(el.dataset.navPanel)); }));
         document.querySelectorAll(".sidebar-link[data-panel]").forEach(link => { link.addEventListener("click", e => { const p=parseInt(link.dataset.panel); if(!isNaN(p)){e.preventDefault();closeSidebar();setTimeout(()=>goTo(p),320);} }); });
-        goTo(0);
+        window.addEventListener("resize", () => { applyMobilePanelMode(); });
+        if (applyMobilePanelMode()) {
+            goToMobile(0);
+        } else {
+            goTo(0);
+        }
     })();
 
     /* =============================================
