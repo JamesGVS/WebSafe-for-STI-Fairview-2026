@@ -1717,7 +1717,7 @@ PANEL 1 — HERO
 
 /* Scroll-fade hint — fades out bottom of scrollable columns */
 .hero-results-col #results_row,
-.hero-results-col #preview_area {
+.hero-preview-col {
     position: relative;
 }
 .scroll-fade-hint {
@@ -1772,7 +1772,7 @@ PANEL 1 — HERO
 .hero-results-col #results_row::-webkit-scrollbar-track { background: transparent; }
 .hero-results-col #results_row::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 
-.hero-results-col #preview_area {
+.hero-preview-col {
     position: relative;
     display: flex !important;
     flex-direction: column;
@@ -1787,9 +1787,9 @@ PANEL 1 — HERO
     scrollbar-color: var(--accent) transparent;
     border-radius: 14px;
 }
-.hero-results-col #preview_area::-webkit-scrollbar { width: 3px; }
-.hero-results-col #preview_area::-webkit-scrollbar-track { background: transparent; }
-.hero-results-col #preview_area::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+.hero-preview-col::-webkit-scrollbar { width: 3px; }
+.hero-preview-col::-webkit-scrollbar-track { background: transparent; }
+.hero-preview-col::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 
 /* Pop-in animation for results children */
 @keyframes resultPopIn {
@@ -1800,7 +1800,7 @@ PANEL 1 — HERO
 
 /* Children hidden until .visible is added to hero-results-col */
 .hero-results-col #results_row,
-.hero-results-col #preview_area {
+.hero-preview-col {
     opacity: 0;
     pointer-events: none;
     transform: scale(0.88) translateY(18px);
@@ -1810,7 +1810,7 @@ PANEL 1 — HERO
     animation: resultPopIn 0.45s cubic-bezier(0.34,1.56,0.64,1) 0.18s both;
     pointer-events: auto;
 }
-.hero-results-col.visible #preview_area {
+.hero-preview-col.visible {
     animation: resultPopIn 0.45s cubic-bezier(0.34,1.56,0.64,1) 0.32s both;
     pointer-events: auto;
 }
@@ -1896,8 +1896,7 @@ PANEL 1 — HERO
 
 #link_status { min-height: 0; text-align: left; }
 #link_status > div { text-align: left; }
-#preview_area { display: none; flex-direction: column; gap: 10px; }
-.hero-results-col #preview_area { display: flex !important; }
+#preview_area { display: flex; flex-direction: column; gap: 10px; }
 #preview_card { background:var(--preview-card-bg); border:1px solid var(--border-glass); padding:13px 16px; border-radius:12px; box-shadow:0 4px 24px rgba(0,0,0,0.5); display:flex; gap:14px; align-items:flex-start; }
 #preview_card > img, #preview_card img#preview_favicon { width:34px; height:34px; border-radius:8px; object-fit:contain; display:none; border:1px solid var(--border-glass); background:var(--accent-dim); }
 #preview_card > div { flex:1; text-align:left; }
