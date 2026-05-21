@@ -2289,7 +2289,7 @@ MOBILE
     .emergency-banner { flex-direction:column; }
     .emergency-contacts { margin-left:0; }
     .panel-label { display:none; }
-    #panel-nav { display:none; }
+    #panel-nav { display:flex; right:12px; left:auto; bottom:96px; gap:10px; }
     #nav-prev { left:16px; bottom:36px; }
     #nav-next { right:16px; left:auto; bottom:36px; }
     .header-right { gap:6px; margin-left:auto; }
